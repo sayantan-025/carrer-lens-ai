@@ -3,9 +3,8 @@ import Login from "./features/auth/pages/login";
 import Register from "./features/auth/pages/register";
 import LandingPage from "./landing-page/landing-page";
 import Protected from "./features/auth/components/protectet";
-import Dashboard from "./features/interview/pages/Dashboard";
+import Dashboard from "./features/interview/pages/dashboard";
 import GenerateReport from "./features/interview/pages/generate-report";
-
 
 import MainLayout from "./layouts/main-layout";
 
