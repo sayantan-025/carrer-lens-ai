@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  
+  --color-brand-dark: #050505;
+  --color-brand-card: #0D0D0D;
+  --color-brand-card-hover: #171717;
+  --color-brand-neon: #8CFF2E;
+  --color-brand-neon-hover: #75E626;
+  --color-brand-cyan: #8CFF2E; /* Migrating cyan uses to neon to unify the whole page palette */
+  --color-brand-border: #F8F8FA;
+  --color-brand-border-muted: #2F2F2F;
+  --color-white-card: #FDFDFD;
+  --color-white-card-hover: #F8F8F8;
+
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 30s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-delayed: float 6s ease-in-out 3s infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); } 
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-15px) scale(1.05); }
+  100% { transform: translateY(0px) scale(1); }
+}
+
+body {
+  @apply bg-brand-dark text-white overflow-x-hidden antialiased;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
