@@ -116,32 +116,60 @@ async function generateInterviewReport({
 }
 
 async function generatePdfFromHtml(htmlContent) {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-    ],
-  });
+  let browser;
+  let page;
 
-  const page = await browser.newPage();
-  await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--single-process",
+        "--no-zygote",
+      ],
+    });
 
-  const pdfBuffer = await page.pdf({
-    format: "A4",
-    pageRanges: "1",
-    margin: {
-      top: "15mm",
-      bottom: "15mm",
-      left: "15mm",
-      right: "15mm",
-    },
-  });
+    page = await browser.newPage();
+    await page.emulateMediaType("screen");
+    await page.setContent(htmlContent, {
+      waitUntil: "networkidle2",
+      timeout: 30000,
+    });
 
-  await browser.close();
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      pageRanges: "1",
+      margin: {
+        top: "15mm",
+        bottom: "15mm",
+        left: "15mm",
+        right: "15mm",
+      },
+    });
 
-  return pdfBuffer;
+    return pdfBuffer;
+  } catch (error) {
+    console.error("generatePdfFromHtml error:", error);
+    throw new Error(`PDF generation failed: ${error.message}`);
+  } finally {
+    if (page) {
+      try {
+        await page.close();
+      } catch (err) {
+        console.warn("Failed to close Puppeteer page:", err.message);
+      }
+    }
+    if (browser) {
+      try {
+        await browser.close();
+      } catch (err) {
+        console.warn("Failed to close Puppeteer browser:", err.message);
+      }
+    }
+  }
 }
 
 async function generateResumePdf({ resume, selfDescription, jobDescription }) {
@@ -218,27 +246,46 @@ Include this embedded CSS in your HTML <head> and match its structure:
 </html>
 `;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-lite",
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: z.toJSONSchema(resumePdfSchema),
-    },
-  });
+  let response;
+  try {
+    response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-lite",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: z.toJSONSchema(resumePdfSchema),
+      },
+    });
+  } catch (error) {
+    console.error("AI resume generation failed:", error);
+    throw new Error(`AI resume generation failed: ${error.message}`);
+  }
+
+  if (!response || typeof response.text !== "string") {
+    throw new Error("AI resume generation returned an unexpected response.");
+  }
 
   let jsonContent;
   try {
     jsonContent = JSON.parse(response.text);
   } catch (error) {
+    console.error("Invalid AI resume response text:", response.text);
     throw new Error(`Invalid JSON from AI resume response: ${error.message}`);
   }
 
   const validation = resumePdfSchema.safeParse(jsonContent);
   if (!validation.success) {
+    console.error(
+      "Resume PDF schema validation failed:",
+      validation.error.format(),
+    );
     throw new Error(
       `Resume PDF schema validation failed: ${JSON.stringify(validation.error.format())}`,
     );
+  }
+
+  if (!validation.data.html || !validation.data.html.trim()) {
+    throw new Error("AI resume response contained empty HTML.");
   }
 
   const pdfBuffer = await generatePdfFromHtml(validation.data.html);
