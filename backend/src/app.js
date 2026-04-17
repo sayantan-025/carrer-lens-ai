@@ -20,6 +20,18 @@ app.use("/api/auth", authRouter);
 app.use("/api/interview", interviewReport);
 
 app.use(express.static(path.join(projectRoot, "frontend/dist")));
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(err.status || 500).json({
+    message: err.message || "Internal Server Error",
+    error: process.env.NODE_ENV !== "production" ? err.stack : undefined,
+  });
+});
+
 app.use((req, res) => {
   res.sendFile(path.join(projectRoot, "frontend", "dist", "index.html"));
 });

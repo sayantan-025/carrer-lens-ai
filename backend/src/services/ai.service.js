@@ -1,6 +1,6 @@
 const { GoogleGenAI } = require("@google/genai");
 const { z } = require("zod");
-const puppeteer = require("puppeteer")
+const puppeteer = require("puppeteer");
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENAI_API_KEY,
@@ -116,33 +116,44 @@ async function generateInterviewReport({
 }
 
 async function generatePdfFromHtml(htmlContent) {
-    const browser = await puppeteer.launch()
-    const page = await browser.newPage();
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" })
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+    ],
+  });
 
-    const pdfBuffer = await page.pdf({
-        format: "A4", 
-        pageRanges: "1",
-        margin: {
-            top: "15mm",
-            bottom: "15mm",
-            left: "15mm",
-            right: "15mm"
-        }
-    })
+  const page = await browser.newPage();
+  await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
-    await browser.close()
+  const pdfBuffer = await page.pdf({
+    format: "A4",
+    pageRanges: "1",
+    margin: {
+      top: "15mm",
+      bottom: "15mm",
+      left: "15mm",
+      right: "15mm",
+    },
+  });
 
-    return pdfBuffer
+  await browser.close();
+
+  return pdfBuffer;
 }
 
 async function generateResumePdf({ resume, selfDescription, jobDescription }) {
+  const resumePdfSchema = z.object({
+    html: z
+      .string()
+      .describe(
+        "The HTML content of the resume which can be converted to PDF using any library like puppeteer",
+      ),
+  });
 
-    const resumePdfSchema = z.object({
-        html: z.string().describe("The HTML content of the resume which can be converted to PDF using any library like puppeteer")
-    })
-
-    const prompt = `Generate a highly professional, ATS-friendly resume for a candidate based on the following inputs:
+  const prompt = `Generate a highly professional, ATS-friendly resume for a candidate based on the following inputs:
 Resume: ${resume}
 Self Description: ${selfDescription}
 Job Description: ${jobDescription}
@@ -205,24 +216,34 @@ Include this embedded CSS in your HTML <head> and match its structure:
     <!-- Build the rest based on Candidate data -->
 </body>
 </html>
-`
+`;
 
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash-lite",
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: z.toJSONSchema(resumePdfSchema),
-        }
-    })
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash-lite",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: z.toJSONSchema(resumePdfSchema),
+    },
+  });
 
+  let jsonContent;
+  try {
+    jsonContent = JSON.parse(response.text);
+  } catch (error) {
+    throw new Error(`Invalid JSON from AI resume response: ${error.message}`);
+  }
 
-    const jsonContent = JSON.parse(response.text)
+  const validation = resumePdfSchema.safeParse(jsonContent);
+  if (!validation.success) {
+    throw new Error(
+      `Resume PDF schema validation failed: ${JSON.stringify(validation.error.format())}`,
+    );
+  }
 
-    const pdfBuffer = await generatePdfFromHtml(jsonContent.html)
+  const pdfBuffer = await generatePdfFromHtml(validation.data.html);
 
-    return pdfBuffer
-
+  return pdfBuffer;
 }
 
 module.exports = { generateInterviewReport, generateResumePdf };
