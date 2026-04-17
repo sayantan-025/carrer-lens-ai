@@ -10,7 +10,7 @@ const projectRoot = path.resolve(__dirname, "../..");
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://carrer-lens-ai.onrender.com",
     credentials: true,
   }),
 );
