@@ -1,6 +1,8 @@
 const { GoogleGenAI } = require("@google/genai");
 const { z } = require("zod");
 const puppeteer = require("puppeteer");
+const path = require("path");
+const fs = require("fs");
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENAI_API_KEY,
@@ -120,6 +122,20 @@ async function generatePdfFromHtml(htmlContent) {
   let page;
 
   try {
+    // Path to the downloaded chrome on Render (based on puppeteer.config.cjs)
+    const executablePath = path.join(
+      process.cwd(),
+      ".cache",
+      "puppeteer",
+      "chrome",
+      "win64-147.0.7727.56", // This part might vary by platform, but Puppeteer usually handles the deep nesting if we give it the base. 
+      "chrome-win64",        // However, standard launch often works if cache is set correctly.
+      "chrome.exe"
+    );
+
+    // In a Linux environment (Render), the path would look different. 
+    // We'll try a flexible approach or just rely on the config-driven standard launch first.
+    
     browser = await puppeteer.launch({
       headless: true,
       args: [
@@ -130,6 +146,7 @@ async function generatePdfFromHtml(htmlContent) {
         "--single-process",
         "--no-zygote",
       ],
+      // If we are on Render/Linux, we might need to specify a path if it fails.
     });
 
     page = await browser.newPage();

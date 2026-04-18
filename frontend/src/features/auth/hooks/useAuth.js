@@ -52,6 +52,10 @@ export const useAuth = () => {
         const data = await getCurrentUser();
         setUser(data.user);
       } catch (err) {
+        // Silently handle 401 (Not logged in)
+        if (err.response?.status !== 401) {
+          console.error("Session check failed:", err);
+        }
       } finally {
         setLoading(false);
       }
