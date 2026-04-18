@@ -8,14 +8,17 @@ const userSchema = new mongoose.Schema({
   },
 
   email: {
+    
     type: String,
     unique: [true, "Email already exists"],
     required: true,
+    match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
   },
 
   password: {
     type: String,
     required: true,
+    minlength: [8, "Password must be at least 8 characters long"],
   },
 });
 

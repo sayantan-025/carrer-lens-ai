@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInterview } from "../hooks/useinterview";
+import { useToast } from "../../../context/toast-context";
 import FullScreenLoader from "../../../components/ui/full-screen-loader";
 import {
   Code2,
@@ -19,10 +20,37 @@ import {
 
 const Dashboard = () => {
   const { interviewId } = useParams();
-  const { report, loading, getResumePdf } = useInterview();
+  const { report, loading, error, getResumePdf } = useInterview();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState("technical");
 
-  if (loading || !report) return <FullScreenLoader />;
+  if (loading) {
+    const message = (loading && report) 
+      ? "Preparing your optimized resume..." 
+      : "Accessing Secure Archives...";
+    return <FullScreenLoader message={message} />;
+  }
+
+  if (error || !report) {
+    return (
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#030303] text-center px-6">
+        <div className="w-20 h-20 rounded-[28px] bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-8">
+          <AlertTriangle size={40} className="text-red-500" />
+        </div>
+        <h1 className="text-3xl font-bold text-white mb-4 tracking-tight">Report Retrieval Failed</h1>
+        <p className="text-zinc-500 max-w-md mb-10 font-light leading-relaxed">
+          {error || "The requested interview protocol could not be located in our secure archives. It may have been deleted or is inaccessible."}
+        </p>
+        <Link 
+          to="/generate-report"
+          className="bg-white/5 hover:bg-white/10 text-white px-8 py-4 rounded-2xl border border-white/10 transition-all font-bold flex items-center gap-3"
+        >
+          <Map size={18} />
+          Go to Synthesis
+        </Link>
+      </div>
+    );
+  }
 
   const tabs = [
     {
@@ -118,7 +146,20 @@ const Dashboard = () => {
                 borderColor: "rgba(140, 255, 46, 0.4)",
               }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => getResumePdf(interviewId)}
+              onClick={async () => {
+                try {
+                  await getResumePdf(interviewId);
+                  showToast({ 
+                    message: "Resume downloaded successfully!", 
+                    type: "success" 
+                  });
+                } catch (err) {
+                  showToast({ 
+                    message: "Failed to download resume. Please try again.", 
+                    type: "error" 
+                  });
+                }
+              }}
               className="mt-4 flex items-center justify-between gap-4 w-full p-6 rounded-2xl border transition-all duration-300 relative group overflow-hidden bg-brand-neon/[0.05] border-brand-neon/20 shadow-lg"
             >
               <div className="flex flex-col items-start text-left">

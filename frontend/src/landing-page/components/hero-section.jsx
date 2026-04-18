@@ -26,12 +26,12 @@ const HeroSection = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="w-full flex flex-col items-center pt-32 pb-24 md:pt-40 md:pb-32 max-w-7xl relative mx-auto px-6">
+    <div className="w-full flex flex-col items-center pt-32 pb-24 md:pt-40 md:pb-32 max-w-7xl relative mx-auto px-6 overflow-x-hidden">
       
       {/* Background Glows (Deep Dark / Neon Theme) */}
       {/* Background Glows (Refined for maximum clarity) */}
-      <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-brand-neon/10 rounded-full blur-[120px] pointer-events-none -z-10 opacity-50"></div>
-      <div className="absolute top-[40%] right-10 w-[300px] h-[300px] bg-brand-neon/15 rounded-full blur-[100px] pointer-events-none -z-10 opacity-30"></div>
+      <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-brand-neon/10 rounded-full blur-[80px] md:blur-[120px] pointer-events-none -z-10 opacity-50"></div>
+      <div className="absolute top-[40%] right-0 md:right-10 w-[200px] md:w-[300px] h-[200px] md:h-[300px] bg-brand-neon/15 rounded-full blur-[80px] md:blur-[100px] pointer-events-none -z-10 opacity-30"></div>
 
       {/* Animated Hero Text */}
       <motion.section 
@@ -52,9 +52,9 @@ const HeroSection = () => {
         
         <motion.h1 
           variants={itemVariants}
-          className="text-4xl sm:text-6xl md:text-[6.5rem] font-bold tracking-[-0.04em] leading-[0.9] text-white max-w-5xl mx-auto mb-8"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-[6.5rem] font-bold tracking-[-0.04em] leading-[1.1] md:leading-[0.9] text-white max-w-5xl mx-auto mb-8"
         >
-          Engineer Your <br/>
+          Engineer Your <br className="hidden md:block" />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-brand-neon to-white bg-[length:200%_auto] animate-pulse-slow drop-shadow-lg">
             Interview Success
           </span>
@@ -62,7 +62,7 @@ const HeroSection = () => {
         
         <motion.p 
           variants={itemVariants}
-          className="text-lg md:text-xl text-white/50 leading-relaxed font-light max-w-2xl mx-auto mb-10"
+          className="text-base md:text-xl text-white/50 leading-relaxed font-light max-w-2xl mx-auto mb-10"
         >
           Map your <span className="text-white">Resume</span>, <span className="text-white">JD</span>, and <span className="text-white">Bio</span> to instantly generate Technical & Behavioral Questions, a Match Score, and a Day-Wise roadmap. Plus, one-click Resume re-generation.
         </motion.p>
@@ -87,7 +87,7 @@ const HeroSection = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-5xl aspect-square md:aspect-[21/9] bg-[#0a0a0a] rounded-[32px] overflow-hidden flex flex-col p-2 md:p-6 group relative shadow-[0_40px_100px_rgba(0,0,0,0.8)] border border-white/5"
+        className="w-full max-w-5xl aspect-[4/3] sm:aspect-square md:aspect-[21/9] bg-[#0a0a0a] rounded-[24px] md:rounded-[32px] overflow-hidden flex flex-col p-2 md:p-6 group relative shadow-[0_40px_100px_rgba(0,0,0,0.8)] border border-white/5"
       >
         <div className="flex justify-between items-center mb-4 px-4 relative z-10 w-full pt-2">
            <div className="flex gap-2">
@@ -159,12 +159,12 @@ const HeroSection = () => {
               <div className="flex-1 bg-[#111] rounded-2xl border border-white/5 p-4 relative overflow-hidden flex flex-col items-center justify-center">
                  <Target size={120} className="absolute -right-6 -top-6 text-white/5 rotate-12" />
                  <div className="flex items-center gap-2 w-full text-left mb-auto">
-                    <Activity size={14} className="text-white/40" />
-                    <span className="text-[10px] font-bold tracking-widest uppercase text-white/50">Match</span>
+                    <Activity size={12} className="text-white/40 md:w-3.5 md:h-3.5" />
+                    <span className="text-[8px] md:text-[10px] font-bold tracking-widest uppercase text-white/50">Match</span>
                  </div>
                  <div className="flex items-start my-auto">
-                    <span className="text-6xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40">94</span>
-                    <span className="text-xl font-mono text-brand-neon mt-2">%</span>
+                    <span className="text-3xl md:text-6xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40">94</span>
+                    <span className="text-sm md:text-xl font-mono text-brand-neon mt-1 md:mt-2">%</span>
                  </div>
               </div>
               <div className="flex-1 bg-[#111] rounded-2xl border border-white/5 p-4 flex flex-col relative">

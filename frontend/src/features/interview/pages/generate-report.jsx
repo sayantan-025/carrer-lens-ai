@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 import FullScreenLoader from "../../../components/ui/full-screen-loader";
 import { useInterview } from "../hooks/useinterview";
+import { useToast } from "../../../context/toast-context";
 
 const GenerateReport = () => {
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const { loading, generateReport, reports } = useInterview();
   const [jobDescription, setJobDescription] = useState("");
@@ -26,14 +28,35 @@ const GenerateReport = () => {
   const resumeInputRef = useRef();
 
   const handleGenerateReport = async () => {
-    const resumeFile = uploadedFile;
-    const data = await generateReport({
-      jobDescription,
-      selfDescription,
-      resumeFile,
-    });
-    if (data && data._id) {
+    if (!jobDescription.trim()) {
+      showToast({ message: "Please provide a job description.", type: "error" });
+      return;
+    }
+
+    if (!uploadedFile && !selfDescription.trim()) {
+      showToast({
+        message: "Please upload a resume or provide a self-description.",
+        type: "error",
+      });
+      return;
+    }
+
+    try {
+      const resumeFile = uploadedFile;
+      const data = await generateReport({
+        jobDescription,
+        selfDescription,
+        resumeFile,
+      });
+      if (data && data._id) {
+        showToast({ message: "Strategy generated successfully!", type: "success" });
         navigate(`/dashboard/${data._id}`);
+      }
+    } catch (err) {
+      showToast({
+        message: err.response?.data?.message || "Failed to generate report. Please try again.",
+        type: "error",
+      });
     }
   };
 
@@ -52,17 +75,19 @@ const GenerateReport = () => {
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       setUploadedFile(e.dataTransfer.files[0]);
+      showToast({ message: "Resume uploaded successfully!", type: "success" });
     }
   };
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       setUploadedFile(e.target.files[0]);
+      showToast({ message: "Resume selected successfully!", type: "success" });
     }
   };
 
   if (loading) {
-    return <FullScreenLoader />;
+    return <FullScreenLoader message="Synthesizing your interview strategy..." />;
   }
 
   return (
@@ -303,28 +328,31 @@ const GenerateReport = () => {
       </main>
 
       {/* Reports Section with LayoutGrid */}
-      {reports.length > 0 && (
-        <div className="relative z-10 border-t border-white/5 pt-20 pb-20">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center justify-between mb-10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
-                  <LayoutGrid className="text-white" size={18} />
-                </div>
-                <h2 className="text-2xl font-bold tracking-tight text-white">
-                  Archives
-                </h2>
+      <div className="relative z-10 border-t border-white/5 pt-20 pb-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
+                <LayoutGrid className="text-white" size={18} />
               </div>
+              <h2 className="text-2xl font-bold tracking-tight text-white">
+                Archives
+              </h2>
             </div>
+          </div>
 
+          {reports.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {reports.map((report, idx) => (
                 <motion.div
-                
                   key={report._id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -5, borderColor: "rgba(140, 255, 46, 0.3)", backgroundColor: "rgba(255,255,255,0.05)" }}
+                  whileHover={{
+                    y: -5,
+                    borderColor: "rgba(140, 255, 46, 0.3)",
+                    backgroundColor: "rgba(255,255,255,0.05)",
+                  }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
                   onClick={() => navigate(`/dashboard/${report._id}`)}
@@ -354,9 +382,23 @@ const GenerateReport = () => {
                 </motion.div>
               ))}
             </div>
-          </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full py-20 bg-white/[0.02] border border-dashed border-white/10 rounded-[32px] flex flex-col items-center justify-center text-center px-6"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 border border-white/10">
+                <Box size={32} className="text-white/20" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">No Reports Synthesized Yet</h3>
+              <p className="text-white/40 max-w-sm text-sm font-light">
+                Your future interview strategies will be archived here. Start by uploading your resume above.
+              </p>
+            </motion.div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

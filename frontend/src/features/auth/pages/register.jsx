@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
+import { useToast } from "../../../context/toast-context";
 import { motion } from "framer-motion";
-import { Loader2, ArrowRight, Lock, Mail, User } from "lucide-react";
+import { Loader2, ArrowRight, Lock, Mail, User, Eye, EyeOff } from "lucide-react";
 
 import FullScreenLoader from "../../../components/ui/full-screen-loader";
 import Logo from "../../../components/ui/logo";
@@ -10,15 +11,33 @@ import Logo from "../../../components/ui/logo";
 const Register = () => {
   const navigate = useNavigate();
   const { loading, handleRegister } = useAuth();
+  const { showToast } = useToast();
 
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleRegister({ userName, email, password });
-    navigate("/");
+    setError("");
+    
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return;
+    }
+
+    try {
+      const response = await handleRegister({ userName, email, password });
+      showToast({ 
+        message: response.message || "Account created successfully!", 
+        type: "success" 
+      });
+      navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed. Please try again.");
+    }
   };
 
   if (loading) {
@@ -52,6 +71,17 @@ const Register = () => {
             Join CareerLens to start your journey.
           </p>
         </div>
+
+        {error && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-400 text-sm font-medium"
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+            {error}
+          </motion.div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
@@ -121,15 +151,22 @@ const Register = () => {
                 />
               </div>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 placeholder="••••••••"
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-transparent border border-white/10 hover:border-white/20 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-brand-neon/50 focus:bg-[#0D0D0D] transition-all font-medium tracking-widest"
+                className="w-full bg-transparent border border-white/10 hover:border-white/20 rounded-2xl py-4 pl-12 pr-12 text-white placeholder:text-white/20 focus:outline-none focus:border-brand-neon/50 focus:bg-[#0D0D0D] transition-all font-medium tracking-widest"
                 required
-                minLength={6}
+                minLength={8}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-600 hover:text-brand-neon transition-colors"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 

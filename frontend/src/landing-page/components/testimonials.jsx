@@ -74,8 +74,8 @@ const Testimonials = () => {
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-neon/10 border border-brand-neon/20 mb-6 font-mono text-[10px] uppercase tracking-widest text-brand-neon">
            <Star size={10} className="fill-brand-neon"/> Social Proof
         </div>
-        <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-6">Proven Protocol.</h2>
-        <p className="text-zinc-500 text-xl font-light max-w-2xl mx-auto">Engineers and managers from top-tier tech are already using the protocol to land their next level.</p>
+        <h2 className="text-3xl md:text-6xl font-extrabold tracking-tight text-white mb-4 md:mb-6">Proven Protocol.</h2>
+        <p className="text-zinc-500 text-base md:text-xl font-light max-w-2xl mx-auto">Engineers and managers from top-tier tech are already using the protocol to land their next level.</p>
       </motion.div>
 
       {/* Testimonials Grid */}
@@ -87,25 +87,25 @@ const Testimonials = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
-            className="flex flex-col bg-[#0D0D0D] border border-white/5 p-8 rounded-[32px] relative group hover:border-brand-neon/20 transition-all duration-500 shadow-2xl"
+            className="flex flex-col bg-[#0D0D0D] border border-white/5 p-6 md:p-8 rounded-[24px] md:rounded-[32px] relative group hover:border-brand-neon/20 transition-all duration-500 shadow-2xl"
           >
-            <div className="absolute top-8 right-8 text-white/5 group-hover:text-brand-neon/10 transition-colors">
-              <Quote size={80} />
+            <div className="absolute top-6 md:top-8 right-6 md:right-8 text-white/5 group-hover:text-brand-neon/10 transition-colors">
+              <Quote className="w-10 h-10 md:w-20 md:h-20" />
             </div>
             
-            <div className="flex items-center gap-4 mb-10 relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 flex items-center justify-center text-xl font-black text-white/50 group-hover:text-brand-neon transition-colors">
-                 {item.logo}
-              </div>
-              <div className="flex flex-col">
-                <h4 className="font-bold text-white text-lg tracking-tight">{item.name}</h4>
-                <div className="flex items-center gap-2 text-[10px] text-zinc-500 uppercase tracking-widest font-bold">
-                  {item.role} <span className="text-brand-neon/50">@</span> {item.company}
+              <div className="flex items-center gap-3 md:gap-4 mb-8 md:mb-10 relative z-10">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 flex items-center justify-center text-lg md:text-xl font-black text-white/50 group-hover:text-brand-neon transition-colors">
+                   {item.logo}
+                </div>
+                <div className="flex flex-col">
+                  <h4 className="font-bold text-white text-base md:text-lg tracking-tight">{item.name}</h4>
+                  <div className="flex items-center gap-2 text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest font-bold">
+                    {item.role} <span className="text-brand-neon/50">@</span> {item.company}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <p className="text-zinc-400 text-lg leading-relaxed font-light mb-10 relative z-10">
+            <p className="text-zinc-400 text-base md:text-lg leading-relaxed font-light mb-8 md:mb-10 relative z-10">
               "{item.quote}"
             </p>
 
@@ -127,19 +127,19 @@ const Testimonials = () => {
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="mt-24 pt-12 border-t border-white/5 w-full flex flex-col md:flex-row justify-center items-center gap-12 md:gap-32"
+        className="mt-16 md:mt-24 pt-8 md:pt-12 border-t border-white/5 w-full flex flex-col md:flex-row justify-center items-center gap-10 md:gap-32"
       >
          <div className="flex flex-col items-center">
-            <span className="text-4xl font-black text-white"><AnimatedCounter value="12" suffix="k+" /></span>
-            <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-[0.2em] mt-2">Reports Generated</span>
+            <span className="text-3xl md:text-4xl font-black text-white"><AnimatedCounter value="12" suffix="k+" /></span>
+            <span className="text-[9px] md:text-[10px] text-zinc-500 uppercase font-bold tracking-[0.2em] mt-2">Reports Generated</span>
          </div>
          <div className="flex flex-col items-center">
-            <span className="text-4xl font-black text-white"><AnimatedCounter value="84" suffix="%" /></span>
-            <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-[0.2em] mt-2">Interview Success</span>
+            <span className="text-3xl md:text-4xl font-black text-white"><AnimatedCounter value="84" suffix="%" /></span>
+            <span className="text-[9px] md:text-[10px] text-zinc-500 uppercase font-bold tracking-[0.2em] mt-2">Interview Success</span>
          </div>
          <div className="flex flex-col items-center">
-            <span className="text-4xl font-black text-white"><AnimatedCounter value="2" suffix=".4M" /></span>
-            <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-[0.2em] mt-2">Salary Impact</span>
+            <span className="text-3xl md:text-4xl font-black text-white"><AnimatedCounter value="2" suffix=".4M" /></span>
+            <span className="text-[9px] md:text-[10px] text-zinc-500 uppercase font-bold tracking-[0.2em] mt-2">Salary Impact</span>
          </div>
       </motion.div>
     </section>

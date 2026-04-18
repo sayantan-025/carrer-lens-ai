@@ -21,7 +21,7 @@ const cardStyle = {
 
 const SpotlightFeatures = () => {
   return (
-    <section className="w-full flex flex-col items-center max-w-7xl py-24 md:py-32 px-6 mx-auto">
+    <section className="w-full flex flex-col items-center max-w-7xl py-24 md:py-32 px-6 mx-auto overflow-hidden">
       
       {/* Header Section */}
       <motion.div 
@@ -31,8 +31,8 @@ const SpotlightFeatures = () => {
         transition={{ duration: 0.8 }}
         className="text-center mb-16"
       >
-        <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-4">The Intelligence Pipeline</h2>
-        <p className="text-zinc-500 text-xl font-light">Engineered for high-signal interview conversion.</p>
+        <h2 className="text-3xl md:text-6xl font-bold tracking-tight text-white mb-4">The Intelligence Pipeline</h2>
+        <p className="text-zinc-500 text-base md:text-xl font-light">Engineered for high-signal interview conversion.</p>
       </motion.div>
 
       <div className="w-full flex flex-col gap-6">
@@ -46,13 +46,13 @@ const SpotlightFeatures = () => {
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             whileHover={{ y: -5, borderColor: "rgba(140, 255, 46, 0.3)" }}
-            className="flex-[2] rounded-[32px] p-8 md:p-14 flex flex-col relative overflow-hidden group transition-all duration-500"
+            className="flex-[2] rounded-[24px] md:rounded-[32px] p-6 md:p-14 flex flex-col relative overflow-hidden group transition-all duration-500"
             style={cardStyle}
           >
              {/* Border Beam Effect */}
              <div className="absolute inset-0 border border-brand-neon/0 group-hover:border-brand-neon/20 transition-colors duration-500 rounded-[32px] z-20 pointer-events-none" />
              
-             <div className="absolute right-0 top-0 w-96 h-96 bg-brand-neon/5 blur-[100px] rounded-full pointer-events-none group-hover:bg-brand-neon/15 transition-all duration-1000"></div>
+             <div className="absolute right-0 top-0 w-64 md:w-96 h-64 md:h-96 bg-brand-neon/5 blur-[80px] md:blur-[100px] rounded-full pointer-events-none group-hover:bg-brand-neon/15 transition-all duration-1000"></div>
              
              <div className="flex items-center gap-4 mb-6">
                <div className="w-12 h-12 rounded-2xl bg-brand-neon/10 flex items-center justify-center border border-brand-neon/20 shadow-[0_0_20px_rgba(140,255,46,0.1)] group-hover:scale-110 transition-transform duration-500">
@@ -61,8 +61,8 @@ const SpotlightFeatures = () => {
                <span className="text-[10px] font-bold text-brand-neon uppercase tracking-widest bg-brand-neon/5 px-3 py-1 rounded-full border border-brand-neon/10">Engine Phase 01</span>
              </div>
 
-             <h3 className="text-4xl font-bold tracking-tight mb-4 text-white">Contextual Synthesis</h3>
-             <p className="text-zinc-400 max-w-lg mb-12 font-light z-10 leading-relaxed text-lg">
+             <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-4 text-white">Contextual Synthesis</h3>
+             <p className="text-zinc-400 max-w-lg mb-8 md:mb-12 font-light z-10 leading-relaxed text-base md:text-lg">
                Drop your <span className="text-white font-medium italic">Resume</span>, the <span className="text-white font-medium italic">Job Description</span>, and a <span className="text-white font-medium italic">Self-Bio</span>. 
                Our AI cross-references every data point to build a hyper-personalized conversion strategy.
              </p>
@@ -70,35 +70,35 @@ const SpotlightFeatures = () => {
              {/* UI Graphic: Input Synthesis System */}
              <div className="mt-auto w-full aspect-video md:aspect-[21/10] bg-[#050505] rounded-t-2xl border border-white/10 border-b-0 relative overflow-hidden flex flex-col items-center justify-center shadow-2xl pt-12 pb-16 group/synthesis">
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-neon/[0.02] to-transparent pointer-events-none" />
-                <div className="flex gap-6 items-center relative z-10">
-                   {[
-                     { label: "JD", icon: Upload },
-                     { label: "RESUME", icon: Upload },
-                     { label: "BIO", icon: Upload }
-                   ].map((item, i) => (
-                     <motion.div 
-                       key={i}
-                       whileHover={{ y: -2, borderColor: "rgba(140, 255, 46, 0.4)" }}
-                       className="px-5 py-3 bg-white/[0.03] border border-white/10 rounded-2xl text-[10px] text-white/70 font-mono flex items-center gap-3 shadow-lg backdrop-blur-md transition-all"
-                     >
-                       <item.icon size={14} className="text-brand-neon/60" /> {item.label}
-                     </motion.div>
-                   ))}
-                </div>
-                <div className="w-px h-16 bg-gradient-to-b from-white/10 via-brand-neon/40 to-brand-neon my-6 relative z-10">
-                   <motion.div 
-                     animate={{ top: ["0%", "100%"] }}
-                     transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                     className="absolute w-2 h-2 bg-brand-neon rounded-full left-1/2 -translate-x-1/2 blur-[2px]"
-                   />
-                </div>
-                <motion.div 
-                  animate={{ scale: [1, 1.02, 1], boxShadow: ["0 0 20px rgba(140,255,46,0.1)", "0 0 40px rgba(140,255,46,0.3)", "0 0 20px rgba(140,255,46,0.1)"] }}
-                  transition={{ repeat: Infinity, duration: 3 }}
-                  className="px-8 py-4 bg-brand-neon/10 border border-brand-neon/30 rounded-full text-xs font-black text-brand-neon tracking-[0.3em] shadow-lg relative z-10"
-                >
-                  SYNTHESIZING PROTOCOL
-                </motion.div>
+                 <div className="flex flex-wrap gap-2 md:gap-6 items-center justify-center relative z-10">
+                    {[
+                      { label: "JD", icon: Upload },
+                      { label: "RESUME", icon: Upload },
+                      { label: "BIO", icon: Upload }
+                    ].map((item, i) => (
+                      <motion.div 
+                        key={i}
+                        whileHover={{ y: -2, borderColor: "rgba(140, 255, 46, 0.4)" }}
+                        className="px-3 md:px-5 py-2 md:py-3 bg-white/[0.03] border border-white/10 rounded-xl md:rounded-2xl text-[8px] md:text-[10px] text-white/70 font-mono flex items-center gap-2 md:gap-3 shadow-lg backdrop-blur-md transition-all"
+                      >
+                        <item.icon size={12} className="text-brand-neon/60 md:w-3.5 md:h-3.5" /> {item.label}
+                      </motion.div>
+                    ))}
+                 </div>
+                 <div className="w-px h-10 md:h-16 bg-gradient-to-b from-white/10 via-brand-neon/40 to-brand-neon my-4 md:my-6 relative z-10">
+                    <motion.div 
+                      animate={{ top: ["0%", "100%"] }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                      className="absolute w-1.5 md:w-2 h-1.5 md:h-2 bg-brand-neon rounded-full left-1/2 -translate-x-1/2 blur-[2px]"
+                    />
+                 </div>
+                 <motion.div 
+                   animate={{ scale: [1, 1.02, 1], boxShadow: ["0 0 20px rgba(140,255,46,0.1)", "0 0 40px rgba(140,255,46,0.3)", "0 0 20px rgba(140,255,46,0.1)"] }}
+                   transition={{ repeat: Infinity, duration: 3 }}
+                   className="px-6 md:px-8 py-3 md:py-4 bg-brand-neon/10 border border-brand-neon/30 rounded-full text-[10px] md:text-xs font-black text-brand-neon tracking-[0.2em] md:tracking-[0.3em] shadow-lg relative z-10"
+                 >
+                   SYNTHESIZING PROTOCOL
+                 </motion.div>
              </div>
           </motion.div>
 
@@ -110,7 +110,7 @@ const SpotlightFeatures = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ delay: 0.2 }}
             whileHover={{ y: -5, borderColor: "rgba(140, 255, 46, 0.3)" }}
-            className="flex-[1] rounded-[32px] p-8 md:p-14 flex flex-col relative overflow-hidden group transition-all duration-500"
+            className="flex-[1] rounded-[24px] md:rounded-[32px] p-6 md:p-14 flex flex-col relative overflow-hidden group transition-all duration-500"
             style={cardStyle}
           >
              <div className="absolute inset-0 border border-brand-neon/0 group-hover:border-brand-neon/20 transition-colors duration-500 rounded-[32px] z-20 pointer-events-none" />
@@ -118,12 +118,12 @@ const SpotlightFeatures = () => {
              <div className="w-12 h-12 rounded-2xl bg-brand-neon/10 flex items-center justify-center border border-brand-neon/20 shadow-[0_0_20px_rgba(140,255,46,0.1)] group-hover:rotate-12 transition-all duration-500 mb-6">
                 <Activity size={24} className="text-brand-neon" />
              </div>
-             <h3 className="text-3xl font-bold tracking-tight mb-2 text-white">Precision Metrics</h3>
-             <p className="text-zinc-500 text-sm font-light mb-8 italic">Signal evaluation vs market benchmarks.</p>
+             <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-white">Precision Metrics</h3>
+             <p className="text-zinc-500 text-xs md:text-sm font-light mb-8 italic">Signal evaluation vs market benchmarks.</p>
              
              <div className="flex items-baseline gap-1 mt-6 mb-4 relative group/score">
-               <span className="text-6xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/20 group-hover/score:via-brand-neon group-hover/score:to-white transition-all duration-1000">94</span>
-               <span className="text-3xl font-mono text-brand-neon font-bold drop-shadow-[0_0_10px_rgba(140,255,46,0.5)]">%</span>
+               <span className="text-5xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/20 group-hover/score:via-brand-neon group-hover/score:to-white transition-all duration-1000">94</span>
+               <span className="text-2xl md:text-3xl font-mono text-brand-neon font-bold drop-shadow-[0_0_10px_rgba(140,255,46,0.5)]">%</span>
                <div className="absolute -top-4 -right-12 hidden group-hover/score:block bg-brand-neon text-black text-[8px] font-black px-2 py-1 rounded tracking-tighter animate-bounce">TOP 1% CANDIDATE</div>
              </div>
 
@@ -164,13 +164,13 @@ const SpotlightFeatures = () => {
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             whileHover={{ y: -5, borderColor: "rgba(140, 255, 46, 0.3)" }}
-            className="flex-[1] bg-brand-neon text-black rounded-[32px] p-8 md:p-14 flex flex-col relative overflow-hidden group transition-all duration-500"
+            className="flex-[1] bg-brand-neon text-black rounded-[24px] md:rounded-[32px] p-6 md:p-14 flex flex-col relative overflow-hidden group transition-all duration-500"
           >
              <div className="w-12 h-12 rounded-2xl bg-black/10 flex items-center justify-center border border-black/10 transition-transform group-hover:rotate-12 mb-6">
                <FileCheck size={24} className="text-black" />
              </div>
-             <h3 className="text-3xl font-bold tracking-tight mb-4 text-black relative z-10 leading-tight">Contextual Resume Re-gen</h3>
-             <p className="font-semibold text-black/70 relative z-10 text-lg leading-snug">
+             <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-4 text-black relative z-10 leading-tight">Contextual Resume Re-gen</h3>
+             <p className="font-semibold text-black/70 relative z-10 text-base md:text-lg leading-snug">
                Automatically rewrite your resume with high-signal keywords tailored to the target JD.
              </p>
              <div className="mt-auto flex items-center justify-between bg-black/10 p-5 rounded-3xl border border-black/10 relative z-10 group/btn hover:bg-black transition-all cursor-pointer">
@@ -193,7 +193,7 @@ const SpotlightFeatures = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ delay: 0.2 }}
             whileHover={{ y: -5, borderColor: "rgba(140, 255, 46, 0.3)" }}
-            className="flex-[2] rounded-[32px] p-8 md:p-14 flex flex-col relative overflow-hidden group transition-all duration-500"
+            className="flex-[2] rounded-[24px] md:rounded-[32px] p-6 md:p-14 flex flex-col relative overflow-hidden group transition-all duration-500"
             style={cardStyle}
           >
              <div className="absolute inset-0 border border-brand-neon/0 group-hover:border-brand-neon/20 transition-colors duration-500 rounded-[32px] z-20 pointer-events-none" />
@@ -204,8 +204,8 @@ const SpotlightFeatures = () => {
                 <Milestone size={24} className="text-zinc-400 group-hover:text-white transition-colors" />
              </div>
 
-             <h3 className="text-4xl font-bold tracking-tight mb-4 text-white">Execution Roadmap</h3>
-             <p className="text-zinc-500 font-light max-w-md z-10 leading-relaxed text-lg mb-10">
+             <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-4 text-white">Execution Roadmap</h3>
+             <p className="text-zinc-500 font-light max-w-md z-10 leading-relaxed text-base md:text-lg mb-8 md:mb-10">
                Get <span className="text-white">Technical Questions</span>, <span className="text-white">Behavioral Questions</span>, and a day-by-day roadmap tailored to your timeline.
              </p>
              

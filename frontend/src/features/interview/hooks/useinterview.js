@@ -16,7 +16,7 @@ export const useInterview = () => {
     throw new Error("useInterview must be used within an InterviewProvider");
   }
 
-  const { loading, setLoading, report, setReport, reports, setReports } =
+  const { loading, setLoading, report, setReport, reports, setReports, error, setError } =
     context;
 
   const generateReport = async ({
@@ -33,8 +33,10 @@ export const useInterview = () => {
         resumeFile,
       });
       setReport(response.interviewReport);
-    } catch (error) {
-      console.log(error);
+      setError(null);
+    } catch (err) {
+      console.log(err);
+      setError(err.response?.data?.message || "Failed to generate report");
     } finally {
       setLoading(false);
     }
@@ -48,8 +50,10 @@ export const useInterview = () => {
     try {
       response = await getInterviewReportById(interviewId);
       setReport(response.interviewReport);
-    } catch (error) {
-      console.log(error);
+      setError(null);
+    } catch (err) {
+      console.log(err);
+      setError(err.response?.data?.message || "Report not found");
     } finally {
       setLoading(false);
     }
@@ -62,8 +66,10 @@ export const useInterview = () => {
     try {
       response = await getAllInterviewReports();
       setReports(response.interviewReports);
-    } catch (error) {
-      console.log(error);
+      setError(null);
+    } catch (err) {
+      console.log(err);
+      setError(err.response?.data?.message || "Failed to fetch reports");
     } finally {
       setLoading(false);
     }
@@ -86,6 +92,7 @@ export const useInterview = () => {
       link.click();
     } catch (error) {
       console.log(error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -103,6 +110,7 @@ export const useInterview = () => {
     loading,
     report,
     reports,
+    error,
     generateReport,
     getReportById,
     getReports,

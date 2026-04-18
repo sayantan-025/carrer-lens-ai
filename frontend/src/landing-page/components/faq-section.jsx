@@ -11,7 +11,7 @@ const FAQItem = ({ question, answer }) => {
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex justify-between items-center text-left group"
       >
-        <span className="text-xl md:text-2xl font-bold text-white group-hover:text-brand-neon transition-colors duration-300">
+        <span className="text-lg md:text-2xl font-bold text-white group-hover:text-brand-neon transition-colors duration-300">
            {question}
         </span>
         <div className={`p-2 rounded-full border border-white/10 transition-transform duration-500 ${isOpen ? 'rotate-180 bg-brand-neon border-brand-neon' : ''}`}>
@@ -28,7 +28,7 @@ const FAQItem = ({ question, answer }) => {
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <p className="pt-6 text-zinc-400 text-lg font-light leading-relaxed max-w-4xl">
+            <p className="pt-6 text-zinc-400 text-base md:text-lg font-light leading-relaxed max-w-4xl">
               {answer}
             </p>
           </motion.div>
@@ -63,9 +63,9 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="w-full flex flex-col items-center max-w-7xl py-24 md:py-32 px-6 mx-auto relative">
+    <section className="w-full flex flex-col items-center max-w-7xl py-16 md:py-32 px-6 mx-auto relative overflow-hidden">
       
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-brand-neon/5 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+      <div className="absolute bottom-0 right-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-brand-neon/5 blur-[100px] md:blur-[120px] rounded-full pointer-events-none -z-10"></div>
       
       {/* Header */}
       <motion.div 
@@ -78,8 +78,8 @@ const FAQSection = () => {
            <HelpCircle size={12} className="text-zinc-500 group-hover:text-brand-neon transition-colors" />
            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-500">The Intelligence FAQ</span>
         </div>
-        <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-6">Clarifying the Protocol.</h2>
-        <p className="text-zinc-500 text-xl font-light max-w-2xl mx-auto italic">Everything you need to know about the CareerLens AI framework.</p>
+        <h2 className="text-3xl md:text-6xl font-extrabold tracking-tight text-white mb-4 md:mb-6">Clarifying the Protocol.</h2>
+        <p className="text-zinc-500 text-base md:text-xl font-light max-w-2xl mx-auto italic">Everything you need to know about the CareerLens AI framework.</p>
       </motion.div>
 
       {/* Accordion Container */}

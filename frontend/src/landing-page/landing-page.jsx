@@ -9,9 +9,9 @@ import Testimonials from "./components/testimonials";
 
 const LandingPage = () => {
   return (
-    <div className="w-full text-white font-sans selection:bg-brand-neon/30 relative">
+    <div className="w-full text-white font-sans selection:bg-brand-neon/30 relative overflow-x-hidden">
       <div className="relative z-10 w-full flex flex-col min-h-screen">
-        <main className="flex flex-col items-center w-full relative mx-auto flex-1">
+        <main className="flex flex-col items-center w-full relative mx-auto flex-1 overflow-x-hidden">
           <HeroSection />
           <InfiniteMarquee />
           <SpotlightFeatures />
