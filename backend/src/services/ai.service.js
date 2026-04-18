@@ -8,6 +8,27 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENAI_API_KEY,
 });
 
+/**
+ * Robustly finds the chrome binary within the puppeteer cache directory.
+ */
+function findChromeBinary(startPath) {
+  if (!fs.existsSync(startPath)) return null;
+
+  const files = fs.readdirSync(startPath);
+  for (const file of files) {
+    const filename = path.join(startPath, file);
+    const stat = fs.lstatSync(filename);
+
+    if (stat.isDirectory()) {
+      const found = findChromeBinary(filename);
+      if (found) return found;
+    } else if (file === "chrome.exe" || file === "chrome") {
+      return filename;
+    }
+  }
+  return null;
+}
+
 const interviewReportSchema = z.object({
   matchScore: z
     .number()
@@ -122,32 +143,45 @@ async function generatePdfFromHtml(htmlContent) {
   let page;
 
   try {
-    // Path to the downloaded chrome on Render (based on puppeteer.config.cjs)
-    const executablePath = path.join(
-      process.cwd(),
-      ".cache",
-      "puppeteer",
-      "chrome",
-      "win64-147.0.7727.56", // This part might vary by platform, but Puppeteer usually handles the deep nesting if we give it the base. 
-      "chrome-win64",        // However, standard launch often works if cache is set correctly.
-      "chrome.exe"
-    );
-
-    // In a Linux environment (Render), the path would look different. 
-    // We'll try a flexible approach or just rely on the config-driven standard launch first.
+    // 1. Try to find the chrome executable in the custom cache directory
+    const cachePath = path.join(process.cwd(), ".cache", "puppeteer");
+    const resolvedPath = findChromeBinary(cachePath);
     
-    browser = await puppeteer.launch({
+    // 2. Fallback to environment variable (standard for many cloud providers)
+    const executablePath = resolvedPath || process.env.PUPPETEER_EXECUTABLE_PATH;
+
+    if (executablePath) {
+      console.log(`[Puppeteer] Launching with explicit binary: ${executablePath}`);
+    } else {
+      console.log("[Puppeteer] No custom binary found, launching with default path...");
+    }
+
+    const launchOptions = {
+      executablePath: executablePath || undefined,
       headless: true,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
         "--disable-gpu",
-        "--single-process",
-        "--no-zygote",
       ],
-      // If we are on Render/Linux, we might need to specify a path if it fails.
-    });
+    };
+
+    // Only add specific flags that are known to help on specific cloud envs 
+    // but can be unstable on local Windows/MacOS.
+    if (process.env.NODE_ENV === "production") {
+      launchOptions.args.push("--single-process", "--no-zygote");
+    }
+
+    try {
+      browser = await puppeteer.launch(launchOptions);
+    } catch (launchError) {
+      console.warn(`[Puppeteer] Failed to launch with explicit binary. Retrying with default...`);
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"]
+      });
+    }
 
     page = await browser.newPage();
     await page.emulateMediaType("screen");

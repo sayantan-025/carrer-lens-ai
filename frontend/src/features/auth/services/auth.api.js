@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://carrer-lens-ai.onrender.com",
+  baseURL: "http://localhost:3000",
   withCredentials: true,
 });
 
@@ -52,5 +52,6 @@ export const getCurrentUser = async () => {
     return response.data;
   } catch (error) {
     console.error("Get current user error:", error);
+    throw error;
   }
 };
