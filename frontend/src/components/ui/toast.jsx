@@ -39,11 +39,11 @@ const Toast = ({ message, type = "info", onClose, duration }) => {
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, x: 20, scale: 0.9 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 20, scale: 0.9 }}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      className={`pointer-events-auto relative overflow-hidden flex items-center gap-4 px-6 py-4 rounded-[20px] backdrop-blur-xl border ${colors[type]} shadow-2xl min-w-[320px] group`}
+      className={`pointer-events-auto relative overflow-hidden flex items-center gap-4 px-5 py-4 rounded-[20px] backdrop-blur-xl border ${colors[type]} shadow-2xl w-full md:min-w-[320px] group`}
     >
       <div className="flex-shrink-0">{icons[type]}</div>
       
