@@ -164,18 +164,18 @@ const SpotlightFeatures = () => {
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             whileHover={{ y: -5, borderColor: "rgba(140, 255, 46, 0.3)" }}
-            className="flex-[1] bg-brand-neon text-black rounded-[24px] md:rounded-[32px] p-6 md:p-14 flex flex-col relative overflow-hidden group transition-all duration-500"
+            className="flex-[1] bg-brand-neon text-black rounded-[24px] md:rounded-[32px] p-6 md:p-14 flex flex-col relative overflow-hidden group transition-all duration-500 min-h-[380px] md:min-h-0"
           >
              <div className="w-12 h-12 rounded-2xl bg-black/10 flex items-center justify-center border border-black/10 transition-transform group-hover:rotate-12 mb-6">
                <FileCheck size={24} className="text-black" />
              </div>
              <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-4 text-black relative z-10 leading-tight">Contextual Resume Re-gen</h3>
-             <p className="font-semibold text-black/70 relative z-10 text-base md:text-lg leading-snug">
+             <p className="font-semibold text-black/70 relative z-10 text-base md:text-lg leading-snug mb-8">
                Automatically rewrite your resume with high-signal keywords tailored to the target JD.
              </p>
-             <div className="mt-auto flex items-center justify-between bg-black/10 p-5 rounded-3xl border border-black/10 relative z-10 group/btn hover:bg-black transition-all cursor-pointer">
-                <span className="text-xs font-black uppercase tracking-widest group-hover:text-brand-neon transition-colors">Export High-Signal PDF</span>
-                <Download size={20} className="group-hover:text-brand-neon transition-colors" />
+             <div className="mt-auto flex items-center justify-between bg-black/10 p-4 md:p-5 rounded-3xl border border-black/10 relative z-10 group/btn hover:bg-black transition-all cursor-pointer">
+                <span className="text-[10px] md:text-xs font-black uppercase tracking-widest group-hover:text-brand-neon transition-colors">Export High-Signal PDF</span>
+                <Download size={18} className="md:w-5 md:h-5 group-hover:text-brand-neon transition-colors" />
              </div>
              
              <motion.div
