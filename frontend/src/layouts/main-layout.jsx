@@ -7,7 +7,7 @@ import GlobalBackground from "../components/ui/global-background";
 
 const MainLayout = () => {
   return (
-    <div className="min-h-screen relative flex flex-col">
+    <div className="min-h-screen relative flex flex-col bg-black">
       <LenisScroll />
       <GlobalBackground />
       <Navbar />

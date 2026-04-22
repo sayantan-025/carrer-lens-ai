@@ -1,126 +1,126 @@
-import SectionTitle from "./section-title";
-import { Check, Rocket, Zap, Award } from "lucide-react";
-import { motion } from "framer-motion";
-import { useRef } from "react";
-import { Link } from "react-router";
+"use client"
+
+import React from "react"
+import { Check } from "lucide-react"
+import { Link } from "react-router"
+
+const plans = [
+  {
+    name: "Starter",
+    description: "Perfect for side projects and small teams",
+    price: "$0",
+    period: "forever",
+    features: ["Up to 3 team members", "5 projects", "Basic analytics", "Community support", "1GB storage"],
+    cta: "Get Started",
+    highlighted: false,
+  },
+  {
+    name: "Pro",
+    description: "For growing teams that need more power",
+    price: "$29",
+    period: "/month",
+    features: [
+      "Unlimited team members",
+      "Unlimited projects",
+      "Advanced analytics",
+      "Priority support",
+      "100GB storage",
+      "Custom integrations",
+      "API access",
+    ],
+    cta: "Start Free Trial",
+    highlighted: true,
+  },
+  {
+    name: "Enterprise",
+    description: "For large organizations with custom needs",
+    price: "Custom",
+    period: "",
+    features: [
+      "Everything in Pro",
+      "Dedicated account manager",
+      "Custom SLA",
+      "On-premise deployment",
+      "Unlimited storage",
+      "Advanced security",
+      "Training & onboarding",
+    ],
+    cta: "Contact Sales",
+    highlighted: false,
+  },
+]
 
 export default function PricingPlans() {
-  const ref = useRef([]);
-  const data = [
-    {
-      icon: Rocket,
-      title: "Free",
-      description: "Perfect for exploring our platform",
-      price: "$0",
-      buttonText: "Get Started",
-      features: [
-        "2 AI Interview Reports",
-        "Basic Resume Analysis",
-        "ATS-Friendly Templates",
-        "Mock Interview Questions",
-        "Community Access",
-      ],
-    },
-    {
-      icon: Zap,
-      title: "Pro",
-      description: "For active job seekers",
-      price: "$19",
-      mostPopular: true,
-      buttonText: "Go Pro",
-      features: [
-        "Unlimited Reports",
-        "Advanced Resume Builder",
-        "Deep Skill Gap Analysis",
-        "Priority AI Processing",
-        "Expert Question Bank",
-        "Email Support",
-      ],
-    },
-    {
-      icon: Award,
-      title: "Unlimited",
-      description: "Everything you need to land the job",
-      price: "$49",
-      buttonText: "Go Unlimited",
-      features: [
-        "Lifetime Access",
-        "Personalized Career Roadmap",
-        "Advanced Analytics",
-        "Custom Resume Export",
-        "24/7 Priority Support",
-        "Early Access to Features",
-      ],
-    },
-  ];
-
   return (
-    <section className="mt-32">
-      <SectionTitle
-        title="Choose your path to success."
-        description="Select the plan that fits your career goals. No hidden fees, just pure AI-driven insights."
-      />
+    <section id="pricing" className="px-6 py-24">
+      <div className="max-w-5xl mx-auto">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">Pricing</p>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-zinc-100 mb-4">
+            Simple, transparent pricing
+          </h2>
+          <p className="text-zinc-500 max-w-xl mx-auto text-balance text-lg">
+            No hidden fees. No surprises. Choose the plan that works for you.
+          </p>
+        </div>
 
-      <div className="mt-12 flex flex-wrap items-center justify-center gap-8 px-6 max-w-7xl mx-auto">
-        {data.map((item, index) => (
-          <motion.div
-            key={index}
-            className={`group w-full max-w-sm glass p-8 rounded-2xl hover:-translate-y-2 transition-all duration-300 relative ${item.mostPopular ? "border-blue-500/50 shadow-blue-500/10 shadow-2xl scale-105" : "border-white/5"}`}
-            initial={{ y: 50, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{
-              delay: `${index * 0.1}`,
-              type: "spring",
-              stiffness: 320,
-              damping: 70,
-              mass: 1,
-            }}
-            ref={(el) => (ref.current[index] = el)}
-          >
-            {item.mostPopular && (
-              <div className="absolute top-0 right-8 -translate-y-1/2 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-                Most Popular
-              </div>
-            )}
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400">
-                <item.icon className="size-6" />
-              </div>
-              <span className="font-semibold text-white">{item.title}</span>
-            </div>
-            
-            <div className="mt-6 flex items-baseline gap-1">
-              <span className="text-4xl font-bold text-white">{item.price}</span>
-              {item.price !== "$0" && (
-                <span className="text-gray-400 text-sm">{item.price === "$49" ? "/lifetime" : "/month"}</span>
-              )}
-            </div>
-            
-            <p className="text-gray-400 mt-4 text-sm leading-relaxed">
-              {item.description}
-            </p>
-            
-            <Link
-              to="/register"
-              className={`mt-8 w-full btn flex items-center justify-center py-4 rounded-xl font-semibold transition-all duration-300 ${item.mostPopular ? "bg-blue-600 hover:bg-blue-700 text-white border-none" : "glass hover:bg-white/10"}`}
+        {/* Pricing Grid */}
+        <div className="grid md:grid-cols-3 gap-6">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`p-8 rounded-2xl border flex flex-col h-full ${
+                plan.highlighted ? "bg-zinc-100 border-zinc-100" : "bg-zinc-900/50 border-zinc-800/50"
+              }`}
             >
-              {item.buttonText}
-            </Link>
-            
-            <div className="mt-8 space-y-4">
-              {item.features.map((feature, idx) => (
-                <div key={idx} className="flex items-center gap-3">
-                  <div className="flex-shrink-0 bg-blue-500/20 rounded-full p-0.5">
-                    <Check className="size-3.5 text-blue-400" strokeWidth={3} />
-                  </div>
-                  <p className="text-sm text-gray-300">{feature}</p>
-                </div>
-              ))}
+              {/* Plan Header */}
+              <div className="mb-6">
+                <h3
+                  className={`font-heading text-xl font-semibold mb-2 ${
+                    plan.highlighted ? "text-zinc-900" : "text-zinc-100"
+                  }`}
+                >
+                  {plan.name}
+                </h3>
+                <p className={`text-sm ${plan.highlighted ? "text-zinc-600" : "text-zinc-500"}`}>{plan.description}</p>
+              </div>
+
+              {/* Price */}
+              <div className="mb-6">
+                <span
+                  className={`font-display text-4xl font-bold ${plan.highlighted ? "text-zinc-900" : "text-zinc-100"}`}
+                >
+                  {plan.price}
+                </span>
+                <span className={`text-sm ${plan.highlighted ? "text-zinc-600" : "text-zinc-500"}`}>{plan.period}</span>
+              </div>
+
+              {/* Features */}
+              <ul className="space-y-3 mb-8 flex-1">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3">
+                    <Check className={`w-5 h-5 shrink-0 ${plan.highlighted ? "text-zinc-900" : "text-zinc-400"}`} />
+                    <span className={`text-sm ${plan.highlighted ? "text-zinc-700" : "text-zinc-400"}`}>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA */}
+              <Link
+                to="/register"
+                className={`block w-full py-3 px-6 text-center rounded-full font-medium text-sm transition-colors mt-auto ${
+                  plan.highlighted
+                    ? "bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
+                    : "bg-zinc-800 text-zinc-100 hover:bg-zinc-700"
+                }`}
+              >
+                {plan.cta}
+              </Link>
             </div>
-          </motion.div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
-  );
+  )
 }

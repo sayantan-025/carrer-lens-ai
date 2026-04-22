@@ -16,7 +16,7 @@ const AuthLayout = () => {
   }
 
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center">
+    <div className="min-h-screen relative flex flex-col items-center justify-center bg-black">
       <GlobalBackground />
       <main className="relative z-10 w-full">
         <Outlet />

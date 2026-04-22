@@ -19,7 +19,7 @@ const ProtectedLayout = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col relative overflow-hidden">
+    <div className="h-screen flex flex-col relative overflow-hidden bg-black">
       <GlobalBackground />
       <Navbar />
       <main className="flex-1 mt-20 relative z-10 flex flex-col min-h-0 overflow-y-auto">
