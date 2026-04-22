@@ -69,9 +69,9 @@ const logos = ["Google", "Meta", "Amazon", "Netflix", "Stripe", "Vercel", "Airbn
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="px-6 py-24 bg-black border-y border-zinc-900/50 relative overflow-hidden">
+    <section id="testimonials" className="px-6 py-24 bg-black border-y border-zinc-900/50 relative overflow-hidden bg-zinc-900/20">
       {/* Background Ambience */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(147,51,234,0.03),transparent_50%)] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_50%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
@@ -81,7 +81,9 @@ export default function Testimonials() {
           viewport={{ once: true }}
           className="flex flex-col items-center justify-center max-w-xl mx-auto mb-16 text-center"
         >
-          <p className="text-sm font-medium text-purple-500 uppercase tracking-widest mb-4">Wall of Victory</p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">Wall of Victory</span>
+          </div>
 
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 tracking-tighter">
             Trusted by the Next Generation of Leaders.

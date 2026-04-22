@@ -78,9 +78,9 @@ export default function CallToAction() {
               gradientUnits="userSpaceOnUse"
               gradientTransform="translate(683.482 245.884) rotate(-3.78676) scale(469.009 248.4)"
             >
-              <stop offset="0.1294" stopColor="#9333ea" />
-              <stop offset="0.2347" stopColor="#a855f7" />
-              <stop offset="0.3" stopColor="#a855f7" stopOpacity="0" />
+              <stop offset="0.1294" stopColor="#d4d4d8" />
+              <stop offset="0.2347" stopColor="#a1a1aa" />
+              <stop offset="0.3" stopColor="#a1a1aa" stopOpacity="0" />
             </radialGradient>
             <linearGradient
               id="paint2_linear_cta"
@@ -117,15 +117,14 @@ export default function CallToAction() {
           transition={{ duration: 0.6 }}
         >
           {/* Synced Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-6">
-             <Rocket className="w-3.5 h-3.5 text-purple-500" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">Final Deployment</span>
           </div>
 
-          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-tight">
-            Strategic Superiority Made <span className="text-zinc-600 italic">Effortless.</span>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 tracking-tighter">
+            Strategic Superiority Made Effortless.
           </h2>
-          <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl font-light leading-relaxed mb-10">
+          <p className="text-zinc-400 max-w-2xl mx-auto text-lg leading-relaxed font-light mb-10">
             Join the elite circle of professionals who have transformed their interview performance into a repeatable science.
           </p>
         </motion.div>

@@ -60,7 +60,7 @@ const FAQItem = ({ question, answer, isOpen, onToggle }) => {
           <ChevronDown
             className={cn(
               "w-5 h-5 text-zinc-500 transition-all duration-500 ease-out",
-              isOpen ? "rotate-180 text-purple-500 scale-110" : "rotate-0 group-hover:text-zinc-400"
+              isOpen ? "rotate-180 text-zinc-100 scale-110" : "rotate-0 group-hover:text-zinc-400"
             )}
           />
         </div>
@@ -92,7 +92,9 @@ export default function FaqSection() {
   return (
     <section id="faq" className="relative py-24 bg-black overflow-hidden border-y border-zinc-900/50">
       {/* Dynamic Background Element */}
-      <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none" />
+      {/* Premium Atmospheric Glow */}
+      <div className="w-[400px] h-[600px] absolute top-[-100px] left-1/2 -translate-x-1/2 origin-top-left rotate-[-33.39deg] bg-white/[0.03] blur-[120px] pointer-events-none z-0" />
+      <div className="w-[300px] h-[500px] absolute top-[150px] left-1/2 -translate-x-1/2 origin-top-left rotate-[-33.39deg] bg-white/[0.02] blur-[100px] pointer-events-none z-0" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         {/* Section Header */}
@@ -104,7 +106,7 @@ export default function FaqSection() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
-             <HelpCircle className="w-3.5 h-3.5 text-purple-500" />
+             <HelpCircle className="w-3.5 h-3.5 text-zinc-400" />
              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">Intelligence Base</span>
           </div>
           
@@ -136,7 +138,7 @@ export default function FaqSection() {
           transition={{ delay: 0.4 }}
         >
           <p className="text-zinc-500 text-sm font-light">
-            Still have questions? <a href="mailto:support@careerlens.ai" className="text-purple-500 hover:text-purple-400 transition-colors font-medium border-b border-purple-500/20 pb-0.5">Reach out to our strategic team</a>.
+            Still have questions? <a href="mailto:support@careerlens.ai" className="text-zinc-300 hover:text-white transition-colors font-medium border-b border-zinc-300/20 pb-0.5">Reach out to our strategic team</a>.
           </p>
         </motion.div>
       </div>

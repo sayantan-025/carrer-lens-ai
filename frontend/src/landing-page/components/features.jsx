@@ -28,7 +28,7 @@ const integrationLogos = [
 
 export default function Features() {
   return (
-    <section id="features" className="px-6 py-24 mt-12 bg-black border-y border-zinc-900/50 ">
+    <section id="features" className="px-6 py-24 mt-12 bg-black border-y border-zinc-900/50 bg-zinc-900/20">
       <div className="max-w-5xl mx-auto">
         {/* Section Header */}
         <motion.div
@@ -38,7 +38,9 @@ export default function Features() {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-medium text-purple-500 uppercase tracking-widest mb-4">Engineering Excellence</p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">Engineering Excellence</span>
+          </div>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 tracking-tighter">
             Strategic Tools for Career Superiority
           </h2>
@@ -56,15 +58,15 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="md:col-span-3"
           >
-            <Card className="group h-full overflow-hidden border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl hover:border-purple-500/30 transition-all duration-500 rounded-3xl">
+            <Card className="group h-full overflow-hidden border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl hover:border-zinc-500/30 transition-all duration-500 rounded-3xl">
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-4">
                   <motion.div
-                    className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20"
+                    className="w-12 h-12 rounded-2xl bg-zinc-800/50 flex items-center justify-center border border-zinc-700/50"
                     whileHover={{ rotate: [0, -10, 10, 0] }}
                     transition={{ duration: 0.5 }}
                   >
-                    <Target className="w-6 h-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
+                    <Target className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
                   </motion.div>
                   <div>
                     <p className="font-display font-bold text-xl text-zinc-100">Match Intelligence</p>
@@ -105,7 +107,7 @@ export default function Features() {
                         </div>
                         <div className="w-full h-1 bg-zinc-800 mt-2 rounded-full overflow-hidden">
                            <motion.div 
-                            className="h-full bg-purple-500" 
+                            className="h-full bg-zinc-300" 
                             initial={{ width: 0 }}
                             whileInView={{ width: metric.value.includes('%') ? metric.value : '80%' }}
                             transition={{ duration: 1, delay: 0.6 }}
@@ -120,7 +122,7 @@ export default function Features() {
                     {[45, 75, 55, 90, 65, 80, 50, 95, 70, 85, 60, 75].map((h, i) => (
                       <motion.div
                         key={i}
-                        className="flex-1 bg-gradient-to-t from-purple-600/20 to-purple-500/60 rounded-t-sm origin-bottom"
+                        className="flex-1 bg-gradient-to-t from-zinc-600/20 to-zinc-400/60 rounded-t-sm origin-bottom"
                         initial={{ scaleY: 0 }}
                         whileInView={{ scaleY: h / 100 }}
                         viewport={{ once: true }}
@@ -141,15 +143,15 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="md:col-span-2"
           >
-            <Card className="group h-full overflow-hidden border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl hover:border-purple-500/30 transition-all duration-500 rounded-3xl">
+            <Card className="group h-full overflow-hidden border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl hover:border-zinc-500/30 transition-all duration-500 rounded-3xl">
               <CardContent className="p-8 flex flex-col h-full">
                 <div className="flex items-center gap-4 mb-4">
                   <motion.div
-                    className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20"
+                    className="w-12 h-12 rounded-2xl bg-zinc-800/50 flex items-center justify-center border border-zinc-700/50"
                     animate={{ scale: [1, 1.05, 1] }}
                     transition={{ duration: 3, repeat: Infinity }}
                   >
-                    <FileCheck className="w-6 h-6 text-emerald-400 group-hover:text-emerald-300 transition-colors" />
+                    <FileCheck className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
                   </motion.div>
                   <p className="font-display font-bold text-xl text-zinc-100">ATS Dominance</p>
                 </div>
@@ -167,11 +169,11 @@ export default function Features() {
                     >
                       100%
                     </motion.span>
-                    <span className="text-emerald-500 font-mono text-xs uppercase tracking-widest">Success Rate</span>
+                    <span className="text-zinc-400 font-mono text-xs uppercase tracking-widest">Success Rate</span>
                   </div>
                   <div className="h-3 bg-zinc-800/50 rounded-full overflow-hidden p-0.5">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full"
+                      className="h-full bg-gradient-to-r from-zinc-500 to-zinc-300 rounded-full"
                       initial={{ width: "0%" }}
                       whileInView={{ width: "100%" }}
                       viewport={{ once: true }}
@@ -192,14 +194,14 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="md:col-span-2"
           >
-            <Card className="group h-full overflow-hidden border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl hover:border-purple-500/30 transition-all duration-500 rounded-3xl">
+            <Card className="group h-full overflow-hidden border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl hover:border-zinc-500/30 transition-all duration-500 rounded-3xl">
               <CardContent className="p-8 flex flex-col h-full">
                 <div className="flex items-center gap-4 mb-4">
                   <motion.div
-                    className="w-12 h-12 rounded-2xl bg-violet-500/10 flex items-center justify-center border border-violet-500/20"
+                    className="w-12 h-12 rounded-2xl bg-zinc-800/50 flex items-center justify-center border border-zinc-700/50"
                     whileHover={{ y: -2 }}
                   >
-                    <MessageSquare className="w-6 h-6 text-violet-400 group-hover:text-violet-300 transition-colors" />
+                    <MessageSquare className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
                   </motion.div>
                   <p className="font-display font-bold text-xl text-zinc-100">Tactical Prep</p>
                 </div>
@@ -208,7 +210,7 @@ export default function Features() {
                 </p>
                 
                 <div className="flex justify-center gap-3 mt-auto relative">
-                   <div className="absolute inset-0 bg-violet-500/5 blur-3xl rounded-full" />
+                   <div className="absolute inset-0 bg-zinc-500/5 blur-3xl rounded-full" />
                   {["⌘", "Q"].map((key, i) => (
                     <motion.div
                       key={key}
@@ -239,15 +241,15 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="md:col-span-3"
           >
-            <Card className="group h-full overflow-hidden border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl hover:border-purple-500/30 transition-all duration-500 rounded-3xl">
+            <Card className="group h-full overflow-hidden border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl hover:border-zinc-500/30 transition-all duration-500 rounded-3xl">
               <CardContent className="p-8 flex flex-col h-full">
                 <div className="flex items-center gap-4 mb-4">
                   <motion.div
-                    className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20"
+                    className="w-12 h-12 rounded-2xl bg-zinc-800/50 flex items-center justify-center border border-zinc-700/50"
                     whileHover={{ rotate: 180 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <Layers className="w-6 h-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
+                    <Layers className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
                   </motion.div>
                   <div>
                     <p className="font-display font-bold text-xl text-zinc-100">Strategic Roadmap</p>
@@ -266,12 +268,12 @@ export default function Features() {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.4, delay: 0.4 + i * 0.05 }}
-                      whileHover={{ scale: 1.1, y: -4, borderColor: 'rgba(147, 51, 234, 0.5)' }}
+                      whileHover={{ scale: 1.1, y: -4, borderColor: 'rgba(161, 161, 170, 0.5)' }}
                       className="aspect-square rounded-xl border border-zinc-800 bg-zinc-950/50 flex flex-col items-center justify-center cursor-pointer p-2 transition-colors group/logo"
                     >
                       <div className="w-full h-1 bg-zinc-800 mb-1 rounded-full overflow-hidden">
                         <motion.div 
-                          className="h-full bg-purple-500/40 group-hover/logo:bg-purple-500" 
+                          className="h-full bg-zinc-500/40 group-hover/logo:bg-zinc-300" 
                           initial={{ width: 0 }}
                           whileInView={{ width: '100%' }}
                           transition={{ duration: 1, delay: 1 + i * 0.1 }}
@@ -286,12 +288,12 @@ export default function Features() {
                 
                 <div className="flex items-center justify-between mt-8">
                   <div className="flex items-center gap-2 text-zinc-500 text-xs">
-                    <ShieldCheck className="w-4 h-4 text-emerald-500/50" />
+                    <ShieldCheck className="w-4 h-4 text-zinc-400/50" />
                     <span>Data Privacy Encrypted</span>
                   </div>
                   <motion.button
                     whileHover={{ x: 6 }}
-                    className="flex items-center gap-2 text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors"
+                    className="flex items-center gap-2 text-sm font-medium text-zinc-300 hover:text-zinc-100 transition-colors"
                   >
                     View preparation engine <ArrowRight className="w-4 h-4" />
                   </motion.button>

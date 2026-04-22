@@ -1,125 +1,190 @@
-"use client"
-
 import React from "react"
-import { Check } from "lucide-react"
+import { Check, Sparkles, ShieldCheck, Zap } from "lucide-react"
 import { Link } from "react-router"
+import { motion } from "framer-motion"
+import { cn } from "../../lib/utils"
 
 const plans = [
   {
-    name: "Starter",
-    description: "Perfect for side projects and small teams",
+    name: "Standard",
+    description: "Essential tools for tactical preparation",
     price: "$0",
     period: "forever",
-    features: ["Up to 3 team members", "5 projects", "Basic analytics", "Community support", "1GB storage"],
-    cta: "Get Started",
+    features: [
+      "3 AI Resume Scans / mo",
+      "Basic Match Scoring",
+      "Standard PDF Export",
+      "Technical Skill Analysis",
+      "Community Access"
+    ],
+    cta: "Start Free",
     highlighted: false,
+    icon: Zap
   },
   {
-    name: "Pro",
-    description: "For growing teams that need more power",
+    name: "Professional",
+    description: "The complete protocol for high-stakes roles",
     price: "$29",
     period: "/month",
     features: [
-      "Unlimited team members",
-      "Unlimited projects",
-      "Advanced analytics",
-      "Priority support",
-      "100GB storage",
-      "Custom integrations",
-      "API access",
+      "Unlimited Resume Scans",
+      "Full Strategic Roadmaps",
+      "Behavioral Script Generation",
+      "Company Culture Matching",
+      "Priority AI Generation",
+      "Premium LaTeX Templates",
+      "Direct Support"
     ],
-    cta: "Start Free Trial",
+    cta: "Deploy Now",
     highlighted: true,
+    icon: Sparkles
   },
   {
-    name: "Enterprise",
-    description: "For large organizations with custom needs",
-    price: "Custom",
-    period: "",
+    name: "Elite",
+    description: "Industrial-grade training for leadership",
+    price: "$79",
+    period: "/month",
     features: [
       "Everything in Pro",
-      "Dedicated account manager",
-      "Custom SLA",
-      "On-premise deployment",
-      "Unlimited storage",
-      "Advanced security",
-      "Training & onboarding",
+      "Unlimited Mock Interviews",
+      "Executive Level Coaching",
+      "Market Intelligence Reports",
+      "Personal Branding Suite",
+      "24/7 Strategic Support",
+      "Lifetime Report Archive"
     ],
-    cta: "Contact Sales",
+    cta: "Go Elite",
     highlighted: false,
+    icon: ShieldCheck
   },
 ]
 
 export default function PricingPlans() {
   return (
-    <section id="pricing" className="px-6 py-24">
-      <div className="max-w-5xl mx-auto">
+    <section id="pricing" className="px-6 py-24 md:py-40 bg-black relative overflow-hidden border-t border-zinc-900/50">
+      {/* Premium Background Ambience */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_50%)] pointer-events-none" />
+      
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">Pricing</p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-zinc-100 mb-4">
-            Simple, transparent pricing
+        <motion.div 
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-6">
+            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.3em] font-bold">Invest in Strategy</span>
+          </div>
+          <h2 className="font-display text-5xl md:text-7xl font-bold text-white mb-8 tracking-tighter leading-[1.05]">
+            Industrial-Grade <br className="hidden md:block" /> Investment.
           </h2>
-          <p className="text-zinc-500 max-w-xl mx-auto text-balance text-lg">
-            No hidden fees. No surprises. Choose the plan that works for you.
+          <p className="text-zinc-500 max-w-xl mx-auto text-balance text-xl font-light">
+            Transparent pricing designed to scale with your career trajectory. Zero technical debt, total tactical superiority.
           </p>
-        </div>
+        </motion.div>
 
         {/* Pricing Grid */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {plans.map((plan) => (
-            <div
+        <div className="grid md:grid-cols-3 gap-8">
+          {plans.map((plan, i) => (
+            <motion.div
               key={plan.name}
-              className={`p-8 rounded-2xl border flex flex-col h-full ${
-                plan.highlighted ? "bg-zinc-100 border-zinc-100" : "bg-zinc-900/50 border-zinc-800/50"
-              }`}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className={cn(
+                "group relative p-10 rounded-[2.5rem] border flex flex-col h-full transition-all duration-500",
+                plan.highlighted 
+                  ? "bg-white border-white shadow-[0_0_80px_rgba(255,255,255,0.1)]" 
+                  : "bg-zinc-900/20 border-zinc-800/50 hover:border-zinc-600/50 backdrop-blur-xl"
+              )}
             >
+              {plan.highlighted && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-zinc-900 text-white text-[10px] font-mono font-bold uppercase tracking-widest rounded-full border border-white/20">
+                  Recommended Protocol
+                </div>
+              )}
+
               {/* Plan Header */}
-              <div className="mb-6">
-                <h3
-                  className={`font-heading text-xl font-semibold mb-2 ${
-                    plan.highlighted ? "text-zinc-900" : "text-zinc-100"
-                  }`}
-                >
+              <div className="mb-10">
+                <div className={cn(
+                  "w-12 h-12 rounded-2xl flex items-center justify-center mb-6 border transition-transform duration-500 group-hover:scale-110",
+                  plan.highlighted ? "bg-zinc-100 border-zinc-200" : "bg-zinc-800/50 border-zinc-700/50"
+                )}>
+                  <plan.icon className={cn("w-6 h-6", plan.highlighted ? "text-zinc-900" : "text-zinc-400")} />
+                </div>
+                <h3 className={cn(
+                  "font-display text-2xl font-bold mb-3 tracking-tight",
+                  plan.highlighted ? "text-zinc-950" : "text-white"
+                )}>
                   {plan.name}
                 </h3>
-                <p className={`text-sm ${plan.highlighted ? "text-zinc-600" : "text-zinc-500"}`}>{plan.description}</p>
+                <p className={cn(
+                  "text-sm font-light leading-relaxed",
+                  plan.highlighted ? "text-zinc-600" : "text-zinc-400"
+                )}>
+                  {plan.description}
+                </p>
               </div>
 
               {/* Price */}
-              <div className="mb-6">
-                <span
-                  className={`font-display text-4xl font-bold ${plan.highlighted ? "text-zinc-900" : "text-zinc-100"}`}
-                >
-                  {plan.price}
-                </span>
-                <span className={`text-sm ${plan.highlighted ? "text-zinc-600" : "text-zinc-500"}`}>{plan.period}</span>
+              <div className="mb-10">
+                <div className="flex items-baseline gap-1">
+                  <span className={cn(
+                    "font-display text-5xl font-bold tracking-tighter",
+                    plan.highlighted ? "text-zinc-950" : "text-white"
+                  )}>
+                    {plan.price}
+                  </span>
+                  <span className={cn(
+                    "text-sm font-medium",
+                    plan.highlighted ? "text-zinc-500" : "text-zinc-500"
+                  )}>
+                    {plan.period}
+                  </span>
+                </div>
               </div>
 
               {/* Features */}
-              <ul className="space-y-3 mb-8 flex-1">
+              <ul className="space-y-4 mb-12 flex-1">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <Check className={`w-5 h-5 shrink-0 ${plan.highlighted ? "text-zinc-900" : "text-zinc-400"}`} />
-                    <span className={`text-sm ${plan.highlighted ? "text-zinc-700" : "text-zinc-400"}`}>{feature}</span>
+                  <li key={feature} className="flex items-start gap-4">
+                    <Check className={cn(
+                      "w-4 h-4 shrink-0 mt-0.5 transition-colors",
+                      plan.highlighted ? "text-zinc-900" : "text-zinc-500 group-hover:text-white"
+                    )} />
+                    <span className={cn(
+                      "text-sm font-light",
+                      plan.highlighted ? "text-zinc-700" : "text-zinc-400 group-hover:text-zinc-300"
+                    )}>{feature}</span>
                   </li>
                 ))}
               </ul>
 
               {/* CTA */}
-              <Link
-                to="/register"
-                className={`block w-full py-3 px-6 text-center rounded-full font-medium text-sm transition-colors mt-auto ${
-                  plan.highlighted
-                    ? "bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
-                    : "bg-zinc-800 text-zinc-100 hover:bg-zinc-700"
-                }`}
-              >
-                {plan.cta}
+              <Link to="/register">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={cn(
+                    "w-full py-4 px-6 text-center rounded-2xl font-bold text-sm tracking-tight transition-all duration-300",
+                    plan.highlighted
+                      ? "bg-zinc-950 text-white hover:shadow-[0_10px_30px_rgba(0,0,0,0.2)]"
+                      : "bg-white text-zinc-950 hover:bg-zinc-200"
+                  )}
+                >
+                  {plan.cta}
+                </motion.div>
               </Link>
-            </div>
+            </motion.div>
           ))}
         </div>
+
+        <p className="text-center text-zinc-600 text-[10px] font-mono uppercase tracking-[0.4em] mt-20">
+          Secure Deployment. Encrypted Intelligence. No hidden protocols.
+        </p>
       </div>
     </section>
   )

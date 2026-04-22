@@ -40,7 +40,7 @@ export default function Navbar() {
   };
 
   const UserAvatar = ({ size = "size-8" }) => (
-    <div className={cn(size, "rounded-full overflow-hidden border border-white/10 bg-brand-600 flex items-center justify-center text-white text-xs font-bold")}>
+    <div className={cn(size, "rounded-full overflow-hidden border border-white/10 bg-brand-600 flex items-center justify-center text-black text-xs font-bold")}>
       {user?.avatar ? (
         <img src={user.avatar} alt={user.name} className="size-full object-cover" />
       ) : (

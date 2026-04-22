@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router";
-import { ArrowRight, PlayCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { LiquidCtaButton } from "../../components/buttons/LiquidCtaButton";
 import SoftAurora from "../../components/ui/SoftAurora";
@@ -39,7 +38,7 @@ export default function HeroSection() {
           scale={1.5}
           brightness={1}
           color1="#f7f7f7"
-          color2="#9333ea"
+          color2="#ffffff"
           noiseFrequency={2.5}
           noiseAmplitude={1}
           bandHeight={0.5}
@@ -150,12 +149,6 @@ export default function HeroSection() {
             <Link to="/register">
               <LiquidCtaButton>Get Started Free</LiquidCtaButton>
             </Link>
-            <button
-              className="group flex items-center gap-2 px-6 py-3 text-sm font-semibold text-zinc-400 hover:text-white transition-all duration-300"
-            >
-              <span>See how it works</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-            </button>
           </motion.div>
         </motion.div>
       </div>
