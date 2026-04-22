@@ -33,85 +33,85 @@ const interviewReportSchema = z.object({
   matchScore: z
     .number()
     .describe(
-      "A score between 0 and 100 indicating how well the candidate's profile matches the job describe",
+      "A score between 0 and 100 indicating how well the candidate's profile aligns with the job requirements",
     ),
   technicalQuestions: z
     .array(
       z.object({
         question: z
           .string()
-          .describe("The technical question can be asked in the interview"),
+          .describe("A high-impact technical question tailored to the role"),
         intention: z
           .string()
-          .describe("The intention of interviewer behind asking this question"),
+          .describe("The underlying competency or knowledge area being assessed"),
         answer: z
           .string()
           .describe(
-            "How to answer this question, what points to cover, what approach to take etc.",
+            "A structured guide for the candidate, including key concepts, edge cases, and best practices to mention",
           ),
       }),
     )
     .describe(
-      "Technical questions that can be asked in the interview along with their intention and how to answer them",
+      "Critical technical questions derived from the job description and candidate's background",
     ),
   behavioralQuestions: z
     .array(
       z.object({
         question: z
           .string()
-          .describe("The technical question can be asked in the interview"),
+          .describe("A STAR-method based behavioral question"),
         intention: z
           .string()
-          .describe("The intention of interviewer behind asking this question"),
+          .describe("The soft skill or cultural value being tested (e.g., leadership, conflict resolution)"),
         answer: z
           .string()
           .describe(
-            "How to answer this question, what points to cover, what approach to take etc.",
+            "Guidance on how to structure the story using the Situation, Task, Action, Result framework",
           ),
       }),
     )
     .describe(
-      "Behavioral questions that can be asked in the interview along with their intention and how to answer them",
+      "Behavioral and situational questions focused on soft skills and culture fit",
     ),
   skillGaps: z
     .array(
       z.object({
-        skill: z.string().describe("The skill which the candidate is lacking"),
+        skill: z.string().describe("A specific technical or soft skill required for the role but missing/weak in the profile"),
         severity: z
           .enum(["low", "medium", "high"])
           .describe(
-            "The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances",
+            "The critical nature of this gap: High (deal-breaker), Medium (important), Low (nice-to-have)",
           ),
       }),
     )
     .describe(
-      "List of skill gaps in the candidate's profile along with their severity",
+      "Identification of specific skill deficiencies relative to the target role",
     ),
   preparationPlan: z
     .array(
       z.object({
         day: z
           .number()
-          .describe("The day number in the preparation plan, starting from 1"),
+          .describe("Sequence day in the structured preparation roadmap"),
         focus: z
           .string()
           .describe(
-            "The main focus of this day in the preparation plan, e.g. data structures, system design, mock interviews etc.",
+            "The primary theme for the day (e.g., Core Architecture, System Design, Behavioral Deep Dive)",
           ),
         tasks: z
           .array(z.string())
           .describe(
-            "List of tasks to be done on this day to follow the preparation plan, e.g. read a specific book or article, solve a set of problems, watch a video etc.",
+            "Actionable, measurable steps to achieve the day's objective",
           ),
       }),
     )
     .describe(
-      "A day-wise preparation plan for the candidate to follow in order to prepare for the interview effectively",
+      "A comprehensive, day-wise strategic roadmap for interview success",
     ),
   title: z
     .string()
     .describe(
-      "The title of the job for which the interview report is generated",
+      "The official job title being analyzed",
     ),
 });
 
@@ -120,10 +120,31 @@ async function generateInterviewReport({
   selfDescription,
   jobDescription,
 }) {
-  const prompt = `Generate an interview report for a candidate with the following details:
-                        Resume: ${resume}
-                        Self Description: ${selfDescription}
-                        Job Description: ${jobDescription}
+  const prompt = `Act as an Elite Technical Interview Coach and Career Strategist. Your goal is to provide a deep, high-level analysis of a candidate's readiness for a specific role.
+
+### INPUT DATA:
+1. **Candidate Resume:**
+${resume}
+
+2. **Candidate Self-Description (Contextual Details):**
+${selfDescription}
+
+3. **Target Job Description:**
+${jobDescription}
+
+### TASK:
+Analyze the alignment between the candidate and the role. Your output must be professional, insightful, and brutally honest where necessary.
+
+1. **Strategic Match Score:** Calculate a realistic match percentage based on skills, experience levels, and domain expertise.
+2. **Technical Deep Dive:** Formulate technical questions that probe areas where the candidate claims expertise OR where the job description has strict requirements. Provide "Gold Standard" answer guides.
+3. **Behavioral Archetypes:** Identify the key soft skills required (e.g., "Stakeholder Management" for Seniors, "Rapid Learning" for Juniors) and generate targeted situational questions.
+4. **Gap Analysis:** Be precise about missing technologies, methodologies, or soft skills.
+5. **Hyper-Focused Preparation Plan:** Create a high-intensity, structured roadmap for the candidate to bridge gaps and master their narrative before the interview.
+
+### CONSTRAINTS:
+- Use professional corporate terminology.
+- Ensure the "intention" of questions reveals the psychological or technical goal of the interviewer.
+- The preparation plan should feel like a premium coaching service.
 `;
 
   const response = await ai.models.generateContent({

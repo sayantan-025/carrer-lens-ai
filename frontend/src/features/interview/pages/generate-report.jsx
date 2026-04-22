@@ -1,404 +1,444 @@
-import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Briefcase,
-  UploadCloud,
-  FileText,
+import { 
+  FileText, 
+  Target, 
+  Sparkles, 
+  Upload, 
+  CheckCircle2, 
+  ArrowRight, 
+  ArrowLeft,
+  Loader2,
+  FileCheck,
   Zap,
+  AlertCircle,
+  PenLine,
+  History,
+  Calendar,
   ChevronRight,
-  CheckCircle2,
-  Sparkles,
-  Box,
-  LayoutGrid,
+  LayoutDashboard
 } from "lucide-react";
-import FullScreenLoader from "../../../components/ui/full-screen-loader";
-import { useInterview } from "../hooks/useinterview";
+import { useNavigate, Link } from "react-router";
+import { useInterview } from "../hooks/use-interview";
 import { useToast } from "../../../context/toast-context";
+
+const steps = [
+  {
+    id: "target",
+    title: "The Opportunity",
+    description: "Paste the job description you are targeting.",
+    icon: Target,
+  },
+  {
+    id: "resume",
+    title: "Resume Upload",
+    description: "Upload your professional resume (Optional if providing a bio).",
+    icon: FileText,
+  },
+  {
+    id: "context",
+    title: "Personal Bio",
+    description: "Describe your experience or specific interview goals.",
+    icon: PenLine,
+  }
+];
 
 const GenerateReport = () => {
   const navigate = useNavigate();
+  const { generateReport, loading, reports, getReports } = useInterview();
   const { showToast } = useToast();
+  
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState({
+    jobDescription: "",
+    resumeFile: null,
+    selfDescription: ""
+  });
+  
+  const fileInputRef = useRef(null);
 
-  const { loading, generateReport, reports } = useInterview();
-  const [jobDescription, setJobDescription] = useState("");
-  const [selfDescription, setSelfDescription] = useState("");
-  const [uploadedFile, setUploadedFile] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const resumeInputRef = useRef();
+  useEffect(() => {
+    getReports();
+  }, [getReports]);
 
-  const handleGenerateReport = async () => {
-    if (!jobDescription.trim()) {
-      showToast({ message: "Please provide a job description.", type: "error" });
-      return;
-    }
-
-    if (!uploadedFile && !selfDescription.trim()) {
-      showToast({
-        message: "Please upload a resume or provide a self-description.",
-        type: "error",
-      });
-      return;
-    }
-
-    try {
-      const resumeFile = uploadedFile;
-      const data = await generateReport({
-        jobDescription,
-        selfDescription,
-        resumeFile,
-      });
-      if (data && data._id) {
-        showToast({ message: "Strategy generated successfully!", type: "success" });
-        navigate(`/dashboard/${data._id}`);
-      }
-    } catch (err) {
-      showToast({
-        message: err.response?.data?.message || "Failed to generate report. Please try again.",
-        type: "error",
-      });
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setUploadedFile(e.dataTransfer.files[0]);
-      showToast({ message: "Resume uploaded successfully!", type: "success" });
-    }
-  };
+  // Validation Logic
+  const isStep1Valid = useMemo(() => formData.jobDescription.trim().length >= 50, [formData.jobDescription]);
+  
+  const isFinalValid = useMemo(() => {
+    return isStep1Valid && (formData.resumeFile !== null || formData.selfDescription.trim().length >= 20);
+  }, [isStep1Valid, formData.resumeFile, formData.selfDescription]);
 
   const handleFileChange = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setUploadedFile(e.target.files[0]);
-      showToast({ message: "Resume selected successfully!", type: "success" });
+    const file = e.target.files[0];
+    if (file && file.type === "application/pdf") {
+      setFormData(prev => ({ ...prev, resumeFile: file }));
+      showToast({ message: "Resume uploaded successfully", type: "success" });
+    } else {
+      showToast({ message: "Please upload a valid PDF file", type: "error" });
     }
   };
 
-  if (loading) {
-    return <FullScreenLoader message="Synthesizing your interview strategy..." />;
-  }
+  const handleGenerate = async () => {
+    if (!isFinalValid) return;
+
+    try {
+      const result = await generateReport(formData);
+      if (result) {
+        showToast({ message: "Strategy blueprint generated!", type: "success" });
+        navigate(`/dashboard/${result._id}`);
+      }
+    } catch (err) {
+      showToast({ message: "Failed to generate report. Please try again.", type: "error" });
+    }
+  };
+
+  const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="w-full relative flex flex-col flex-1">
-
-      <main className="relative z-10 max-w-7xl w-full mx-auto px-6 pt-40 pb-10 flex flex-col gap-12 flex-1">
-        {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex flex-col items-center text-center space-y-6"
-        >
+    <div className="min-h-[calc(100vh-80px)] w-full max-w-7xl mx-auto px-4 pt-12 pb-32 flex flex-col gap-20">
+      
+      {/* --- SECTION 1: GENERATION ENGINE --- */}
+      <section className="flex flex-col items-center">
+        {/* Header Section */}
+        <div className="text-center mb-12">
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111] border border-white/5"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-bold tracking-wide uppercase mb-4"
           >
-            <Sparkles size={14} className="text-brand-neon" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-white/80">
-              Next-Gen AI Pipeline
-            </span>
+            <Sparkles className="size-4" />
+            AI Strategy Engine
           </motion.div>
-
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-tight">
-            Engineer Your <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-brand-neon to-white bg-[length:200%_auto] animate-pulse-slow">
-              Interview Success
-            </span>
-          </h1>
-
-          <p className="text-lg text-white/50 max-w-2xl font-light">
-            Deploy our proprietary AI to map your unique profile against any job
-            description. Generate actionable, hyper-personalized strategies in
-            seconds.
-          </p>
-        </motion.div>
-
-        {/* Main Configuration Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
-          {/* Left Column: Job Description */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            whileHover={{ y: -5, borderColor: "rgba(140, 255, 46, 0.3)", backgroundColor: "rgba(13, 13, 13, 0.9)" }}
-            className="lg:col-span-7 flex flex-col h-full bg-[#0a0a0a] border border-white/5 transition-all duration-300 rounded-3xl overflow-hidden relative group"
+          <motion.h1 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-5xl font-bold text-white mb-4"
           >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-neon/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-            <div className="p-8 flex items-center justify-between border-b border-white/5">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 shadow-inner">
-                  <Briefcase size={18} className="text-white" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    Target Position
-                  </h2>
-                  <p className="text-xs text-white/40 mt-1">
-                    Paste the requirements
-                  </p>
-                </div>
-              </div>
-              <span className="px-3 py-1 bg-brand-neon/10 text-brand-neon border border-brand-neon/20 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                Step 01
-              </span>
-            </div>
-
-            <div className="p-8 flex-1 flex flex-col relative focus-within:bg-[#0D0D0D] transition-colors rounded-b-3xl">
-              <div className="absolute left-8 top-8 bottom-8 w-8 flex flex-col text-[#222] font-mono text-xs items-end pr-2 select-none pointer-events-none">
-                {Array.from({ length: 15 }).map((_, i) => (
-                  <span key={i}>{i + 1}</span>
-                ))}
-              </div>
-              <textarea
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                className="w-full flex-1 bg-transparent border-none text-white/90 placeholder:text-white/20 focus:ring-0 resize-none font-light leading-loose pl-10 h-[350px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] focus:outline-none"
-                placeholder="Paste the full job description here...&#10;&#10;e.g. 'Senior Frontend Engineer at Google requires proficiency in React, TypeScript, and large-scale system design...'"
-              />
-              <div className="absolute bottom-6 right-6 text-[10px] text-white/30 font-mono bg-black/50 px-2 py-1 rounded">
-                {jobDescription.length} / 5000
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right Column: Profile Input */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="lg:col-span-5 flex flex-col gap-6"
-          >
-            {/* Resume Dropzone */}
-            <motion.div
-              whileHover={{ y: -5, borderColor: "rgba(140, 255, 46, 0.3)" }}
-              className={`bg-[#0a0a0a] border ${isDragging ? "border-brand-neon bg-brand-neon/5 scale-[1.02]" : "border-white/5 hover:border-white/10"} rounded-3xl p-8 transition-all duration-300 relative overflow-hidden group`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-            >
-              <div className="absolute top-[-20px] right-[-20px] p-8 opacity-5 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none">
-                <Box size={140} className="text-brand-neon rotate-12" />
-              </div>
-
-              <div className="flex items-center justify-between mb-8 relative z-10">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-brand-neon/10 flex items-center justify-center border border-brand-neon/20 shadow-inner">
-                    <UploadCloud size={18} className="text-brand-neon" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-white">
-                      Your Profile
-                    </h2>
-                    <p className="text-xs text-brand-neon/70 mt-1">
-                      Recommended
-                    </p>
-                  </div>
-                </div>
-                <span className="px-3 py-1 bg-white/5 text-white/50 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                  Step 02
-                </span>
-              </div>
-
-              <label
-                htmlFor="resume"
-                className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:border-brand-neon/50 hover:bg-brand-neon/[0.02] transition-all relative z-10"
-              >
-                <AnimatePresence mode="wait">
-                  {uploadedFile ? (
-                    <motion.div
-                      key="file-uploaded"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className="flex flex-col items-center text-center"
-                    >
-                      <div className="w-12 h-12 bg-brand-neon/20 rounded-full flex items-center justify-center mb-3">
-                        <CheckCircle2 className="text-brand-neon" size={24} />
-                      </div>
-                      <p className="text-sm text-white font-medium truncate max-w-[200px]">
-                        {uploadedFile.name}
-                      </p>
-                      <p className="text-xs text-white/40 mt-1">
-                        {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
-                      </p>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="file-prompt"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="flex flex-col items-center"
-                    >
-                      <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <UploadCloud
-                          size={20}
-                          className="text-white/40 group-hover:text-brand-neon"
-                        />
-                      </div>
-                      <p className="text-sm font-medium text-white/80">
-                        Drop your resume here
-                      </p>
-                      <p className="text-[10px] text-white/40 mt-1 uppercase tracking-widest">
-                        PDF or DOCX
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                <input
-                  ref={resumeInputRef}
-                  onChange={handleFileChange}
-                  hidden
-                  type="file"
-                  id="resume"
-                  accept=".pdf,.docx"
-                />
-              </label>
-            </motion.div>
-
-            {/* Self Description Fallback */}
-            <motion.div 
-               whileHover={{ y: -5, borderColor: "rgba(140, 255, 46, 0.3)" }}
-               className="bg-[#0a0a0a] border border-white/5 hover:border-white/10 rounded-3xl p-8 flex-1 flex flex-col transition-all duration-300 focus-within:border-brand-neon/30 focus-within:bg-[#111] group"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <FileText size={16} className="text-white/30" />
-                <h3 className="text-xs font-semibold text-white/60 uppercase tracking-widest">
-                  Or write a quick bio
-                </h3>
-              </div>
-              <textarea
-                value={selfDescription}
-                onChange={(e) => setSelfDescription(e.target.value)}
-                className="w-full flex-1 bg-transparent border-none rounded-xl p-0 text-white/80 placeholder:text-white/20 focus:outline-none focus:ring-0 resize-none text-sm font-light leading-relaxed [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-                placeholder="I'm a frontend engineer with 5 years of React experience, focusing on performance optimization. Previously at Meta..."
-              />
-            </motion.div>
-          </motion.div>
+            Generate Your <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-indigo-400">Interview Blueprint</span>
+          </motion.h1>
         </div>
 
-        {/* Action Footer */}
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="sticky bottom-8 mx-auto w-[90%] max-w-3xl z-50 mt-8"
-        >
-          <div className="bg-[#0a0a0a] border border-white/5 p-3 rounded-3xl flex items-center justify-between hover:border-brand-neon/30 transition-all">
-            <div className="hidden sm:flex items-center gap-3 px-6">
-              <div className="w-2 h-2 rounded-full bg-brand-neon animate-pulse shadow-[0_0_10px_#8CFF2E]" />
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-white/40 tracking-widest">
-                  STATUS
-                </span>
-                <span className="text-xs font-semibold text-white tracking-wider">
-                  SYSTEM READY
-                </span>
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          
+          {/* Left: Step Indicators */}
+          <div className="lg:col-span-4 space-y-4">
+            <div className="glass rounded-3xl p-6 border border-white/10">
+              <div className="mb-8">
+                <div className="flex justify-between items-end mb-2">
+                  <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Setup Progress</span>
+                  <span className="text-2xl font-bold text-white">{Math.round(progress)}%</span>
+                </div>
+                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    className="h-full bg-linear-to-r from-blue-500 to-indigo-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+                  />
+                </div>
               </div>
-            </div>
 
-            <button
-              onClick={handleGenerateReport}
-              className="w-full sm:w-auto bg-brand-neon text-black px-8 py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-white hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 font-bold group relative overflow-hidden shadow-[0_0_20px_rgba(140,255,46,0.2)]"
-            >
-              <div className="absolute inset-0 bg-white/20 w-full h-full -skew-x-12 -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-700 ease-out" />
-              <Zap
-                size={18}
-                className="fill-black group-hover:scale-110 transition-transform"
-              />
-              <span>Synthesize Strategy</span>
-            </button>
-          </div>
-        </motion.div>
-      </main>
+              <div className="space-y-6">
+                {steps.map((step, index) => {
+                  const Icon = step.icon;
+                  const isActive = currentStep === index;
+                  const isCompleted = currentStep > index;
 
-      {/* Reports Section with LayoutGrid */}
-      <div className="relative z-10 border-t border-white/5 pt-20 pb-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between mb-10">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
-                <LayoutGrid className="text-white" size={18} />
-              </div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">
-                Archives
-              </h2>
-            </div>
-          </div>
-
-          {reports.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {reports.map((report, idx) => (
-                <motion.div
-                  key={report._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{
-                    y: -5,
-                    borderColor: "rgba(140, 255, 46, 0.3)",
-                    backgroundColor: "rgba(255,255,255,0.05)",
-                  }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  onClick={() => navigate(`/dashboard/${report._id}`)}
-                  className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 transition-all duration-300 cursor-pointer group flex flex-col h-full shadow-lg"
-                >
-                  <div className="flex justify-between items-start mb-8">
-                    <div
-                      className={`px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wider ${report.matchScore >= 80 ? "bg-brand-neon/10 text-brand-neon border border-brand-neon/20 shadow-[0_0_10px_rgba(140,255,46,0.1)]" : "bg-white/10 text-white/60 border border-white/10"}`}
-                    >
-                      {report.matchScore}% MATCH
+                  return (
+                    <div key={step.id} className="flex items-start gap-4">
+                      <div className={`
+                        shrink-0 size-10 rounded-xl flex items-center justify-center transition-all duration-300
+                        ${isActive ? 'bg-blue-600 text-white scale-110 shadow-lg shadow-blue-600/20' : 
+                          isCompleted ? 'bg-green-500/20 text-green-500' : 'bg-white/5 text-gray-600'}
+                      `}>
+                        {isCompleted ? <CheckCircle2 className="size-5" /> : <Icon className="size-5" />}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? 'text-white' : 'text-gray-600'}`}>
+                          Step {index + 1}
+                        </span>
+                        <span className={`font-medium ${isActive ? 'text-blue-400' : 'text-gray-400'}`}>
+                          {step.title}
+                        </span>
+                      </div>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-brand-neon group-hover:text-black transition-colors">
-                      <ChevronRight size={16} />
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="glass rounded-3xl p-6 border border-white/10 bg-blue-500/5">
+              <div className="flex gap-3 text-blue-400 mb-3">
+                <Zap className="size-5 shrink-0" />
+                <h3 className="font-bold text-sm uppercase tracking-wider text-white">Requirement</h3>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed italic">
+                Job Description is <strong>required</strong>. You must also provide either a Resume PDF <strong>OR</strong> a Bio description to generate the strategy.
+              </p>
+            </div>
+          </div>
+
+          {/* Right: Active Step Form */}
+          <div className="lg:col-span-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="glass rounded-[32px] p-8 md:p-12 border border-white/10 shadow-2xl relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none text-white">
+                  {React.createElement(steps[currentStep].icon, { size: 120 })}
+                </div>
+
+                <div className="mb-10">
+                  <h2 className="text-3xl font-bold text-white mb-2">{steps[currentStep].title}</h2>
+                  <p className="text-gray-400">{steps[currentStep].description}</p>
+                </div>
+
+                {/* Step 1: Job Description */}
+                {currentStep === 0 && (
+                  <div className="space-y-4">
+                    <div className="relative group">
+                      <textarea
+                        placeholder="Paste the full job description here... (Min 50 characters)"
+                        value={formData.jobDescription}
+                        onChange={(e) => setFormData(prev => ({ ...prev, jobDescription: e.target.value }))}
+                        className="w-full h-64 bg-white/5 border border-white/10 rounded-2xl p-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.07] transition-all resize-none font-medium"
+                      />
+                      <div className={`absolute bottom-4 right-6 text-[10px] font-bold uppercase tracking-widest ${isStep1Valid ? 'text-green-500' : 'text-gray-600'}`}>
+                        {formData.jobDescription.length} / 50 characters
+                      </div>
                     </div>
                   </div>
-                  <h3 className="text-lg font-semibold text-white/90 group-hover:text-white mb-3 leading-snug">
-                    {report.title || "Unknown Protocol"}
-                  </h3>
-                  <p className="text-xs text-white/40 mt-auto font-mono flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/20"></span>
-                    {new Date(report.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
+                )}
+
+                {/* Step 2: Resume Upload */}
+                {currentStep === 1 && (
+                  <div className="space-y-6">
+                    <div 
+                      onClick={() => fileInputRef.current?.click()}
+                      className={`
+                        border-2 border-dashed rounded-3xl p-12 flex flex-col items-center justify-center gap-4 transition-all cursor-pointer group
+                        ${formData.resumeFile ? 'border-green-500/50 bg-green-500/5' : 'border-white/10 hover:border-blue-500/50 hover:bg-blue-500/5'}
+                      `}
+                    >
+                      <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf" className="hidden" />
+                      
+                      {formData.resumeFile ? (
+                        <>
+                          <div className="size-16 rounded-2xl bg-green-500/20 flex items-center justify-center text-green-500">
+                            <FileCheck size={32} />
+                          </div>
+                          <div className="text-center">
+                            <p className="text-white font-bold text-lg">{formData.resumeFile.name}</p>
+                            <p className="text-green-500 text-sm font-medium uppercase tracking-widest">Ready for analysis</p>
+                          </div>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); setFormData(prev => ({ ...prev, resumeFile: null })); }}
+                            className="text-xs text-gray-500 hover:text-red-400 font-bold uppercase tracking-widest mt-2 underline"
+                          >
+                            Remove file
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <div className="size-16 rounded-2xl bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-blue-500 group-hover:bg-blue-500/10 transition-all">
+                            <Upload size={32} />
+                          </div>
+                          <div className="text-center">
+                            <p className="text-white font-bold text-lg">Drop your resume here</p>
+                            <p className="text-gray-400 text-sm italic">Optional if you provide a bio in the next step</p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: Self Description */}
+                {currentStep === 2 && (
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <textarea
+                        placeholder="e.g. 'I am pivoting from Backend to Fullstack. I'm worried about my lack of frontend experience...'"
+                        value={formData.selfDescription}
+                        onChange={(e) => setFormData(prev => ({ ...prev, selfDescription: e.target.value }))}
+                        className="w-full h-64 bg-white/5 border border-white/10 rounded-2xl p-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all resize-none font-medium"
+                      />
+                    </div>
+                    {!formData.resumeFile && formData.selfDescription.length < 20 && (
+                      <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3 text-amber-500 text-xs font-bold uppercase tracking-wide">
+                        <AlertCircle className="size-4 shrink-0" />
+                        Since no resume is uploaded, a bio (min 20 chars) is required.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="mt-12 flex items-center justify-between">
+                  <button
+                    onClick={() => setCurrentStep(prev => prev - 1)}
+                    disabled={currentStep === 0 || loading}
+                    className={`
+                      flex items-center gap-2 font-bold uppercase tracking-widest text-xs transition-all
+                      ${currentStep === 0 ? 'opacity-0 pointer-events-none' : 'text-gray-500 hover:text-white'}
+                    `}
+                  >
+                    <ArrowLeft className="size-4" /> Back
+                  </button>
+
+                  {currentStep < steps.length - 1 ? (
+                    <motion.button
+                      whileHover={isStep1Valid || currentStep > 0 ? { scale: 1.02 } : {}}
+                      whileTap={isStep1Valid || currentStep > 0 ? { scale: 0.98 } : {}}
+                      onClick={() => setCurrentStep(prev => prev + 1)}
+                      disabled={currentStep === 0 && !isStep1Valid}
+                      className={`
+                        btn px-8 py-4 rounded-2xl font-bold flex items-center gap-2 shadow-xl
+                        ${(currentStep === 0 && !isStep1Valid) ? 'bg-white/5 text-gray-600 cursor-not-allowed border-none' : 'bg-blue-600 text-white hover:bg-blue-700 border-none shadow-blue-900/20'}
+                      `}
+                    >
+                      Next Step <ArrowRight className="size-4" />
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      whileHover={isFinalValid && !loading ? { scale: 1.02 } : {}}
+                      whileTap={isFinalValid && !loading ? { scale: 0.98 } : {}}
+                      onClick={handleGenerate}
+                      disabled={!isFinalValid || loading}
+                      className={`
+                        btn px-10 py-4 rounded-2xl font-bold flex items-center gap-3 shadow-2xl relative overflow-hidden border-none
+                        ${!isFinalValid || loading
+                          ? 'bg-white/5 text-gray-600 cursor-not-allowed'
+                          : 'bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-indigo-900/40 hover:brightness-110'}
+                      `}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="size-5 animate-spin" />
+                          Synthesizing...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="size-5" />
+                          Generate Blueprint
+                        </>
+                      )}
+                    </motion.button>
+                  )}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+            
+            {loading && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-8 text-center"
+              >
+                <div className="flex flex-col items-center gap-4">
+                  <div className="flex gap-1">
+                    {[0, 1, 2].map((i) => (
+                      <motion.div
+                        key={i}
+                        animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
+                        transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                        className="size-1.5 rounded-full bg-blue-500"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em]">
+                    Analyzing profile alignment...
                   </p>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full py-20 bg-white/[0.02] border border-dashed border-white/10 rounded-[32px] flex flex-col items-center justify-center text-center px-6"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6 border border-white/10">
-                <Box size={32} className="text-white/20" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">No Reports Synthesized Yet</h3>
-              <p className="text-white/40 max-w-sm text-sm font-light">
-                Your future interview strategies will be archived here. Start by uploading your resume above.
-              </p>
-            </motion.div>
-          )}
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* --- DIVIDER --- */}
+      <div className="relative py-4 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-white/10"></div>
+        </div>
+        <div className="relative px-6 bg-[#020B18] flex items-center gap-3">
+           <div className="size-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />
+           <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em]">Mission Archives</span>
+           <div className="size-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />
         </div>
       </div>
+
+      {/* --- SECTION 2: MISSION ARCHIVES --- */}
+      <section className="space-y-10">
+        <div className="flex items-center gap-4">
+          <div className="size-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400">
+            <History size={20} />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Recent Briefings</h2>
+            <p className="text-sm text-gray-500">Quick access to your previously synthesized strategies.</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
+          {reports?.length > 0 ? (
+            reports.map((report, i) => (
+              <motion.div
+                key={report._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="group relative"
+              >
+                <Link to={`/dashboard/${report._id}`}>
+                  <div className="glass rounded-[32px] p-8 border border-white/5 bg-white/[0.01] hover:bg-white/[0.04] hover:border-blue-500/30 transition-all h-full flex flex-col gap-6 group-hover:-translate-y-1 shadow-2xl">
+                    <div className="flex justify-between items-start">
+                      <div className="size-12 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                        <LayoutDashboard size={20} />
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mb-1">Match Score</div>
+                        <div className="text-2xl font-black text-white">{report.matchScore}%</div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-bold text-white leading-tight mb-2 line-clamp-2 group-hover:text-blue-400 transition-colors">
+                        {report.title}
+                      </h3>
+                      <div className="flex items-center gap-2 text-gray-500 text-[10px] font-bold uppercase tracking-widest">
+                        <Calendar size={12} />
+                        {new Date(report.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </div>
+                    </div>
+
+                    <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+                      <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Protocol Active</span>
+                      <div className="size-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <ChevronRight size={16} />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))
+          ) : (
+            <div className="col-span-full py-20 glass rounded-[32px] border border-dashed border-white/10 flex flex-col items-center justify-center text-center">
+              <div className="size-16 rounded-full bg-white/5 flex items-center justify-center text-gray-600 mb-4">
+                <Target size={32} />
+              </div>
+              <h3 className="text-white font-bold mb-1">No Briefings Found</h3>
+              <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
+                Generate your first interview strategy to see it archived here for quick access.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 };

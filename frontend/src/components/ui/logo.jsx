@@ -13,7 +13,7 @@ const Logo = ({ size = 32, className = "" }) => {
         viewBox="0 0 40 40" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full text-brand-neon"
+        className="w-full h-full text-blue-500"
       >
         {/* Outer Tech Shell (The Lens) */}
         <motion.path 
@@ -29,7 +29,7 @@ const Logo = ({ size = 32, className = "" }) => {
         {/* The 'C' curve (Career) */}
         <motion.path 
           d="M26 14C23.6 11.2 19.8 11.2 15.5 14C11.2 16.8 11.2 23.2 15.5 26" 
-          stroke="white" 
+          stroke="#E0F2FE" 
           strokeWidth="4" 
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
@@ -50,8 +50,8 @@ const Logo = ({ size = 32, className = "" }) => {
         />
         
         {/* Tech Nodes */}
-        <circle cx="29" cy="17" r="2" fill="white" />
-        <circle cx="25" cy="27" r="2" fill="white" />
+        <circle cx="29" cy="17" r="2" fill="#E0F2FE" />
+        <circle cx="25" cy="27" r="2" fill="#E0F2FE" />
       </svg>
     </motion.div>
   );

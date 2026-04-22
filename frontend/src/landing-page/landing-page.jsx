@@ -1,28 +1,29 @@
+import React from "react";
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles, Brain, Target, Zap } from "lucide-react";
+import { Link } from "react-router";
 import HeroSection from "./components/hero-section";
-import SpotlightFeatures from "./components/spotlight-features";
-import FlowSection from "./components/flow-section";
-import ResumeComparison from "./components/resume-comparison";
-import FAQSection from "./components/faq-section";
-import InfiniteMarquee from "./components/Infinite-marquee";
-import CTASection from "./components/cta-section";
+import TrustedCompanies from "./components/trusted-companies";
+import Features from "./components/features";
+import WorkflowSteps from "./components/workflow-steps";
 import Testimonials from "./components/testimonials";
+import FaqSection from "./components/faq-section";
+import PricingPlans from "./components/pricing-plans";
+import CallToAction from "./components/call-to-action";
 
 const LandingPage = () => {
   return (
-    <div className="w-full text-white font-sans selection:bg-brand-neon/30 relative overflow-x-hidden">
-      <div className="relative z-10 w-full flex flex-col min-h-screen">
-        <main className="flex flex-col items-center w-full relative mx-auto flex-1 overflow-x-hidden">
-          <HeroSection />
-          <InfiniteMarquee />
-          <SpotlightFeatures />
-          <FlowSection />
-          <ResumeComparison />
-          <Testimonials />
-          <FAQSection />
-          <CTASection />
-        </main>
-      </div>
-    </div>
+    <main className="px-4">
+      <HeroSection />
+      <TrustedCompanies />
+      <Features />
+      <WorkflowSteps />
+      <Testimonials />
+      <FaqSection />
+      <PricingPlans />
+      <CallToAction />
+    </main>
   );
 };
+
 export default LandingPage;

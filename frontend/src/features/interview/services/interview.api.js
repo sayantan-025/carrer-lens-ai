@@ -1,9 +1,4 @@
-import axios from "axios";
-
-const api = axios.create({
-  baseURL: "https://carrer-lens-ai.onrender.com",
-  withCredentials: true,
-});
+import axiosInstance from "../../auth/api/axios-instance";
 
 export const generateInterviewReport = async ({
   jobDescription,
@@ -15,7 +10,7 @@ export const generateInterviewReport = async ({
   formData.append("selfDescription", selfDescription);
   formData.append("resume", resumeFile);
 
-  const response = await api.post("/api/interview/", formData, {
+  const response = await axiosInstance.post("/interview/", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -25,20 +20,20 @@ export const generateInterviewReport = async ({
 };
 
 export const getInterviewReportById = async (interviewId) => {
-  const response = await api.get(`/api/interview/report/${interviewId}`);
+  const response = await axiosInstance.get(`/interview/report/${interviewId}`);
 
   return response.data;
 };
 
 export const getAllInterviewReports = async () => {
-  const response = await api.get("/api/interview/");
+  const response = await axiosInstance.get("/interview/");
 
   return response.data;
 };
 
 export const generateResumePdf = async ({ interviewReportId }) => {
-  const response = await api.post(
-    `/api/interview/resume/pdf/${interviewReportId}`,
+  const response = await axiosInstance.post(
+    `/interview/resume/pdf/${interviewReportId}`,
     null,
     {
       responseType: "blob",
