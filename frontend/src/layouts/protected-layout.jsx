@@ -19,15 +19,16 @@ const ProtectedLayout = () => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  const isGenerateReport = location.pathname === "/generate-report";
+  const isDashboard = location.pathname.startsWith("/dashboard/");
 
   return (
     <div className="h-screen flex flex-col relative overflow-hidden bg-black">
       <GlobalBackground />
 
-      <Navbar />
+      {!isDashboard && <Navbar />}
       <main className={cn(
-        "flex-1 relative z-10 flex flex-col min-h-0 mt-20 overflow-y-auto"
+        "flex-1 relative z-10 flex flex-col min-h-0",
+        isDashboard ? "overflow-hidden" : "overflow-y-auto mt-20"
       )}>
         <Outlet />
       </main>

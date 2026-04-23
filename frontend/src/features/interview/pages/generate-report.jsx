@@ -71,6 +71,7 @@ const IndustrialGauge = ({ value, size = 64 }) => {
 
 /**
  * Encapsulates the multi-stage loading animation and status cycling.
+ * Includes a "Hardware Noise" overlay that intensifies with progress.
  */
 const SynthesisEngine = ({ loading }) => {
   const [stage, setStage] = useState(0);
@@ -101,9 +102,28 @@ const SynthesisEngine = ({ loading }) => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -12, scale: 0.98 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-12 flex flex-col items-center gap-8"
+          className="mt-12 flex flex-col items-center gap-8 relative overflow-hidden rounded-3xl p-12 border border-zinc-900/50 bg-zinc-950/20"
         >
-          <div className="relative size-24">
+          {/* Hardware Grain/Noise Overlay - Intensifies with stage */}
+          <motion.div 
+            animate={{ 
+              x: [0, -15, 10, -5, 15, 0],
+              y: [0, 5, -10, 15, -5, 0]
+            }}
+            transition={{ 
+              duration: 0.15, 
+              repeat: Infinity, 
+              ease: "linear" 
+            }}
+            className="absolute inset-[-200%] pointer-events-none z-0"
+            style={{ 
+              opacity: 0.02 + (stage * 0.01),
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+              backgroundSize: '100px 100px'
+            }}
+          />
+
+          <div className="relative size-24 z-10">
             {/* Outer Rotating Ring */}
             <motion.div 
               animate={{ rotate: 360 }}
@@ -129,7 +149,7 @@ const SynthesisEngine = ({ loading }) => {
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-3 z-10">
             <AnimatePresence mode="wait">
               <motion.p 
                 key={stage}
@@ -228,6 +248,7 @@ const GenerateReport = () => {
   const { showToast } = useToast();
   
   const [currentStep, setCurrentStep] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const [formData, setFormData] = useState({
     jobDescription: "",
     resumeFile: null,
@@ -246,14 +267,29 @@ const GenerateReport = () => {
     return isStep1Valid && (formData.resumeFile !== null || formData.selfDescription.trim().length >= 20);
   }, [isStep1Valid, formData.resumeFile, formData.selfDescription]);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = (file) => {
     if (file && file.type === "application/pdf") {
       setFormData(prev => ({ ...prev, resumeFile: file }));
       showToast({ message: "Resume uploaded successfully", type: "success" });
     } else {
       showToast({ message: "Please upload a valid PDF file", type: "error" });
     }
+  };
+
+  const onDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const onDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    handleFileChange(file);
   };
 
   const handleGenerate = async () => {
@@ -359,7 +395,7 @@ const GenerateReport = () => {
                   </div>
                   <div>
                     <h3 className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 mb-2">Requirement Protocol</h3>
-                    <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                    <p id="jd-requirement-hint" className="text-xs text-zinc-500 leading-relaxed font-light">
                       Job Description (50+ chars) is <span className="text-zinc-300">mandatory</span>. Complete by uploading a Resume PDF or providing a Bio.
                     </p>
                   </div>
@@ -394,12 +430,16 @@ const GenerateReport = () => {
                       {currentStep === 0 && (
                         <div className="relative group h-full">
                           <textarea
+                            id="job-description-input"
+                            aria-describedby="jd-requirement-hint job-description-count"
+                            aria-invalid={!isStep1Valid && formData.jobDescription.length > 0}
                             placeholder="Paste the full job description here..."
                             value={formData.jobDescription}
                             onChange={(e) => setFormData(prev => ({ ...prev, jobDescription: e.target.value }))}
-                            className="w-full h-64 bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-zinc-100 placeholder:text-zinc-700 focus:outline-none focus:border-zinc-500/50 transition-all resize-none font-light leading-relaxed"
+                            className="w-full h-64 bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-zinc-100 placeholder:text-zinc-700 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-zinc-500/50 transition-all resize-none font-light leading-relaxed"
                           />
                           <motion.div 
+                            id="job-description-count"
                             animate={isStep1Valid ? { scale: [1, 1.05, 1], color: "#f4f4f5" } : {}}
                             className={cn(
                               "absolute bottom-4 right-6 text-[10px] font-mono font-bold tracking-widest uppercase",
@@ -413,13 +453,39 @@ const GenerateReport = () => {
 
                       {currentStep === 1 && (
                         <div 
+                          role="button"
+                          tabIndex={0}
+                          aria-label="Upload resume PDF"
+                          onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
                           onClick={() => fileInputRef.current?.click()}
+                          onDragOver={onDragOver}
+                          onDragLeave={onDragLeave}
+                          onDrop={onDrop}
                           className={cn(
-                            "border-2 border-dashed rounded-3xl h-64 flex flex-col items-center justify-center gap-4 transition-all cursor-pointer group/upload overflow-hidden relative",
-                            formData.resumeFile ? 'border-zinc-500/50 bg-zinc-500/5' : 'border-zinc-800 hover:border-zinc-500/50 hover:bg-zinc-500/5'
+                            "border-2 border-dashed rounded-3xl h-64 flex flex-col items-center justify-center gap-4 transition-all cursor-pointer group/upload overflow-hidden relative outline-none",
+                            (formData.resumeFile || isDragging) ? 'border-zinc-500/50 bg-zinc-500/5' : 'border-zinc-800 hover:border-zinc-500/50 hover:bg-zinc-500/5'
                           )}
                         >
-                          <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf" className="hidden" />
+                          {/* Scanline overlay on drag */}
+                          <AnimatePresence>
+                            {isDragging && (
+                              <motion.div 
+                                initial={{ top: "-100%" }}
+                                animate={{ top: "100%" }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                                className="absolute inset-x-0 h-1 bg-white/20 blur-sm z-20 pointer-events-none"
+                              />
+                            )}
+                          </AnimatePresence>
+
+                          <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            onChange={(e) => handleFileChange(e.target.files[0])} 
+                            accept=".pdf" 
+                            className="hidden" 
+                          />
                           {formData.resumeFile ? (
                             <>
                               <div className="size-16 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-900">
@@ -438,11 +504,14 @@ const GenerateReport = () => {
                             </>
                           ) : (
                             <>
-                              <div className="size-16 rounded-2xl bg-zinc-900 flex items-center justify-center text-zinc-600 group-hover/upload:text-zinc-100 group-hover/upload:bg-zinc-800 transition-all border border-zinc-800">
+                              <div className={cn(
+                                "size-16 rounded-2xl bg-zinc-900 flex items-center justify-center transition-all border border-zinc-800",
+                                isDragging ? "bg-zinc-800 text-white scale-110" : "text-zinc-600 group-hover/upload:text-zinc-100 group-hover/upload:bg-zinc-800"
+                              )}>
                                 <Upload size={32} />
                               </div>
                               <div className="text-center">
-                                <p className="text-white font-bold text-lg">Transmit Resume</p>
+                                <p className="text-white font-bold text-lg">{isDragging ? "Release to Transmit" : "Transmit Resume"}</p>
                                 <p className="text-zinc-500 text-xs font-light mt-1 uppercase tracking-widest">PDF format preferred</p>
                               </div>
                             </>
@@ -453,13 +522,16 @@ const GenerateReport = () => {
                       {currentStep === 2 && (
                         <div className="space-y-4 h-full">
                           <textarea
+                            id="bio-input"
+                            aria-describedby={!formData.resumeFile && formData.selfDescription.length < 20 ? "bio-requirement-hint" : undefined}
+                            aria-invalid={!formData.resumeFile && formData.selfDescription.length < 20 && formData.selfDescription.length > 0}
                             placeholder="Describe your goals, experience gaps, or specific areas of concern..."
                             value={formData.selfDescription}
                             onChange={(e) => setFormData(prev => ({ ...prev, selfDescription: e.target.value }))}
-                            className="w-full h-64 bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-zinc-100 placeholder:text-zinc-700 focus:outline-none focus:border-zinc-500/50 transition-all resize-none font-light leading-relaxed"
+                            className="w-full h-64 bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-zinc-100 placeholder:text-zinc-700 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-zinc-500/50 transition-all resize-none font-light leading-relaxed"
                           />
                           {!formData.resumeFile && formData.selfDescription.length < 20 && (
-                            <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center gap-3 text-zinc-500 text-[10px] font-mono font-bold uppercase tracking-widest">
+                            <div id="bio-requirement-hint" className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center gap-3 text-zinc-500 text-[10px] font-mono font-bold uppercase tracking-widest">
                               <AlertCircle className="size-4 shrink-0 text-zinc-600" />
                               Bio minimum 20 chars required without resume
                             </div>

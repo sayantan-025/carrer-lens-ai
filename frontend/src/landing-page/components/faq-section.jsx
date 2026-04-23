@@ -38,18 +38,26 @@ const faqData = [
   },
 ]
 
-const FAQItem = ({ question, answer, isOpen, onToggle }) => {
+const FAQItem = ({ question, answer, isOpen, onToggle, id }) => {
+  const contentId = `faq-content-${id}`;
+  const buttonId = `faq-button-${id}`;
+
   return (
     <div
       className={cn(
-        "w-full transition-all duration-500 ease-out border rounded-2xl overflow-hidden cursor-pointer group",
+        "w-full transition-all duration-500 ease-out border rounded-2xl overflow-hidden group",
         isOpen 
           ? "bg-zinc-900/50 border-zinc-700 shadow-[0_0_30px_rgba(0,0,0,0.3)]" 
           : "bg-zinc-900/20 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/30"
       )}
-      onClick={onToggle}
     >
-      <div className="w-full px-6 py-5 flex justify-between items-center gap-4 text-left transition-all duration-300">
+      <button
+        id={buttonId}
+        aria-expanded={isOpen}
+        aria-controls={contentId}
+        className="w-full px-6 py-5 flex justify-between items-center gap-4 text-left transition-all duration-300 cursor-pointer outline-none focus-visible:ring-inset"
+        onClick={onToggle}
+      >
         <div className={cn(
           "flex-1 text-base font-medium transition-colors duration-300",
           isOpen ? "text-white" : "text-zinc-300 group-hover:text-zinc-100"
@@ -64,11 +72,14 @@ const FAQItem = ({ question, answer, isOpen, onToggle }) => {
             )}
           />
         </div>
-      </div>
+      </button>
       
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
+            id={contentId}
+            role="region"
+            aria-labelledby={buttonId}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -121,7 +132,8 @@ export default function FaqSection() {
         <div className="w-full max-w-[720px] mx-auto space-y-4">
           {faqData.map((faq, index) => (
             <FAQItem 
-              key={index} 
+              key={index}
+              id={index}
               {...faq} 
               isOpen={activeIndex === index} 
               onToggle={() => setActiveIndex(activeIndex === index ? null : index)} 

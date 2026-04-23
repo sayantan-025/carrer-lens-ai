@@ -78,6 +78,18 @@ export default function Features() {
                   Deep-dive analysis against job descriptions to identify missing keywords and calculate your strategic match score.
                 </p>
                 <div className="rounded-2xl border border-zinc-800/50 bg-zinc-950/50 p-6 overflow-hidden relative">
+                  {/* AI Scanline/Pulse Effect */}
+                  <motion.div 
+                    className="absolute inset-0 bg-linear-to-b from-transparent via-zinc-400/5 to-transparent z-10 pointer-events-none"
+                    animate={{ 
+                      top: ["-100%", "100%"] 
+                    }}
+                    transition={{ 
+                      duration: 3, 
+                      repeat: Infinity, 
+                      ease: "linear" 
+                    }}
+                  />
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
