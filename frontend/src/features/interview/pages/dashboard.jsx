@@ -51,6 +51,9 @@ const StatusBadge = ({ children, color = "zinc" }) => {
   );
 };
 
+/**
+ * High-end Industrial Match Gauge.
+ */
 const MatchGauge = ({ value, size = 160 }) => {
   const radius = size / 2 - 12;
   const circumference = 2 * Math.PI * radius;
@@ -111,7 +114,7 @@ const IntelligenceCard = ({ item, index, prefix = "T" }) => {
           "shrink-0 w-10 h-10 rounded-lg flex items-center justify-center font-mono text-[10px] font-bold tracking-widest transition-all duration-500 border",
           isOpen ? "bg-zinc-100 border-zinc-100 text-zinc-950 scale-105 shadow-[0_0_15px_rgba(255,255,255,0.2)]" : "bg-zinc-900 border-zinc-800 text-zinc-600"
         )}>
-          {prefix}{String(index + 1).padStart(2, '0')}
+          {prefix}{index + 1}
         </div>
         <div className="flex-1">
           <h4 className={cn("font-display text-lg font-bold tracking-tight leading-snug transition-colors", isOpen ? "text-white" : "text-zinc-400 group-hover:text-zinc-200")}>
@@ -127,7 +130,7 @@ const IntelligenceCard = ({ item, index, prefix = "T" }) => {
         {isOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}>
             <div className="px-10 pb-8 pt-2 space-y-6">
-              <div className="h-px bg-linear-to-r from-zinc-800/50 via-zinc-800/50 to-transparent" />
+              <div className="h-px bg-zinc-800/50" />
               <div className="space-y-3">
                 <p className="text-[9px] font-mono font-bold text-zinc-600 uppercase tracking-[0.3em] flex items-center gap-2">
                   <Target size={12} /> Why they ask this
@@ -250,22 +253,6 @@ const Dashboard = () => {
               </button>
             ))}
           </div>
-
-          <div className="mt-auto">
-             <div className="p-5 border border-zinc-800/50 bg-zinc-900/20 rounded-2xl relative overflow-hidden group">
-                <p className="text-[9px] font-mono font-bold text-zinc-700 uppercase tracking-widest mb-4">System Status</p>
-                <div className="space-y-3">
-                   {[1, 2, 3].map(i => (
-                     <div key={i} className="flex items-center gap-3">
-                        <div className="size-1 rounded-full bg-zinc-700" />
-                        <div className="h-0.5 flex-1 bg-zinc-800/50 rounded-full overflow-hidden">
-                           <div className="h-full bg-zinc-700 w-full animate-[pulse_2s_infinite]" style={{ animationDelay: `${i * 0.3}s` }} />
-                        </div>
-                     </div>
-                   ))}
-                </div>
-             </div>
-          </div>
         </aside>
 
         {/* --- CENTER STREAM (col-span-7) --- */}
@@ -282,7 +269,7 @@ const Dashboard = () => {
                 <p className="text-zinc-500 text-sm font-light max-w-xl mt-3">{activeSector.desc} based on your resume and job description.</p>
              </div>
              <div className="flex gap-2">
-                <StatusBadge color="blue">Secure Mode</StatusBadge>
+                <StatusBadge color="blue">Diagnostic Mode</StatusBadge>
                 <StatusBadge color="zinc">Analysis OK</StatusBadge>
              </div>
           </div>
@@ -300,7 +287,7 @@ const Dashboard = () => {
                     report.technicalQuestions.map((q, i) => (
                       <IntelligenceCard key={i} item={q} index={i} prefix="T" />
                     ))
-                  ) : <EmptyState icon={Code2} />
+                  ) : <EmptyState text="No technical questions found." />
                 )}
 
                 {activeTab === "behavioral" && (
@@ -308,7 +295,7 @@ const Dashboard = () => {
                     report.behavioralQuestions.map((q, i) => (
                       <IntelligenceCard key={i} item={q} index={i} prefix="B" />
                     ))
-                  ) : <EmptyState icon={Users} />
+                  ) : <EmptyState text="No behavioral questions found." />
                 )}
 
                 {activeTab === "roadmap" && (
@@ -371,7 +358,10 @@ const Dashboard = () => {
                         initial={{ width: 0 }}
                         whileInView={{ width: gap.severity === "high" ? "100%" : gap.severity === "medium" ? "65%" : "30%" }}
                         transition={{ duration: 1.5, delay: i * 0.1 }}
-                        className={cn("absolute inset-y-0 left-0 rounded-full", gap.severity === "high" ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.4)]" : "bg-zinc-600")}
+                        className={cn(
+                          "h-full rounded-full",
+                          gap.severity === "high" ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.4)]" : gap.severity === "medium" ? "bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]" : "bg-zinc-600"
+                        )}
                      />
                   </div>
                 </div>
@@ -393,10 +383,10 @@ const Dashboard = () => {
   );
 };
 
-const EmptyState = ({ icon: Icon }) => (
+const EmptyState = ({ icon: Icon, text }) => (
   <div className="py-40 flex flex-col items-center justify-center text-center opacity-20">
-     <Icon size={48} className="mb-6 text-zinc-600" />
-     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.5em]">No data available</p>
+     <AlertCircle size={48} className="mb-6 text-zinc-600" />
+     <p className="text-[10px] font-mono font-bold uppercase tracking-[0.5em]">{text}</p>
   </div>
 );
 
