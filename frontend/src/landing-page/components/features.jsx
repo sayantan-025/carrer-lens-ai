@@ -42,7 +42,8 @@ export default function Features() {
              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Engineering Excellence</span>
           </div>
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-3xl mx-auto">
-            Strategic Tools for <br className="hidden md:block" /> Career Superiority
+            Strategic Tools for <br className="hidden md:block" /> 
+            <span className="text-zinc-500">Career Superiority</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
             Move beyond anxiety with industrial-grade AI tools designed to analyze, optimize, and prepare you for high-stakes interviews.

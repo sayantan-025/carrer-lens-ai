@@ -78,7 +78,8 @@ export default function PricingPlans() {
             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Invest in Strategy</span>
           </div>
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
-            Industrial-Grade <br className="hidden md:block" /> Investment.
+            Industrial-Grade <br className="hidden md:block" /> 
+            <span className="text-zinc-500">Investment.</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
             Transparent pricing designed to scale with your career trajectory. Zero technical debt, total tactical superiority.

@@ -110,7 +110,7 @@ export default function FaqSection() {
           </div>
           
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
-            Operational Queries
+            Operational <span className="text-zinc-500">Queries</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
             Everything you need to know about the Career Lens protocol and how it transforms your trajectory.

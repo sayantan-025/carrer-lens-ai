@@ -5,6 +5,7 @@ import Navbar from "../components/ui/navbar";
 import LenisScroll from "../components/ui/lenis-scroll";
 import FullScreenLoader from "../components/ui/full-screen-loader";
 import GlobalBackground from "../components/ui/global-background";
+import { cn } from "../lib/utils";
 
 const ProtectedLayout = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -18,11 +19,16 @@ const ProtectedLayout = () => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  const isGenerateReport = location.pathname === "/generate-report";
+
   return (
     <div className="h-screen flex flex-col relative overflow-hidden bg-black">
       <GlobalBackground />
-      <Navbar />
-      <main className="flex-1 mt-20 relative z-10 flex flex-col min-h-0 overflow-y-auto">
+      {!isGenerateReport && <Navbar />}
+      <main className={cn(
+        "flex-1 relative z-10 flex flex-col min-h-0",
+        !isGenerateReport ? "mt-20 overflow-y-auto" : "h-full overflow-hidden"
+      )}>
         <Outlet />
       </main>
     </div>

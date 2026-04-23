@@ -197,7 +197,8 @@ export default function WorkflowSteps() {
              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">The Protocol</span>
           </div>
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
-            Strategic Deployment <br className="hidden md:block" /> Pipeline
+            Strategic Deployment <br className="hidden md:block" /> 
+            <span className="text-zinc-500">Pipeline</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
             An industrial three-phase process designed to transform raw experience into a strategic advantage that dominates the interview loop.

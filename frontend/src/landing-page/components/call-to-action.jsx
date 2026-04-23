@@ -122,7 +122,8 @@ export default function CallToAction() {
           </div>
 
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
-            Strategic Superiority <br className="hidden md:block" /> Made Effortless.
+            Strategic Superiority <br className="hidden md:block" /> 
+            <span className="text-zinc-500">Made Effortless.</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light mb-10">
             Join the elite circle of professionals who have transformed their interview performance into a repeatable science.

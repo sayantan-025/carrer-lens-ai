@@ -86,7 +86,8 @@ export default function Testimonials() {
           </div>
 
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
-            Trusted by the Next <br className="hidden md:block" /> Generation of Leaders.
+            Trusted by the Next <br className="hidden md:block" /> 
+            <span className="text-zinc-500">Generation of Leaders.</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
             Join thousands of professionals who have accelerated their careers with industrial-grade AI insights and strategic preparation.
