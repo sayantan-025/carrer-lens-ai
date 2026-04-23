@@ -7,7 +7,7 @@ import { cn } from "../../lib/utils"
 const plans = [
   {
     name: "Standard",
-    description: "Essential tools for tactical preparation",
+    description: "Essential tools to help you get started.",
     price: "$0",
     period: "forever",
     features: [
@@ -23,34 +23,34 @@ const plans = [
   },
   {
     name: "Professional",
-    description: "The complete protocol for high-stakes roles",
+    description: "The complete plan for top job seekers.",
     price: "$29",
     period: "/month",
     features: [
       "Unlimited Resume Scans",
-      "Full Strategic Roadmaps",
-      "Behavioral Script Generation",
+      "Full Study Guides",
+      "Custom Interview Answers",
       "Company Culture Matching",
-      "Priority AI Generation",
-      "Premium LaTeX Templates",
+      "Priority AI Analysis",
+      "Professional Templates",
       "Direct Support"
     ],
-    cta: "Deploy Now",
+    cta: "Get Started",
     highlighted: true,
     icon: Sparkles
   },
   {
     name: "Elite",
-    description: "Industrial-grade training for leadership",
+    description: "Premium coaching for leadership roles.",
     price: "$79",
     period: "/month",
     features: [
       "Everything in Pro",
       "Unlimited Mock Interviews",
       "Executive Level Coaching",
-      "Market Intelligence Reports",
+      "Market Analysis Reports",
       "Personal Branding Suite",
-      "24/7 Strategic Support",
+      "24/7 Priority Support",
       "Lifetime Report Archive"
     ],
     cta: "Go Elite",
@@ -75,14 +75,14 @@ export default function PricingPlans() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
-            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Invest in Strategy</span>
+            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Flexible Pricing</span>
           </div>
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
-            Industrial-Grade <br className="hidden md:block" /> 
+            Simple <br className="hidden md:block" /> 
             <span className="text-zinc-500">Investment.</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
-            Transparent pricing designed to scale with your career trajectory. Zero technical debt, total tactical superiority.
+            Transparent pricing designed to fit your career goals. No hidden fees, just pure interview success.
           </p>
         </motion.div>
 
@@ -104,7 +104,7 @@ export default function PricingPlans() {
             >
               {plan.highlighted && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-zinc-900 text-white text-[10px] font-mono font-bold uppercase tracking-widest rounded-full border border-white/20">
-                  Recommended Protocol
+                  Most Popular
                 </div>
               )}
 
@@ -184,7 +184,7 @@ export default function PricingPlans() {
         </div>
 
         <p className="text-center text-zinc-600 text-[10px] font-mono uppercase tracking-[0.4em] mt-20">
-          Secure Deployment. Encrypted Intelligence. No hidden protocols.
+          Secure. Private. Reliable.
         </p>
       </div>
     </section>

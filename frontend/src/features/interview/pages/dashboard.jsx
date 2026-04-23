@@ -51,9 +51,6 @@ const StatusBadge = ({ children, color = "zinc" }) => {
   );
 };
 
-/**
- * High-end Industrial Match Gauge.
- */
 const MatchGauge = ({ value, size = 160 }) => {
   const radius = size / 2 - 12;
   const circumference = 2 * Math.PI * radius;
@@ -114,7 +111,7 @@ const IntelligenceCard = ({ item, index, prefix = "T" }) => {
           "shrink-0 w-10 h-10 rounded-lg flex items-center justify-center font-mono text-[10px] font-bold tracking-widest transition-all duration-500 border",
           isOpen ? "bg-zinc-100 border-zinc-100 text-zinc-950 scale-105 shadow-[0_0_15px_rgba(255,255,255,0.2)]" : "bg-zinc-900 border-zinc-800 text-zinc-600"
         )}>
-          {prefix}{index + 1}
+          {prefix}{String(index + 1).padStart(2, '0')}
         </div>
         <div className="flex-1">
           <h4 className={cn("font-display text-lg font-bold tracking-tight leading-snug transition-colors", isOpen ? "text-white" : "text-zinc-400 group-hover:text-zinc-200")}>
@@ -189,8 +186,14 @@ const Dashboard = () => {
           </Link>
           <div className="h-4 w-px bg-zinc-800/60" />
           <div className="flex flex-col">
-            <span className="text-[9px] font-mono font-bold text-zinc-600 uppercase tracking-[0.3em] leading-none">Dashboard</span>
-            <h2 className="text-sm font-bold text-zinc-100 tracking-tight leading-none mt-1.5 uppercase truncate max-w-[200px]">{report.title}</h2>
+            <div className="flex items-center gap-2 text-[8px] font-mono font-bold text-zinc-600 uppercase tracking-[0.2em] leading-none mb-1.5">
+               <span>Root</span>
+               <span className="text-zinc-800">//</span>
+               <span>Reports</span>
+               <span className="text-zinc-800">//</span>
+               <span className="text-zinc-500">Live_Stream</span>
+            </div>
+            <h2 className="text-sm font-bold text-zinc-100 tracking-tight leading-none uppercase truncate max-w-[300px]">{report.title}</h2>
           </div>
           <div className="h-4 w-px bg-zinc-800/60" />
           <div className="flex items-center gap-3">
@@ -233,7 +236,7 @@ const Dashboard = () => {
                 className={cn(
                   "w-full flex items-center gap-4 px-4 py-3.5 rounded-xl border transition-all duration-500 group relative outline-none cursor-pointer",
                   activeTab === sector.id 
-                    ? "bg-white/[0.04] border-zinc-700/50 text-zinc-100 shadow-[0_0_20px_rgba(0,0,0,0.5)]" 
+                    ? "bg-white/[0.04] border-zinc-700/50 text-zinc-100 shadow-[0_0_25px_rgba(255,255,255,0.03)]" 
                     : "bg-transparent border-transparent text-zinc-600 hover:text-zinc-400 hover:bg-white/[0.02]"
                 )}
               >
@@ -248,7 +251,10 @@ const Dashboard = () => {
                   <span className="text-xs font-bold tracking-tight">{sector.label}</span>
                 </div>
                 {activeTab === sector.id && (
-                  <motion.div layoutId="sector-pill" className="absolute right-4 size-1 rounded-full bg-white shadow-[0_0_10px_white]" />
+                  <motion.div 
+                    layoutId="sector-pill" 
+                    className="absolute right-4 size-1.5 rounded-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)]" 
+                  />
                 )}
               </button>
             ))}
@@ -269,7 +275,7 @@ const Dashboard = () => {
                 <p className="text-zinc-500 text-sm font-light max-w-xl mt-3">{activeSector.desc} based on your resume and job description.</p>
              </div>
              <div className="flex gap-2">
-                <StatusBadge color="blue">Diagnostic Mode</StatusBadge>
+                <StatusBadge color="blue">Secure Mode</StatusBadge>
                 <StatusBadge color="zinc">Analysis OK</StatusBadge>
              </div>
           </div>
@@ -287,7 +293,7 @@ const Dashboard = () => {
                     report.technicalQuestions.map((q, i) => (
                       <IntelligenceCard key={i} item={q} index={i} prefix="T" />
                     ))
-                  ) : <EmptyState text="No technical questions found." />
+                  ) : <EmptyState icon={Code2} text="No technical questions found." />
                 )}
 
                 {activeTab === "behavioral" && (
@@ -295,7 +301,7 @@ const Dashboard = () => {
                     report.behavioralQuestions.map((q, i) => (
                       <IntelligenceCard key={i} item={q} index={i} prefix="B" />
                     ))
-                  ) : <EmptyState text="No behavioral questions found." />
+                  ) : <EmptyState icon={Users} text="No behavioral questions found." />
                 )}
 
                 {activeTab === "roadmap" && (
@@ -369,12 +375,11 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="shrink-0 p-10 border-t border-zinc-800/50 bg-zinc-950/20">
-             <Link to="/generate-report" className="block">
-               <button className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-zinc-100 text-zinc-950 font-bold text-xs uppercase tracking-widest hover:bg-white transition-all cursor-pointer active:scale-95 shadow-xl shadow-white/5">
-                 <Plus size={18} />
+          <div className="shrink-0 p-8 border-t border-zinc-800/50 bg-zinc-950/20 flex justify-center">
+             <Link to="/generate-report">
+               <LiquidCtaButton>
                  New Report
-               </button>
+               </LiquidCtaButton>
              </Link>
           </div>
         </aside>

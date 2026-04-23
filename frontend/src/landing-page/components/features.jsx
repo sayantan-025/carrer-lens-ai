@@ -39,19 +39,19 @@ export default function Features() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
-             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Engineering Excellence</span>
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Smart Performance</span>
           </div>
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-3xl mx-auto">
-            Strategic Tools for <br className="hidden md:block" /> 
-            <span className="text-zinc-500">Career Superiority</span>
+            Everything you need <br className="hidden md:block" /> 
+            <span className="text-zinc-500">to land the job</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
-            Move beyond anxiety with industrial-grade AI tools designed to analyze, optimize, and prepare you for high-stakes interviews.
+            Skip the anxiety with AI tools designed to analyze job details, optimize your resume, and prepare you for any interview.
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {/* Card 1 - Match Intelligence (3 cols) */}
+          {/* Card 1 - Job Match Analysis (3 cols) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -70,12 +70,12 @@ export default function Features() {
                     <Target className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
                   </motion.div>
                   <div>
-                    <p className="font-display font-bold text-xl text-zinc-100">Match Intelligence</p>
-                    <p className="text-zinc-500 text-sm">Real-time resume & JD alignment</p>
+                    <p className="font-display font-bold text-xl text-zinc-100">Job Match Analysis</p>
+                    <p className="text-zinc-500 text-sm">Resume & job description alignment</p>
                   </div>
                 </div>
                 <p className="text-zinc-400 text-base mb-8 leading-relaxed">
-                  Deep-dive analysis against job descriptions to identify missing keywords and calculate your strategic match score.
+                  Deep analysis of job descriptions to find missing keywords and calculate your readiness score for the role.
                 </p>
                 <div className="rounded-2xl border border-zinc-800/50 bg-zinc-950/50 p-6 overflow-hidden relative">
                   {/* AI Scanline/Pulse Effect */}
@@ -104,7 +104,7 @@ export default function Features() {
                     {[
                       { label: "Match Score", value: "87%", status: "High" },
                       { label: "Keywords", value: "18/22", status: "Strong" },
-                      { label: "Gap Risk", value: "Low", status: "Safe" },
+                      { label: "Skill Gaps", value: "Low", status: "Safe" },
                     ].map((metric, i) => (
                       <motion.div
                         key={metric.label}
@@ -148,7 +148,7 @@ export default function Features() {
             </Card>
           </motion.div>
 
-          {/* Card 2 - ATS Dominance (2 cols) */}
+          {/* Card 2 - Resume Optimizer (2 cols) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -166,19 +166,19 @@ export default function Features() {
                   >
                     <FileCheck className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
                   </motion.div>
-                  <p className="font-display font-bold text-xl text-zinc-100">ATS Dominance</p>
+                  <p className="font-display font-bold text-xl text-zinc-100">Resume Optimizer</p>
                 </div>
                 <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
-                  Generate professional, LaTeX-inspired resumes guaranteed to pass through Applicant Tracking Systems.
+                  Generate professional resumes that are guaranteed to pass through automated screening systems (ATS).
                 </p>
 
                 {/* Technical Compliance Checklist */}
                 <div className="grid grid-cols-1 gap-2.5 mb-8">
                   {[
-                    { label: "Semantic Parsing", status: "Active" },
-                    { label: "Keyword Density", status: "Optimized" },
                     { label: "Section Hierarchy", status: "Verified" },
-                    { label: "LaTeX Logic", status: "Enabled" }
+                    { label: "Keyword Density", status: "Optimized" },
+                    { label: "Formatting", status: "Approved" },
+                    { label: "Readability", status: "High" }
                   ].map((item, i) => (
                     <motion.div 
                       key={item.label}
@@ -217,13 +217,13 @@ export default function Features() {
                       transition={{ duration: 2, delay: 0.5, ease: "expoOut" }}
                     />
                   </div>
-                  <p className="text-[10px] text-zinc-500 mt-4 text-center uppercase tracking-[0.2em]">Verified Industrial Standard</p>
+                  <p className="text-[10px] text-zinc-500 mt-4 text-center uppercase tracking-[0.2em]">Industry Standard Templates</p>
                 </div>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Card 3 - Tactical Prep (2 cols) */}
+          {/* Card 3 - Interview Preparation (2 cols) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -240,10 +240,10 @@ export default function Features() {
                   >
                     <MessageSquare className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
                   </motion.div>
-                  <p className="font-display font-bold text-xl text-zinc-100">Tactical Prep</p>
+                  <p className="font-display font-bold text-xl text-zinc-100">Interview Prep</p>
                 </div>
                 <p className="text-zinc-400 text-sm mb-12 leading-relaxed">
-                  Get customized technical and behavioral questions tailored to your experience and the specific role.
+                  Get technical and behavioral questions tailored to your experience and the specific role.
                 </p>
                 
                 <div className="flex justify-center gap-3 mt-auto relative">
@@ -265,12 +265,12 @@ export default function Features() {
                     </motion.div>
                   ))}
                 </div>
-                <p className="text-[10px] text-zinc-600 mt-8 text-center uppercase tracking-widest">Generate Mock Interview</p>
+                <p className="text-[10px] text-zinc-600 mt-8 text-center uppercase tracking-widest">Get Practice Questions</p>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Card 4 - Strategic Roadmap (3 cols) */}
+          {/* Card 4 - Step-by-step Study Plan (3 cols) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -289,12 +289,12 @@ export default function Features() {
                     <Layers className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
                   </motion.div>
                   <div>
-                    <p className="font-display font-bold text-xl text-zinc-100">Strategic Roadmap</p>
-                    <p className="text-zinc-500 text-sm">End-to-end preparation plan</p>
+                    <p className="font-display font-bold text-xl text-zinc-100">Step-by-step Study Plan</p>
+                    <p className="text-zinc-500 text-sm">Personalized preparation roadmap</p>
                   </div>
                 </div>
                 <p className="text-zinc-400 text-base mb-8 leading-relaxed">
-                  A step-by-step preparation roadmap to bridge skill gaps and master the company's specific interview culture.
+                  A clear preparation roadmap to bridge your skill gaps and master the company's specific interview culture.
                 </p>
                 
                 <div className="grid grid-cols-4 md:grid-cols-8 gap-3 mt-auto">
@@ -326,13 +326,13 @@ export default function Features() {
                 <div className="flex items-center justify-between mt-8">
                   <div className="flex items-center gap-2 text-zinc-500 text-xs">
                     <ShieldCheck className="w-4 h-4 text-zinc-400/50" />
-                    <span>Data Privacy Encrypted</span>
+                    <span>Secure and Private</span>
                   </div>
                   <motion.button
                     whileHover={{ x: 6 }}
                     className="flex items-center gap-2 text-sm font-medium text-zinc-300 hover:text-zinc-100 transition-colors"
                   >
-                    View preparation engine <ArrowRight className="w-4 h-4" />
+                    View preparation guide <ArrowRight className="w-4 h-4" />
                   </motion.button>
                 </div>
               </CardContent>

@@ -9,32 +9,32 @@ const faqData = [
   {
     question: "How accurate is the AI match score?",
     answer:
-      "Our AI uses deep semantic analysis and industry-standard competency models, achieving over 90% precision in predicting interview suitability by identifying hidden success criteria.",
+      "Our AI uses smart analysis and real-world hiring standards to achieve high precision in predicting how well you match a job's requirements.",
   },
   {
     question: "Does it support all job types and industries?",
     answer:
-      "Yes. Career Lens is designed for technical, creative, and leadership roles across all sectors, deconstructing requirements into atomic skills and behavioral personas.",
+      "Yes. Career Lens is designed for technical, creative, and leadership roles across all sectors, analyzing the specific skills and behaviors needed for each.",
   },
   {
-    question: "How do the tailored behavioral scripts work?",
+    question: "How do the tailored interview scripts work?",
     answer:
-      "The engine analyzes the specific job description's 'ideal persona' and generates STAR-method responses mapped directly to your unique professional trajectory.",
+      "The engine analyzes the job description to understand what the company is looking for and generates recommended answers based on your unique experience.",
   },
   {
     question: "Is my personal data and resume secure?",
     answer:
-      "Absolutely. We use enterprise-grade encryption for all data transmissions. Your documents are private, secure, and never used to train public models.",
+      "Absolutely. We use high-level encryption for all data. Your documents are private, secure, and are never used to train public models.",
   },
   {
     question: "Can I generate reports for multiple different roles?",
     answer:
-      "Yes. You can run unlimited analysis reports, allowing you to pivot your strategy and optimize your resume for every high-stakes application in your pipeline.",
+      "Yes. You can create unlimited reports, allowing you to optimize your resume and preparation for every job application.",
   },
   {
     question: "What makes this different from using ChatGPT?",
     answer:
-      "Generic AI treats text as data. We treat it as strategy. Our models are fine-tuned specifically for industrial hiring protocols, ATS optimization, and competitive positioning.",
+      "While generic AI treats text as data, we focus on strategy. Our models are specifically built for resume optimization and helping you stand out to recruiters.",
   },
 ]
 
@@ -117,14 +117,14 @@ export default function FaqSection() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
-             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Intelligence Base</span>
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Support</span>
           </div>
           
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
-            Operational <span className="text-zinc-500">Queries</span>
+            Common <span className="text-zinc-500">Questions</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
-            Everything you need to know about the Career Lens protocol and how it transforms your trajectory.
+            Everything you need to know about Career Lens AI and how it helps your career.
           </p>
         </motion.div>
 
@@ -149,7 +149,7 @@ export default function FaqSection() {
           transition={{ delay: 0.4 }}
         >
           <p className="text-zinc-500 text-sm font-light">
-            Still have questions? <a href="mailto:support@careerlens.ai" className="text-zinc-300 hover:text-white transition-colors font-medium border-b border-zinc-300/20 pb-0.5">Reach out to our strategic team</a>.
+            Still have questions? <a href="mailto:support@careerlens.ai" className="text-zinc-300 hover:text-white transition-colors font-medium border-b border-zinc-300/20 pb-0.5">Reach out to our team</a>.
           </p>
         </motion.div>
       </div>

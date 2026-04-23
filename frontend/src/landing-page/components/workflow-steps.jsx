@@ -8,9 +8,9 @@ import { Target, UserSearch, FileBarChart, Activity, Zap, ShieldCheck, ChevronRi
 const steps = [
   {
     phase: "01",
-    protocol: "Target Extraction",
-    title: "Define the Target.",
-    description: "Submit your target job description. Our engine deconstructs requirements into atomic technical stacks, hidden success criteria, and behavioral personas.",
+    protocol: "Job Analysis",
+    title: "Enter the Job Details.",
+    description: "Paste the job description you're aiming for. Our engine breaks down the requirements, hidden success criteria, and the skills they're looking for.",
     icon: Target,
     color: "text-white",
     glow: "shadow-[0_0_40px_rgba(255,255,255,0.08)]",
@@ -39,10 +39,10 @@ const steps = [
             <div className="h-2 w-1/2 bg-zinc-900 rounded-sm overflow-hidden relative">
               <motion.div className="absolute inset-0 bg-zinc-700" initial={{ x: "-100%" }} whileInView={{ x: "0%" }} transition={{ duration: 1, delay: 0.2 }} />
             </div>
-            <p className="flex items-center gap-2 pt-2"><ChevronRight className="w-2.5 h-2.5 text-white/50" /> {`EXTRACTING_REQUIREMENTS...`}</p>
+            <p className="flex items-center gap-2 pt-2"><ChevronRight className="w-2.5 h-2.5 text-white/50" /> {`ANALYZING_JOB...`}</p>
             <div className="grid grid-cols-2 gap-2 mt-4">
-               <div className="p-2 rounded bg-white/[0.02] border border-white/[0.05] text-[7px] text-zinc-500 uppercase tracking-widest">TS_EXPERT</div>
-               <div className="p-2 rounded bg-white/[0.02] border border-white/[0.05] text-[7px] text-zinc-500 uppercase tracking-widest">L6_SENIOR</div>
+               <div className="p-2 rounded bg-white/[0.02] border border-white/[0.05] text-[7px] text-zinc-500 uppercase tracking-widest">REQUIREMENTS</div>
+               <div className="p-2 rounded bg-white/[0.02] border border-white/[0.05] text-[7px] text-zinc-500 uppercase tracking-widest">SUCCESS_CRITERIA</div>
             </div>
           </div>
         </div>
@@ -51,9 +51,9 @@ const steps = [
   },
   {
     phase: "02",
-    protocol: "Alignment Matrix",
-    title: "Sync your Profile.",
-    description: "Inject your professional trajectory. We map your atomic skills against the target, identifying strategic overlaps and critical pivot points.",
+    protocol: "Resume Sync",
+    title: "Upload your Resume.",
+    description: "Submit your resume to sync your professional history. We map your skills against the job requirements, identifying exactly where you match and where you can improve.",
     icon: UserSearch,
     color: "text-white",
     glow: "shadow-[0_0_40px_rgba(255,255,255,0.08)]",
@@ -95,9 +95,9 @@ const steps = [
   },
   {
     phase: "03",
-    protocol: "Strategic Output",
-    title: "Obtain the Roadmap.",
-    description: "Generate an industrial-grade intelligence report. Scores, behavioral scripts, and a tactical prep plan synchronized with company culture.",
+    protocol: "Your Strategy",
+    title: "Get your Study Guide.",
+    description: "Receive a personalized preparation plan including match scores, recommended answers to tough questions, and a daily schedule to help you get hired.",
     icon: FileBarChart,
     color: "text-white",
     glow: "shadow-[0_0_40px_rgba(255,255,255,0.08)]",
@@ -108,7 +108,7 @@ const steps = [
            <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.02] blur-3xl -z-10" />
            <div className="flex justify-between items-start mb-8">
               <div className="space-y-1">
-                <p className="text-[8px] font-mono text-zinc-500 uppercase tracking-[0.4em] font-bold">ALGN_INDEX</p>
+                <p className="text-[8px] font-mono text-zinc-500 uppercase tracking-[0.4em] font-bold">MATCH_INDEX</p>
                 <div className="flex items-baseline gap-1">
                   <motion.span 
                     className="text-5xl font-display font-bold text-white tracking-tighter"
@@ -129,7 +129,7 @@ const steps = [
               {[85, 92].map((w, i) => (
                 <div key={i} className="space-y-2.5">
                   <div className="flex justify-between text-[7px] uppercase tracking-[0.3em] text-zinc-500 font-bold">
-                    <span>{i === 0 ? "TECH_CORE" : "CULTURE_FIT"}</span>
+                    <span>{i === 0 ? "SKILL_MATCH" : "CULTURE_FIT"}</span>
                     <span className="text-white/60 tracking-normal">{w}%</span>
                   </div>
                   <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden p-[1px]">
@@ -194,14 +194,14 @@ export default function WorkflowSteps() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
-             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">The Protocol</span>
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">The Process</span>
           </div>
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
-            Strategic Deployment <br className="hidden md:block" /> 
-            <span className="text-zinc-500">Pipeline</span>
+            How it <br className="hidden md:block" /> 
+            <span className="text-zinc-500">Works</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
-            An industrial three-phase process designed to transform raw experience into a strategic advantage that dominates the interview loop.
+            A simple 3-step process designed to transform your experience into a clear plan that helps you get hired.
           </p>
         </motion.div>
       </div>
@@ -291,7 +291,7 @@ export default function WorkflowSteps() {
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.4em] font-bold">
-                      Protocol Phase {step.phase}
+                      Step {step.phase}
                     </span>
                     <span className="text-[12px] text-zinc-100 font-bold uppercase tracking-[0.2em] opacity-80 group-hover:opacity-100 transition-opacity">
                       {step.protocol}
@@ -344,10 +344,6 @@ export default function WorkflowSteps() {
           ))}
         </div>
       </div>
-      
-      {/* Section End Bridge */}
-      {/* <div className="mt-32 w-px h-24 bg-linear-to-b from-zinc-800 via-zinc-400 to-transparent mx-auto opacity-50" />
-       */}
     </section>
   )
 }

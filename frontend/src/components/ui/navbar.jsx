@@ -10,7 +10,7 @@ import { cn } from "../../lib/utils";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/generate-report", label: "Generate" },
+  { href: "/generate-report", label: "New Report" },
 ];
 
 export default function Navbar() {

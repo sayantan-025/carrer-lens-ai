@@ -118,15 +118,15 @@ export default function CallToAction() {
         >
           {/* Synced Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
-             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Final Deployment</span>
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Ready to Start?</span>
           </div>
 
           <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
-            Strategic Superiority <br className="hidden md:block" /> 
-            <span className="text-zinc-500">Made Effortless.</span>
+            Master Your Next <br className="hidden md:block" /> 
+            <span className="text-zinc-500">Interview Today.</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light mb-10">
-            Join the elite circle of professionals who have transformed their interview performance into a repeatable science.
+            Join thousands of professionals who have improved their interview success and landed their dream jobs with Career Lens AI.
           </p>
         </motion.div>
         
@@ -138,7 +138,7 @@ export default function CallToAction() {
         >
           <Link to="/register">
             <LiquidCtaButton>
-              Deploy Strategic Protocol
+              Get Started for Free
             </LiquidCtaButton>
           </Link>
         </motion.div>
@@ -150,7 +150,7 @@ export default function CallToAction() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          Zero technical debt. Immediate deployment.
+          Secure. Private. Precise.
         </motion.p>
       </div>
     </section>

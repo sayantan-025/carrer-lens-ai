@@ -37,6 +37,8 @@ import { cn } from "../../../lib/utils";
 
 const SynthesisEngine = ({ loading }) => {
   const [stage, setStage] = useState(0);
+  const [metrics, setMetrics] = useState({ bitrate: 0, memory: 0 });
+  
   const stages = [
     "Starting analysis...",
     "Scanning your resume...",
@@ -46,14 +48,27 @@ const SynthesisEngine = ({ loading }) => {
   ];
 
   useEffect(() => {
-    let interval;
+    let stageInterval;
+    let metricsInterval;
+
     if (loading) {
       setStage(0);
-      interval = setInterval(() => {
+      stageInterval = setInterval(() => {
         setStage(prev => (prev < stages.length - 1 ? prev + 1 : prev));
       }, 2000);
+
+      metricsInterval = setInterval(() => {
+        setMetrics({
+          bitrate: Math.floor(Math.random() * (800 - 400 + 1)) + 400,
+          memory: (Math.random() * (1.8 - 0.8) + 0.8).toFixed(1)
+        });
+      }, 150);
     }
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(stageInterval);
+      clearInterval(metricsInterval);
+    };
   }, [loading]);
 
   return (
@@ -85,7 +100,20 @@ const SynthesisEngine = ({ loading }) => {
                   {stages[stage]}
                 </motion.p>
               </AnimatePresence>
-              <p className="text-zinc-500 text-[10px] font-mono uppercase tracking-widest">Please stay on this page</p>
+              
+              <div className="flex items-center gap-4 mt-2">
+                 <div className="flex flex-col items-center">
+                    <span className="text-[8px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Bit-rate</span>
+                    <span className="text-[10px] font-mono text-zinc-400 font-bold">{metrics.bitrate} KBPS</span>
+                 </div>
+                 <div className="w-px h-6 bg-zinc-800" />
+                 <div className="flex flex-col items-center">
+                    <span className="text-[8px] font-mono text-zinc-600 uppercase tracking-widest mb-1">Memory</span>
+                    <span className="text-[10px] font-mono text-zinc-400 font-bold">{metrics.memory} GB</span>
+                 </div>
+              </div>
+
+              <p className="text-zinc-500 text-[10px] font-mono uppercase tracking-widest mt-6 opacity-40">System Analyzing Career Assets</p>
             </div>
           </div>
         </motion.div>
