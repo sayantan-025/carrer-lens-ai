@@ -19,16 +19,16 @@ const ProtectedLayout = () => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  const isDashboard = location.pathname.startsWith("/dashboard/");
+  const isFocusedPage = location.pathname.startsWith("/dashboard/") || location.pathname === "/generate-report";
 
   return (
     <div className="h-screen flex flex-col relative overflow-hidden bg-black">
       <GlobalBackground />
 
-      {!isDashboard && <Navbar />}
+      {!isFocusedPage && <Navbar />}
       <main className={cn(
         "flex-1 relative z-10 flex flex-col min-h-0",
-        isDashboard ? "overflow-hidden" : "overflow-y-auto mt-20"
+        isFocusedPage ? "overflow-hidden" : "overflow-y-auto mt-20"
       )}>
         <Outlet />
       </main>

@@ -15,7 +15,13 @@ import {
   ChevronRight,
   LayoutDashboard,
   BarChart3,
-  Command
+  Command,
+  FileDown,
+  Hexagon,
+  Clock,
+  Activity,
+  Plus,
+  Info
 } from "lucide-react";
 import { useNavigate, Link } from "react-router";
 import { useInterview } from "../hooks/use-interview";
@@ -23,64 +29,20 @@ import { useToast } from "../../../context/toast-context";
 import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
 import { LiquidMetalBorder } from "../../../components/ui/LiquidMetalBorder";
 import { Card, CardContent } from "../../../components/ui/card";
+import SoftAurora from "../../../components/ui/SoftAurora";
+import Logo from "../../../components/ui/logo";
 import { cn } from "../../../lib/utils";
 
-// --- SUB-COMPONENTS ---
+// --- Sub-Components ---
 
-/**
- * High-precision SVG-based progress gauge for monochrome Match Score.
- */
-const IndustrialGauge = ({ value, size = 64 }) => {
-  const radius = size / 2 - 4;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (value / 100) * circumference;
-
-  return (
-    <div className="relative flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
-      <svg className="rotate-[-90deg]" width={size} height={size}>
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke="currentColor"
-          strokeWidth="1.5"
-          fill="transparent"
-          className="text-zinc-800/50"
-        />
-        <motion.circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke="currentColor"
-          strokeWidth="2"
-          fill="transparent"
-          strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="text-zinc-100"
-          strokeLinecap="round"
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[10px] font-mono font-bold text-zinc-100">{value}%</span>
-      </div>
-    </div>
-  );
-};
-
-/**
- * Encapsulates the multi-stage loading animation and status cycling.
- * Includes a "Hardware Noise" overlay that intensifies with progress.
- */
 const SynthesisEngine = ({ loading }) => {
   const [stage, setStage] = useState(0);
   const stages = [
-    "Initializing Protocol...",
-    "Scanning Tactical Assets...",
-    "Deconstructing Requirements...",
-    "Aligning Profile Vectors...",
-    "Synthesizing Briefing..."
+    "Starting analysis...",
+    "Scanning your resume...",
+    "Reading job details...",
+    "Finding matches...",
+    "Creating your report..."
   ];
 
   useEffect(() => {
@@ -98,77 +60,32 @@ const SynthesisEngine = ({ loading }) => {
     <AnimatePresence>
       {loading && (
         <motion.div 
-          initial={{ opacity: 0, y: 12, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -12, scale: 0.98 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-12 flex flex-col items-center gap-8 relative overflow-hidden rounded-3xl p-12 border border-zinc-900/50 bg-zinc-950/20"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md px-6"
         >
-          {/* Hardware Grain/Noise Overlay - Intensifies with stage */}
-          <motion.div 
-            animate={{ 
-              x: [0, -15, 10, -5, 15, 0],
-              y: [0, 5, -10, 15, -5, 0]
-            }}
-            transition={{ 
-              duration: 0.15, 
-              repeat: Infinity, 
-              ease: "linear" 
-            }}
-            className="absolute inset-[-200%] pointer-events-none z-0"
-            style={{ 
-              opacity: 0.02 + (stage * 0.01),
-              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-              backgroundSize: '100px 100px'
-            }}
-          />
+          <div className="flex flex-col items-center gap-8 relative overflow-hidden rounded-[40px] p-16 border border-zinc-800 bg-zinc-950/50 w-full max-w-lg shadow-2xl">
+            {/* Hardware Noise Overlay */}
+            <div className="absolute inset-[-200%] pointer-events-none z-0 opacity-[0.03] mix-blend-overlay"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+            />
 
-          <div className="relative size-24 z-10">
-            {/* Outer Rotating Ring */}
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 rounded-full border border-dashed border-zinc-800"
-            />
-            {/* Inner Fast Ring */}
-            <motion.div 
-              animate={{ rotate: -360 }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-3 rounded-full border-t border-zinc-100 border-r-transparent border-b-transparent border-l-transparent"
-            />
-            {/* Pulsing Core */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div
-                animate={{ 
-                  scale: [1, 1.15, 1],
-                  opacity: [0.4, 0.8, 0.4]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="size-5 bg-white rounded-full shadow-[0_0_30px_rgba(255,255,255,0.4)]"
-              />
+            <div className="relative size-24 z-10">
+              <motion.div animate={{ rotate: 360 }} transition={{ duration: 8, repeat: Infinity, ease: "linear" }} className="absolute inset-0 rounded-full border border-dashed border-zinc-800" />
+              <motion.div animate={{ rotate: -360 }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} className="absolute inset-3 rounded-full border-t border-zinc-100 border-r-transparent border-b-transparent border-l-transparent" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <motion.div animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 2, repeat: Infinity }} className="size-6 bg-white rounded-full shadow-[0_0_30px_white]" />
+              </div>
             </div>
-          </div>
 
-          <div className="flex flex-col items-center gap-3 z-10">
-            <AnimatePresence mode="wait">
-              <motion.p 
-                key={stage}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.3 }}
-                className="text-[11px] font-mono font-bold text-zinc-100 uppercase tracking-[0.5em] text-center"
-              >
-                {stages[stage]}
-              </motion.p>
-            </AnimatePresence>
-            <div className="w-56 h-[1px] bg-zinc-900 relative overflow-hidden">
-              <motion.div 
-                initial={{ left: "-100%" }}
-                animate={{ left: "100%" }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-zinc-400 to-transparent"
-              />
+            <div className="flex flex-col items-center gap-4 z-10 text-center">
+              <AnimatePresence mode="wait">
+                <motion.p key={stage} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="text-sm font-bold text-white uppercase tracking-[0.3em]">
+                  {stages[stage]}
+                </motion.p>
+              </AnimatePresence>
+              <p className="text-zinc-500 text-[10px] font-mono uppercase tracking-widest">Please stay on this page</p>
             </div>
           </div>
         </motion.div>
@@ -177,69 +94,12 @@ const SynthesisEngine = ({ loading }) => {
   );
 };
 
-/**
- * Individual card rendering for the Mission Archives.
- */
-const ArchiveCard = ({ report, index }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: index * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-    className="group h-full"
-  >
-    <Link to={`/dashboard/${report._id}`} className="block h-full">
-      <Card className="h-full border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl hover:border-zinc-500/30 transition-all duration-500 rounded-3xl overflow-hidden group-hover:-translate-y-1">
-        <CardContent className="p-8 h-full flex flex-col">
-          <div className="flex justify-between items-start mb-8">
-            <div className="size-12 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-zinc-400 group-hover:text-zinc-100 transition-colors">
-              <LayoutDashboard size={20} />
-            </div>
-            <IndustrialGauge value={report.matchScore} />
-          </div>
-
-          <div className="mb-8 flex-1">
-            <h3 className="font-display text-xl font-bold text-zinc-100 leading-tight mb-3 group-hover:text-white transition-colors line-clamp-2">
-              {report.title}
-            </h3>
-            <div className="flex items-center gap-2 text-zinc-500 text-[10px] font-mono font-bold uppercase tracking-widest">
-              <Calendar size={12} className="text-zinc-600" />
-              {new Date(report.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-            </div>
-          </div>
-
-          <div className="pt-6 border-t border-zinc-800/50 flex items-center justify-between">
-            <span className="text-[9px] font-mono font-bold text-zinc-600 uppercase tracking-[0.2em]">PROTOCOL_ACTIVE</span>
-            <div className="size-8 rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-zinc-500 group-hover:text-zinc-100 group-hover:bg-zinc-700/50 transition-all">
-              <ChevronRight size={16} />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  </motion.div>
-);
-
-// --- MAIN PAGE ---
+// --- Main Page ---
 
 const steps = [
-  {
-    id: "target",
-    title: "The Opportunity",
-    description: "Paste the job description you are targeting.",
-    icon: Target,
-  },
-  {
-    id: "resume",
-    title: "Resume Upload",
-    description: "Upload your professional resume (Optional if providing a bio).",
-    icon: FileText,
-  },
-  {
-    id: "context",
-    title: "Personal Bio",
-    description: "Describe your experience or specific interview goals.",
-    icon: PenLine,
-  }
+  { id: "target", title: "Job Description", description: "What job are you aiming for?", icon: Target },
+  { id: "resume", title: "Your Resume", description: "Upload your career history.", icon: FileText },
+  { id: "context", title: "About You", description: "Any specific goals or gaps?", icon: PenLine }
 ];
 
 const GenerateReport = () => {
@@ -249,385 +109,251 @@ const GenerateReport = () => {
   
   const [currentStep, setCurrentStep] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [formData, setFormData] = useState({
-    jobDescription: "",
-    resumeFile: null,
-    selfDescription: ""
-  });
+  const [formData, setFormData] = useState({ jobDescription: "", resumeFile: null, selfDescription: "" });
   
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    getReports();
-  }, [getReports]);
+  useEffect(() => { getReports(); }, [getReports]);
 
-  // Validation Logic
   const isStep1Valid = useMemo(() => formData.jobDescription.trim().length >= 50, [formData.jobDescription]);
-  const isFinalValid = useMemo(() => {
-    return isStep1Valid && (formData.resumeFile !== null || formData.selfDescription.trim().length >= 20);
-  }, [isStep1Valid, formData.resumeFile, formData.selfDescription]);
+  const isFinalValid = useMemo(() => isStep1Valid && (formData.resumeFile !== null || formData.selfDescription.trim().length >= 20), [isStep1Valid, formData.resumeFile, formData.selfDescription]);
 
   const handleFileChange = (file) => {
     if (file && file.type === "application/pdf") {
       setFormData(prev => ({ ...prev, resumeFile: file }));
-      showToast({ message: "Resume uploaded successfully", type: "success" });
+      showToast({ message: "Resume uploaded", type: "success" });
     } else {
-      showToast({ message: "Please upload a valid PDF file", type: "error" });
+      showToast({ message: "Upload a valid PDF", type: "error" });
     }
-  };
-
-  const onDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const onDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const onDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    handleFileChange(file);
   };
 
   const handleGenerate = async () => {
     if (!isFinalValid) return;
     try {
       const result = await generateReport(formData);
-      if (result) {
-        showToast({ message: "Strategy blueprint generated!", type: "success" });
-        navigate(`/dashboard/${result._id}`);
-      }
-    } catch (err) {
-      showToast({ message: "Failed to generate report. Please try again.", type: "error" });
-    }
+      if (result) navigate(`/dashboard/${result._id}`);
+    } catch (err) { showToast({ message: "Something went wrong", type: "error" }); }
   };
 
-  const progress = ((currentStep + 1) / steps.length) * 100;
-
   return (
-    <div className="min-h-[calc(100vh-80px)] w-full max-w-6xl mx-auto px-6 pt-16 pb-32 flex flex-col gap-24">
+    <div className="h-screen w-full bg-black text-zinc-400 font-sans selection:bg-white/10 relative overflow-hidden flex flex-col">
       
-      {/* --- SECTION 1: GENERATION ENGINE --- */}
-      <section className="flex flex-col items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-16"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-6">
-             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Protocol Alpha v4.2</span>
+      <div className="absolute inset-0 -z-10 pointer-events-none opacity-20">
+        <SoftAurora speed={0.2} color1="#18181b" color2="#000000" />
+      </div>
+      <div className="absolute inset-[-200%] pointer-events-none z-[100] opacity-[0.015] mix-blend-overlay"
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+      />
+
+      {/* Header Bar */}
+      <header className="shrink-0 h-16 border-b border-zinc-800/50 bg-zinc-950/40 backdrop-blur-xl flex items-center justify-between px-8 z-50">
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center gap-3 group transition-all">
+            <div className="scale-75 group-hover:scale-80 transition-transform"><Logo /></div>
+          </Link>
+          <div className="h-4 w-px bg-zinc-800/60" />
+          <div className="flex flex-col">
+            <span className="text-[9px] font-mono font-bold text-zinc-600 uppercase tracking-[0.3em] leading-none">Initialization</span>
+            <h2 className="text-sm font-bold text-zinc-100 tracking-tight leading-none mt-1.5 uppercase">New Report Protocol</h2>
           </div>
-          <h1 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-3xl mx-auto">
-            Generate Your <br className="hidden md:block" /> 
-            <span className="text-zinc-500">Interview Blueprint</span>
-          </h1>
-          <p className="text-zinc-400 max-w-2xl mx-auto text-lg leading-relaxed font-light">
-            Deploy advanced AI analysis to align your professional profile with high-stakes job requirements.
-          </p>
-        </motion.div>
+        </div>
+        <div className="flex items-center gap-3">
+           <StatusBadge color="blue">Focused Mode</StatusBadge>
+        </div>
+      </header>
 
-        <div className="w-full grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-          
-          {/* Left: Tactical Metrics & Steps */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card className="border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl rounded-3xl overflow-hidden">
-              <CardContent className="p-8">
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-100" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-500" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
+      <main className="flex-1 min-h-0 grid grid-cols-12 overflow-hidden">
+        
+        {/* Navigation Sidebar */}
+        <aside className="col-span-3 border-r border-zinc-800/50 bg-zinc-950/20 flex flex-col p-8 gap-8 min-h-0 overflow-y-auto scrollbar-hidden">
+           <div className="space-y-2">
+              <p className="text-[9px] font-mono font-bold text-zinc-700 px-2 mb-6 uppercase tracking-[0.4em]">Step Navigation</p>
+              {steps.map((step, index) => {
+                const Icon = step.icon;
+                const isActive = currentStep === index;
+                const isCompleted = currentStep > index;
+                return (
+                  <div key={step.id} className={cn(
+                    "w-full flex items-center gap-4 px-4 py-4 rounded-xl border transition-all duration-500",
+                    isActive ? "bg-white/[0.04] border-zinc-700/50 text-white shadow-2xl" : "bg-transparent border-transparent text-zinc-600"
+                  )}>
+                    <div className={cn("size-8 rounded-lg flex items-center justify-center border transition-all", isActive ? "bg-white text-black border-white" : isCompleted ? "bg-zinc-800 border-zinc-700 text-white" : "bg-zinc-900 border-zinc-800")}>
+                      {isCompleted ? <CheckCircle2 size={16} /> : <Icon size={16} />}
+                    </div>
+                    <div className="flex flex-col">
+                       <span className="text-[8px] font-mono font-bold opacity-40 uppercase tracking-widest leading-none mb-1">Phase 0{index + 1}</span>
+                       <span className="text-xs font-bold tracking-tight">{step.title}</span>
+                    </div>
                   </div>
-                  <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">Setup Status: {Math.round(progress)}%</div>
-                </div>
+                );
+              })}
+           </div>
 
-                <div className="space-y-8">
-                  {steps.map((step, index) => {
-                    const Icon = step.icon;
-                    const isActive = currentStep === index;
-                    const isCompleted = currentStep > index;
-
-                    return (
-                      <div key={step.id} className="relative flex items-start gap-4 group" aria-current={isActive ? "step" : undefined}>
-                        {index !== steps.length - 1 && (
-                          <div className={cn(
-                            "absolute left-5 top-10 bottom-[-20px] w-[1px] transition-colors duration-500",
-                            isCompleted ? "bg-zinc-100" : "bg-zinc-800"
-                          )} />
-                        )}
-                        <div className={cn(
-                          "shrink-0 size-10 rounded-xl flex items-center justify-center border transition-all duration-500 z-10",
-                          isActive ? 'bg-zinc-100 border-zinc-100 text-zinc-900 scale-110 shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 
-                          isCompleted ? 'bg-zinc-800 border-zinc-700 text-zinc-100' : 'bg-zinc-900 border-zinc-800 text-zinc-600'
-                        )}>
-                          {isCompleted ? <CheckCircle2 className="size-5" /> : <Icon className="size-5" />}
-                        </div>
-                        <div className="flex flex-col pt-1">
-                          <span className={cn(
-                            "text-[10px] font-mono font-bold uppercase tracking-widest mb-0.5 transition-colors",
-                            isActive ? 'text-white' : 'text-zinc-600'
-                          )}>
-                            Phase 0{index + 1}
-                          </span>
-                          <span className={cn(
-                            "font-display font-bold text-sm transition-colors",
-                            isActive ? 'text-zinc-100' : 'text-zinc-500'
-                          )}>
-                            {step.title}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-zinc-800/50 bg-zinc-900/20 backdrop-blur-xl rounded-3xl overflow-hidden group">
-              <CardContent className="p-6">
-                <div className="flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-xl bg-zinc-800/50 flex items-center justify-center border border-zinc-700/50 shrink-0">
-                    <Zap className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
-                  </div>
-                  <div>
-                    <h3 className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 mb-2">Requirement Protocol</h3>
-                    <p id="jd-requirement-hint" className="text-xs text-zinc-500 leading-relaxed font-light">
-                      Job Description (50+ chars) is <span className="text-zinc-300">mandatory</span>. Complete by uploading a Resume PDF or providing a Bio.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right: Active Step Form */}
-          <div className="lg:col-span-3">
-            <LiquidMetalBorder borderRadius={32} borderWidth={1} opacity={0.3} className="h-full">
-              <div className="bg-zinc-950/80 backdrop-blur-2xl rounded-[31px] p-8 md:p-10 border border-zinc-800/50 h-full flex flex-col relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-10 opacity-[0.03] pointer-events-none text-white select-none">
-                  {React.createElement(steps[currentStep].icon, { size: 180 })}
-                </div>
-
-                <div className="mb-10 relative">
-                  <h2 className="font-display text-3xl font-bold text-white mb-3 tracking-tight">{steps[currentStep].title}</h2>
-                  <p className="text-zinc-400 text-sm font-light max-w-md">{steps[currentStep].description}</p>
-                </div>
-
-                <div className="flex-1">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={currentStep}
-                      initial={{ opacity: 0, x: 10, filter: "blur(4px)" }}
-                      animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                      exit={{ opacity: 0, x: -10, filter: "blur(4px)" }}
-                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                      className="h-full"
-                    >
-                      {currentStep === 0 && (
-                        <div className="relative group h-full">
-                          <textarea
-                            id="job-description-input"
-                            aria-describedby="jd-requirement-hint job-description-count"
-                            aria-invalid={!isStep1Valid && formData.jobDescription.length > 0}
-                            placeholder="Paste the full job description here..."
-                            value={formData.jobDescription}
-                            onChange={(e) => setFormData(prev => ({ ...prev, jobDescription: e.target.value }))}
-                            className="w-full h-64 bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-zinc-100 placeholder:text-zinc-700 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-zinc-500/50 transition-all resize-none font-light leading-relaxed"
-                          />
-                          <motion.div 
-                            id="job-description-count"
-                            animate={isStep1Valid ? { scale: [1, 1.05, 1], color: "#f4f4f5" } : {}}
-                            className={cn(
-                              "absolute bottom-4 right-6 text-[10px] font-mono font-bold tracking-widest uppercase",
-                              isStep1Valid ? 'text-zinc-100' : 'text-zinc-700'
-                            )}
-                          >
-                            {formData.jobDescription.length} / 50 CHARS
-                          </motion.div>
-                        </div>
-                      )}
-
-                      {currentStep === 1 && (
-                        <div 
-                          role="button"
-                          tabIndex={0}
-                          aria-label="Upload resume PDF"
-                          onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
-                          onClick={() => fileInputRef.current?.click()}
-                          onDragOver={onDragOver}
-                          onDragLeave={onDragLeave}
-                          onDrop={onDrop}
-                          className={cn(
-                            "border-2 border-dashed rounded-3xl h-64 flex flex-col items-center justify-center gap-4 transition-all cursor-pointer group/upload overflow-hidden relative outline-none",
-                            (formData.resumeFile || isDragging) ? 'border-zinc-500/50 bg-zinc-500/5' : 'border-zinc-800 hover:border-zinc-500/50 hover:bg-zinc-500/5'
-                          )}
-                        >
-                          {/* Scanline overlay on drag */}
-                          <AnimatePresence>
-                            {isDragging && (
-                              <motion.div 
-                                initial={{ top: "-100%" }}
-                                animate={{ top: "100%" }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                                className="absolute inset-x-0 h-1 bg-white/20 blur-sm z-20 pointer-events-none"
-                              />
-                            )}
-                          </AnimatePresence>
-
-                          <input 
-                            type="file" 
-                            ref={fileInputRef} 
-                            onChange={(e) => handleFileChange(e.target.files[0])} 
-                            accept=".pdf" 
-                            className="hidden" 
-                          />
-                          {formData.resumeFile ? (
-                            <>
-                              <div className="size-16 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-900">
-                                <FileCheck size={32} />
-                              </div>
-                              <div className="text-center">
-                                <p className="text-white font-bold text-lg">{formData.resumeFile.name}</p>
-                                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-1">Ready for synthesis</p>
-                              </div>
-                              <button 
-                                onClick={(e) => { e.stopPropagation(); setFormData(prev => ({ ...prev, resumeFile: null })); }}
-                                className="text-[10px] text-zinc-600 hover:text-zinc-300 font-mono font-bold uppercase tracking-widest mt-2 underline transition-colors"
-                              >
-                                REMOVE_FILE
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <div className={cn(
-                                "size-16 rounded-2xl bg-zinc-900 flex items-center justify-center transition-all border border-zinc-800",
-                                isDragging ? "bg-zinc-800 text-white scale-110" : "text-zinc-600 group-hover/upload:text-zinc-100 group-hover/upload:bg-zinc-800"
-                              )}>
-                                <Upload size={32} />
-                              </div>
-                              <div className="text-center">
-                                <p className="text-white font-bold text-lg">{isDragging ? "Release to Transmit" : "Transmit Resume"}</p>
-                                <p className="text-zinc-500 text-xs font-light mt-1 uppercase tracking-widest">PDF format preferred</p>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      )}
-
-                      {currentStep === 2 && (
-                        <div className="space-y-4 h-full">
-                          <textarea
-                            id="bio-input"
-                            aria-describedby={!formData.resumeFile && formData.selfDescription.length < 20 ? "bio-requirement-hint" : undefined}
-                            aria-invalid={!formData.resumeFile && formData.selfDescription.length < 20 && formData.selfDescription.length > 0}
-                            placeholder="Describe your goals, experience gaps, or specific areas of concern..."
-                            value={formData.selfDescription}
-                            onChange={(e) => setFormData(prev => ({ ...prev, selfDescription: e.target.value }))}
-                            className="w-full h-64 bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-zinc-100 placeholder:text-zinc-700 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-zinc-500/50 transition-all resize-none font-light leading-relaxed"
-                          />
-                          {!formData.resumeFile && formData.selfDescription.length < 20 && (
-                            <div id="bio-requirement-hint" className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center gap-3 text-zinc-500 text-[10px] font-mono font-bold uppercase tracking-widest">
-                              <AlertCircle className="size-4 shrink-0 text-zinc-600" />
-                              Bio minimum 20 chars required without resume
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-
-                <div className="mt-12 flex items-center justify-between gap-6">
-                  <button
-                    onClick={() => setCurrentStep(prev => prev - 1)}
-                    disabled={currentStep === 0 || loading}
-                    className={cn(
-                      "flex items-center gap-2 font-mono font-bold uppercase tracking-widest text-[10px] transition-all",
-                      currentStep === 0 ? 'opacity-0 pointer-events-none' : 'text-zinc-600 hover:text-zinc-300'
-                    )}
-                  >
-                    <ArrowLeft className="size-3" /> Back
-                  </button>
-
-                  {currentStep < steps.length - 1 ? (
-                    <LiquidCtaButton
-                      onClick={() => setCurrentStep(prev => prev + 1)}
-                      className={cn((currentStep === 0 && !isStep1Valid) && "opacity-50 grayscale pointer-events-none")}
-                    >
-                      Next Phase
-                    </LiquidCtaButton>
-                  ) : (
-                    <LiquidCtaButton
-                      onClick={handleGenerate}
-                      className={cn((!isFinalValid || loading) && "opacity-50 grayscale pointer-events-none")}
-                    >
-                      {loading ? "Synthesizing..." : "Generate Briefing"}
-                    </LiquidCtaButton>
-                  )}
-                </div>
+           {/* Rules Section */}
+           <div className="mt-4 p-6 bg-zinc-900/40 border border-zinc-800/60 rounded-[32px] space-y-4">
+              <div className="flex items-center gap-2 text-zinc-400">
+                 <Info size={14} />
+                 <span className="text-[10px] font-bold uppercase tracking-widest">Protocol Rules</span>
               </div>
-            </LiquidMetalBorder>
-            
+              <ul className="space-y-3">
+                 <li className="flex items-start gap-3">
+                    <div className="size-1 rounded-full bg-zinc-600 mt-1.5" />
+                    <p className="text-[11px] text-zinc-500 leading-relaxed font-light">Job Description must be at least <span className="text-zinc-300 font-bold">50 characters</span>.</p>
+                 </li>
+                 <li className="flex items-start gap-3">
+                    <div className="size-1 rounded-full bg-zinc-600 mt-1.5" />
+                    <p className="text-[11px] text-zinc-500 leading-relaxed font-light">Resumes must be in <span className="text-zinc-300 font-bold">PDF format</span> only.</p>
+                 </li>
+                 <li className="flex items-start gap-3">
+                    <div className="size-1 rounded-full bg-zinc-600 mt-1.5" />
+                    <p className="text-[11px] text-zinc-500 leading-relaxed font-light">Without a resume, the <span className="text-zinc-300 font-bold">Bio</span> needs 20+ chars.</p>
+                 </li>
+              </ul>
+           </div>
+
+           {/* Recent Reports - LARGER CARDS */}
+           <div className="mt-auto pt-8 border-t border-zinc-800/50">
+              <p className="text-[9px] font-mono font-bold text-zinc-700 px-2 mb-6 uppercase tracking-[0.4em]">Mission Archives</p>
+              <div className="space-y-4">
+                {reports?.slice(0, 2).map((r, i) => (
+                  <Link key={i} to={`/dashboard/${r._id}`} className="group block p-5 rounded-2xl bg-zinc-900/30 border border-zinc-800/50 hover:border-zinc-500/50 transition-all">
+                    <div className="flex justify-between items-start mb-3">
+                       <span className="text-[8px] font-mono font-bold text-zinc-600 group-hover:text-zinc-400">REPORT_{i+1}</span>
+                       <ChevronRight size={12} className="text-zinc-800 group-hover:text-zinc-400" />
+                    </div>
+                    <h4 className="text-xs font-bold text-zinc-400 group-hover:text-white uppercase truncate mb-1">{r.title}</h4>
+                    <span className="text-[10px] text-zinc-600 font-mono">{r.matchScore}% Match</span>
+                  </Link>
+                ))}
+              </div>
+           </div>
+        </aside>
+
+        {/* Input Core */}
+        <section className="col-span-9 flex flex-col min-h-0 bg-[#070708]/50 p-16 overflow-y-auto scrollbar-hidden">
+          <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
+            <div className="mb-12">
+               <div className="flex items-center gap-3 mb-4">
+                  <div className="h-px w-8 bg-zinc-800" />
+                  <span className="text-[10px] font-mono font-bold text-zinc-600 uppercase tracking-[0.4em]">Core Input</span>
+               </div>
+               <h1 className="font-display text-5xl font-bold text-white tracking-tighter leading-none mb-4">{steps[currentStep].title}</h1>
+               <p className="text-zinc-500 text-xl font-light leading-relaxed max-w-2xl">{steps[currentStep].description}</p>
+            </div>
+
+            <div className="flex-1">
+              <AnimatePresence mode="wait">
+                <motion.div key={currentStep} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="h-full">
+                  {currentStep === 0 && (
+                    <div className="relative group h-[450px]">
+                      <textarea
+                        id="job-description-input"
+                        placeholder="Paste the full job requirements here..."
+                        value={formData.jobDescription}
+                        onChange={(e) => setFormData(prev => ({ ...prev, jobDescription: e.target.value }))}
+                        className="w-full h-full bg-zinc-900/20 border border-zinc-800/80 rounded-[40px] p-10 text-zinc-100 placeholder:text-zinc-700 focus-visible:outline-none focus-visible:ring-0 focus:border-zinc-500/50 transition-all resize-none font-light leading-relaxed text-xl"
+                      />
+                      <div className={cn(
+                        "absolute bottom-8 right-10 text-[10px] font-mono font-bold tracking-[0.3em] uppercase",
+                        isStep1Valid ? "text-green-500/50" : "text-zinc-700"
+                      )}>
+                        {formData.jobDescription.length} / 50 CHARS MIN
+                      </div>
+                    </div>
+                  )}
+
+                  {currentStep === 1 && (
+                    <div 
+                      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFileChange(e.dataTransfer.files[0]); }}
+                      onClick={() => fileInputRef.current?.click()}
+                      className={cn(
+                        "border-2 border-dashed rounded-[48px] h-[450px] flex flex-col items-center justify-center gap-8 transition-all cursor-pointer relative overflow-hidden group/upload",
+                        (formData.resumeFile || isDragging) ? 'border-zinc-500 bg-zinc-500/5' : 'border-zinc-800/80 bg-zinc-900/10 hover:border-zinc-600 hover:bg-zinc-900/20'
+                      )}
+                    >
+                      <input type="file" ref={fileInputRef} onChange={(e) => handleFileChange(e.target.files[0])} accept=".pdf" className="hidden" />
+                      <div className={cn("size-24 rounded-3xl bg-zinc-900 border border-zinc-800 flex items-center justify-center transition-all duration-500", (isDragging || formData.resumeFile) && "scale-110 border-zinc-700")}>
+                        {formData.resumeFile ? <FileCheck size={48} className="text-white" /> : <Upload size={48} className="text-zinc-700 group-hover/upload:text-zinc-400" />}
+                      </div>
+                      <div className="text-center">
+                        <p className="text-white font-bold text-2xl">{formData.resumeFile ? formData.resumeFile.name : "Transmit Resume"}</p>
+                        <p className="text-zinc-500 text-base font-light mt-3 uppercase tracking-widest">{formData.resumeFile ? "Ready for synthesis" : "Drop your PDF file here"}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {currentStep === 2 && (
+                    <div className="h-[450px]">
+                      <textarea
+                        id="bio-input"
+                        placeholder="Describe your background, goals, or concerns..."
+                        value={formData.selfDescription}
+                        onChange={(e) => setFormData(prev => ({ ...prev, selfDescription: e.target.value }))}
+                        className="w-full h-full bg-zinc-900/20 border border-zinc-800/80 rounded-[40px] p-10 text-zinc-100 placeholder:text-zinc-700 focus-visible:outline-none focus-visible:ring-0 focus:border-zinc-500/50 transition-all resize-none font-light leading-relaxed text-xl"
+                      />
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <div className="mt-16 flex items-center justify-between pb-12">
+              <button 
+                onClick={() => setCurrentStep(prev => prev - 1)} 
+                disabled={currentStep === 0 || loading} 
+                className={cn(
+                  "flex items-center gap-3 px-6 py-3.5 rounded-2xl border transition-all duration-300 font-bold uppercase tracking-[0.3em] text-[10px] outline-none cursor-pointer",
+                  currentStep === 0 
+                    ? "opacity-0 pointer-events-none" 
+                    : "bg-zinc-900/50 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300 hover:bg-zinc-900/80 active:scale-95 shadow-sm"
+                )}
+              >
+                <ArrowLeft size={16} /> Previous
+              </button>
+
+              {currentStep < steps.length - 1 ? (
+                <LiquidCtaButton onClick={() => setCurrentStep(prev => prev + 1)} className={cn(currentStep === 0 && !isStep1Valid && "opacity-50 grayscale pointer-events-none")}>
+                  Proceed to Next
+                </LiquidCtaButton>
+              ) : (
+                <LiquidCtaButton onClick={handleGenerate} className={cn((!isFinalValid || loading) && "opacity-50 grayscale pointer-events-none")}>
+                  {loading ? "Analyzing..." : "Generate Briefing"}
+                </LiquidCtaButton>
+              )}
+            </div>
+
+
             <SynthesisEngine loading={loading} />
           </div>
-        </div>
-      </section>
-
-      {/* --- DIVIDER --- */}
-      <div className="relative py-4 flex items-center justify-center">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-zinc-900"></div>
-        </div>
-        <div className="relative px-6 bg-black flex items-center gap-3">
-           <div className="w-1.5 h-1.5 rounded-full bg-zinc-800" />
-           <span className="text-[9px] font-mono font-black text-zinc-600 uppercase tracking-[0.5em]">MISSION ARCHIVES</span>
-           <div className="w-1.5 h-1.5 rounded-full bg-zinc-800" />
-        </div>
-      </div>
-
-      {/* --- SECTION 2: MISSION ARCHIVES --- */}
-      <section className="space-y-12 mb-24">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50">
-               <History className="w-3 h-3 text-zinc-500" />
-               <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Historical Data</span>
-            </div>
-            <h2 className="font-display text-4xl font-bold text-white tracking-tight">Recent Briefings</h2>
-            <p className="text-zinc-500 text-lg font-light max-w-xl">Review and re-deploy your previously synthesized strategic interview blueprints.</p>
-          </div>
-          
-          <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-600 uppercase tracking-widest border border-zinc-900 rounded-full px-4 py-2 bg-zinc-900/20">
-             <BarChart3 className="w-3 h-3" />
-             Total Briefings: {reports?.length || 0}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-          {reports?.length > 0 ? (
-            reports.map((report, i) => (
-              <ArchiveCard key={report._id} report={report} index={i} />
-            ))
-          ) : (
-            <div className="col-span-full py-24 border border-dashed border-zinc-800 rounded-[32px] flex flex-col items-center justify-center text-center bg-zinc-900/5">
-              <div className="size-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-700 mb-6">
-                <Command size={32} />
-              </div>
-              <h3 className="text-zinc-400 font-display font-bold text-xl mb-2">No Briefings Archived</h3>
-              <p className="text-zinc-600 text-sm max-w-xs leading-relaxed font-light">
-                Archive your first operational briefing by completing the generation protocol above.
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
+        </section>
+      </main>
     </div>
   );
 };
+
+const StatusBadge = ({ children, color = "zinc" }) => {
+  const colors = {
+    zinc: "bg-zinc-900 border-zinc-800 text-zinc-500",
+    green: "bg-green-950/20 border-green-500/20 text-green-400",
+    red: "bg-red-950/20 border-red-500/20 text-red-400",
+    blue: "bg-blue-950/20 border-blue-500/20 text-blue-400"
+  };
+  return (
+    <span className={cn("px-2 py-1 rounded-md border text-[10px] font-bold uppercase tracking-widest", colors[color])}>
+      {children}
+    </span>
+  );
+};
+
+const ErrorState = ({ error }) => (
+  <div className="h-screen w-full flex flex-col items-center justify-center bg-black p-6 text-center">
+    <AlertCircle size={64} className="text-red-500 mb-8" />
+    <h1 className="font-display text-4xl font-bold text-white mb-4 uppercase tracking-tighter">System_Failure</h1>
+    <p className="text-zinc-500 text-lg font-light mb-12">{error || "Could not initialize generator."}</p>
+    <Link to="/"><button className="px-10 py-3 bg-white text-black font-black text-xs uppercase tracking-[0.4em] rounded-md hover:bg-zinc-200 transition-all cursor-pointer">Reboot_System</button></Link>
+  </div>
+);
 
 export default GenerateReport;

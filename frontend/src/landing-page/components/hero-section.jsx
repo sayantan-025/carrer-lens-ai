@@ -67,7 +67,7 @@ export default function HeroSection() {
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50">
               <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">
-                Next Gen Interview Intelligence
+                AI-Powered Interview Prep
               </span>
             </div>
           </motion.div>
@@ -88,8 +88,8 @@ export default function HeroSection() {
             className="text-lg md:text-xl text-zinc-300 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light"
             variants={itemVariants}
           >
-            Career Lens AI transforms your resume and job description into a 
-            personalized roadmap for interview success. Experience the future of prep.
+            Career Lens AI uses your resume and the job description to create a 
+            personalized plan for your interview success.
           </motion.p>
 
           {/* CTAs */}
@@ -98,7 +98,7 @@ export default function HeroSection() {
             variants={itemVariants}
           >
             <Link to="/register">
-              <LiquidCtaButton>Initialize Strategy</LiquidCtaButton>
+              <LiquidCtaButton>Get Started Now</LiquidCtaButton>
             </Link>
           </motion.div>
 
