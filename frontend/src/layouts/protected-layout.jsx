@@ -24,10 +24,10 @@ const ProtectedLayout = () => {
   return (
     <div className="h-screen flex flex-col relative overflow-hidden bg-black">
       <GlobalBackground />
-      {!isGenerateReport && <Navbar />}
+
+      <Navbar />
       <main className={cn(
-        "flex-1 relative z-10 flex flex-col min-h-0",
-        !isGenerateReport ? "mt-20 overflow-y-auto" : "h-full overflow-hidden"
+        "flex-1 relative z-10 flex flex-col min-h-0 mt-20 overflow-y-auto"
       )}>
         <Outlet />
       </main>

@@ -9,7 +9,7 @@ export function LiquidCtaButton({ children, className, onClick, theme = "dark" }
   return (
     <button
       onClick={onClick}
-      className={cn("group transition-transform duration-300 hover:scale-105 active:scale-95", className)}
+      className={cn("group transition-transform duration-300 hover:scale-105 active:scale-95 cursor-pointer", className)}
     >
       <div className={cn("rounded-full", isLight && "shadow-[0_8px_20px_rgba(0,0,0,0.25)]")}>
         <LiquidMetalBorder borderRadius={9999} borderWidth={2} theme={theme} opacity={1} speed={1.2} scale={3}>

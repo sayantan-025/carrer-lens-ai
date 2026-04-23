@@ -60,9 +60,51 @@ export default function HeroSection() {
           animate="visible"
           className="flex flex-col items-center"
         >
-          {/* Social Proof Avatar Stack - TOP POSITION */}
+          {/* Feature Badge */}
           <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+            variants={itemVariants}
+            className="mb-8"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50">
+              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">
+                Next Gen Interview Intelligence
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Headline */}
+          <motion.h1 
+            className="font-display text-5xl md:text-8xl font-bold tracking-tighter mb-8 leading-[1.05]"
+            variants={itemVariants}
+          >
+            <span className="text-zinc-100 block">Land the Offer.</span>
+            <span className="text-zinc-100 block">
+              Skip the Stress.
+            </span>
+          </motion.h1>
+
+          {/* Subheadline */}
+          <motion.p 
+            className="text-lg md:text-xl text-zinc-300 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light"
+            variants={itemVariants}
+          >
+            Career Lens AI transforms your resume and job description into a 
+            personalized roadmap for interview success. Experience the future of prep.
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div 
+            className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16"
+            variants={itemVariants}
+          >
+            <Link to="/register">
+              <LiquidCtaButton>Initialize Strategy</LiquidCtaButton>
+            </Link>
+          </motion.div>
+
+          {/* Social Proof Avatar Stack - BOTTOM POSITION */}
+          <motion.div 
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
             variants={itemVariants}
           >
             <div className="flex items-center gap-4">
@@ -119,36 +161,6 @@ export default function HeroSection() {
                 </p>
               </div>
             </div>
-          </motion.div>
-
-          {/* Headline */}
-          <motion.h1 
-            className="font-display text-5xl md:text-8xl font-bold tracking-tighter mb-8 leading-[1.05]"
-            variants={itemVariants}
-          >
-            <span className="text-zinc-100 block">Land the Offer.</span>
-            <span className="text-zinc-100 block">
-              Skip the Stress.
-            </span>
-          </motion.h1>
-
-          {/* Subheadline */}
-          <motion.p 
-            className="text-lg md:text-xl text-zinc-300 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light"
-            variants={itemVariants}
-          >
-            Career Lens AI transforms your resume and job description into a 
-            personalized roadmap for interview success. Experience the future of prep.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-6"
-            variants={itemVariants}
-          >
-            <Link to="/register">
-              <LiquidCtaButton>Initialize Strategy</LiquidCtaButton>
-            </Link>
           </motion.div>
         </motion.div>
       </div>

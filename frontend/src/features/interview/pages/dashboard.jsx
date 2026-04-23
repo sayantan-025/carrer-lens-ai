@@ -20,20 +20,27 @@ import {
   ArrowRight,
   Clock,
   ExternalLink,
-  ChevronDown
+  ChevronDown,
+  LayoutDashboard,
+  Hexagon,
+  Cpu
 } from "lucide-react";
+import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
+import { LiquidMetalBorder } from "../../../components/ui/LiquidMetalBorder";
+import { Card, CardContent } from "../../../components/ui/card";
+import { cn } from "../../../lib/utils";
 
 // --- Sub-Components ---
 
 const Badge = ({ children, variant = "blue" }) => {
   const variants = {
-    blue: "bg-blue-600/10 border-blue-500/20 text-blue-400",
-    red: "bg-red-600/10 border-red-500/20 text-red-400",
-    indigo: "bg-indigo-600/10 border-indigo-500/20 text-indigo-400",
-    gray: "bg-white/5 border-white/10 text-gray-400"
+    blue: "bg-zinc-800/50 border-zinc-700/50 text-zinc-300",
+    red: "bg-red-950/20 border-red-500/20 text-red-400",
+    indigo: "bg-indigo-950/20 border-indigo-500/20 text-indigo-400",
+    gray: "bg-zinc-900 border-zinc-800 text-zinc-500"
   };
   return (
-    <span className={`px-2 py-0.5 rounded-md border text-[11px] font-medium ${variants[variant]}`}>
+    <span className={cn("px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold uppercase tracking-wider", variants[variant])}>
       {children}
     </span>
   );
@@ -44,31 +51,33 @@ const TechnicalFeed = ({ data }) => {
   if (!data?.length) return <EmptyFeed icon={TerminalSquare} text="No technical questions found." />;
   
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {data.map((q, i) => (
         <div
           key={i}
-          className={`rounded-xl border transition-all duration-200 ${
+          className={cn(
+            "rounded-2xl border transition-all duration-300 overflow-hidden",
             expandedIndex === i 
-              ? "bg-white/5 border-white/10" 
-              : "bg-transparent border-white/5 hover:border-white/10"
-          }`}
+              ? "bg-zinc-900/40 border-zinc-700/50 shadow-2xl" 
+              : "bg-transparent border-zinc-800/50 hover:border-zinc-700/30"
+          )}
         >
           <button 
             onClick={() => setExpandedIndex(expandedIndex === i ? -1 : i)}
-            className="w-full text-left p-5 flex items-start gap-4"
+            className="w-full text-left p-6 flex items-start gap-5"
           >
-            <div className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold border ${
-              expandedIndex === i ? "bg-blue-600 border-blue-400 text-white" : "bg-white/5 border-white/10 text-gray-500"
-            }`}>
-              {i + 1}
+            <div className={cn(
+              "shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-mono font-bold border transition-all",
+              expandedIndex === i ? "bg-zinc-100 border-zinc-100 text-zinc-900" : "bg-zinc-900 border-zinc-800 text-zinc-500"
+            )}>
+              Q{i + 1}
             </div>
             <div className="flex-1 pt-0.5">
-              <h4 className="text-base font-semibold text-white leading-snug">
+              <h4 className="font-display text-lg font-bold text-zinc-100 leading-snug group-hover:text-white transition-colors">
                 {q.question}
               </h4>
             </div>
-            <ChevronDown className={`size-5 text-gray-500 transition-transform ${expandedIndex === i ? 'rotate-180' : ''}`} />
+            <ChevronDown className={cn("size-5 text-zinc-600 transition-transform duration-300", expandedIndex === i ? 'rotate-180 text-zinc-300' : '')} />
           </button>
 
           <AnimatePresence>
@@ -79,14 +88,18 @@ const TechnicalFeed = ({ data }) => {
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <div className="px-5 pb-5 pt-0 space-y-4">
-                  <div className="p-4 bg-black/20 rounded-lg border border-white/5">
-                    <p className="text-xs font-semibold text-gray-400 mb-1.5">Goal of this question</p>
-                    <p className="text-gray-300 text-sm leading-relaxed">{q.intention}</p>
+                <div className="px-6 pb-6 pt-0 space-y-4">
+                  <div className="p-5 bg-black/40 rounded-xl border border-zinc-800/50">
+                    <p className="text-[10px] font-mono font-bold text-zinc-600 mb-2 uppercase tracking-widest flex items-center gap-2">
+                       <Target size={12} /> Diagnostic Intent
+                    </p>
+                    <p className="text-zinc-400 text-sm leading-relaxed font-light italic">"{q.intention}"</p>
                   </div>
-                  <div className="p-4 bg-blue-600/5 rounded-lg border border-blue-500/10">
-                    <p className="text-xs font-semibold text-blue-400 mb-1.5">Recommended Answer</p>
-                    <p className="text-white/90 text-sm leading-relaxed">{q.answer}</p>
+                  <div className="p-5 bg-zinc-100/5 rounded-xl border border-zinc-700/30">
+                    <p className="text-[10px] font-mono font-bold text-zinc-400 mb-2 uppercase tracking-widest flex items-center gap-2">
+                       <Cpu size={12} /> Strategic Response
+                    </p>
+                    <p className="text-zinc-200 text-sm leading-relaxed font-light">{q.answer}</p>
                   </div>
                 </div>
               </motion.div>
@@ -103,31 +116,33 @@ const BehavioralFeed = ({ data }) => {
   if (!data?.length) return <EmptyFeed icon={Users} text="No behavioral questions found." />;
   
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {data.map((q, i) => (
         <div
           key={i}
-          className={`rounded-xl border transition-all duration-200 ${
+          className={cn(
+            "rounded-2xl border transition-all duration-300 overflow-hidden",
             expandedIndex === i 
-              ? "bg-white/5 border-white/10" 
-              : "bg-transparent border-white/5 hover:border-white/10"
-          }`}
+              ? "bg-zinc-900/40 border-zinc-700/50 shadow-2xl" 
+              : "bg-transparent border-zinc-800/50 hover:border-zinc-700/30"
+          )}
         >
           <button 
             onClick={() => setExpandedIndex(expandedIndex === i ? -1 : i)}
-            className="w-full text-left p-5 flex items-start gap-4"
+            className="w-full text-left p-6 flex items-start gap-5"
           >
-            <div className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold border ${
-              expandedIndex === i ? "bg-blue-600 border-blue-400 text-white" : "bg-white/5 border-white/10 text-gray-500"
-            }`}>
-              {i + 1}
+            <div className={cn(
+              "shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-mono font-bold border transition-all",
+              expandedIndex === i ? "bg-zinc-100 border-zinc-100 text-zinc-900" : "bg-zinc-900 border-zinc-800 text-zinc-500"
+            )}>
+              B{i + 1}
             </div>
             <div className="flex-1 pt-0.5">
-              <h4 className="text-base font-semibold text-white leading-snug">
+              <h4 className="font-display text-lg font-bold text-zinc-100 leading-snug">
                 {q.question}
               </h4>
             </div>
-            <ChevronDown className={`size-5 text-gray-500 transition-transform ${expandedIndex === i ? 'rotate-180' : ''}`} />
+            <ChevronDown className={cn("size-5 text-zinc-600 transition-transform duration-300", expandedIndex === i ? 'rotate-180 text-zinc-300' : '')} />
           </button>
 
           <AnimatePresence>
@@ -138,14 +153,16 @@ const BehavioralFeed = ({ data }) => {
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <div className="px-5 pb-5 pt-0 space-y-4">
-                  <div className="p-4 bg-black/20 rounded-lg border border-white/5">
-                    <p className="text-xs font-semibold text-gray-400 mb-1.5">What they are looking for</p>
-                    <p className="text-gray-300 text-sm leading-relaxed">{q.intention}</p>
+                <div className="px-6 pb-6 pt-0 space-y-4">
+                  <div className="p-5 bg-black/40 rounded-xl border border-zinc-800/50">
+                    <p className="text-[10px] font-mono font-bold text-zinc-600 mb-2 uppercase tracking-widest">Alignment Objectives</p>
+                    <p className="text-zinc-400 text-sm leading-relaxed font-light italic">"{q.intention}"</p>
                   </div>
-                  <div className="p-4 bg-indigo-600/5 rounded-lg border border-indigo-500/10">
-                    <p className="text-xs font-semibold text-indigo-400 mb-1.5">Strategy (STAR Method)</p>
-                    <p className="text-white/90 text-sm leading-relaxed">{q.answer}</p>
+                  <div className="p-5 bg-zinc-100/5 rounded-xl border border-zinc-700/30">
+                    <p className="text-[10px] font-mono font-bold text-zinc-400 mb-2 uppercase tracking-widest flex items-center gap-2">
+                       <ShieldCheck size={12} /> STAR Execution Strategy
+                    </p>
+                    <p className="text-zinc-200 text-sm leading-relaxed font-light">{q.answer}</p>
                   </div>
                 </div>
               </motion.div>
@@ -160,25 +177,29 @@ const BehavioralFeed = ({ data }) => {
 const RoadmapFeed = ({ data }) => {
   if (!data?.length) return <EmptyFeed icon={Map} text="No roadmap available." />;
   return (
-    <div className="relative pl-4 space-y-6">
-      <div className="absolute left-[3px] top-4 bottom-4 w-[1px] bg-white/10" />
+    <div className="relative pl-6 space-y-8">
+      <div className="absolute left-[7px] top-6 bottom-6 w-[1px] bg-zinc-800" />
       {data.map((plan, i) => (
-        <div key={i} className="relative pl-8">
-          <div className="absolute left-[-2px] top-6 w-2 h-2 rounded-full bg-blue-500 border border-[#020B18]" />
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
-            <span className="text-xs font-bold text-blue-400">Day {plan.day}</span>
-            <h3 className="text-lg font-bold text-white mt-1 mb-4">
-              {plan.focus}
-            </h3>
-            <ul className="space-y-2.5">
-              {plan.tasks?.map((task, j) => (
-                <li key={j} className="flex gap-3 items-start text-gray-400 text-sm leading-relaxed">
-                  <div className="shrink-0 size-1 rounded-full bg-blue-500/60 mt-2" />
-                  <span>{task}</span>
-                </li>
-              ))}
-            </ul>
+        <div key={i} className="relative pl-10">
+          <div className="absolute left-[-2px] top-6 w-4 h-4 rounded-full bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center">
+             <div className="w-1.5 h-1.5 rounded-full bg-zinc-100" />
           </div>
+          <Card className="border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl rounded-2xl overflow-hidden hover:border-zinc-500/30 transition-all duration-500">
+            <CardContent className="p-6">
+              <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-[0.2em]">Deployment: Day {plan.day}</span>
+              <h3 className="font-display text-xl font-bold text-white mt-1 mb-6">
+                {plan.focus}
+              </h3>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {plan.tasks?.map((task, j) => (
+                  <li key={j} className="flex gap-3 items-start p-3 rounded-xl bg-black/20 border border-zinc-800/30 text-zinc-400 text-sm font-light leading-relaxed">
+                    <CheckCircle2 size={14} className="shrink-0 mt-0.5 text-zinc-600" />
+                    <span>{task}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
         </div>
       ))}
     </div>
@@ -186,23 +207,23 @@ const RoadmapFeed = ({ data }) => {
 };
 
 const EmptyFeed = ({ icon: Icon, text }) => (
-  <div className="flex flex-col items-center justify-center py-20 opacity-30">
-    <Icon size={32} className="mb-3 text-gray-400" />
-    <p className="text-sm font-medium text-gray-500">{text}</p>
+  <div className="flex flex-col items-center justify-center py-24 border-2 border-dashed border-zinc-900 rounded-[32px]">
+    <Icon size={40} className="mb-4 text-zinc-800" />
+    <p className="text-[10px] font-mono font-bold text-zinc-600 uppercase tracking-widest">{text}</p>
   </div>
 );
 
 const ErrorState = ({ error }) => (
   <div className="h-full w-full flex flex-col items-center justify-center p-6 text-center">
-    <div className="size-16 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mb-6">
-      <ShieldAlert size={28} className="text-red-500" />
+    <div className="size-20 bg-zinc-900 border border-zinc-800 rounded-3xl flex items-center justify-center mb-8">
+      <ShieldAlert size={32} className="text-zinc-600" />
     </div>
-    <h1 className="text-2xl font-bold text-white mb-3">Unable to load report</h1>
-    <p className="text-gray-400 text-sm max-w-xs mb-8 leading-relaxed">
-      {error || "There was an issue fetching your interview analysis."}
+    <h1 className="font-display text-3xl font-bold text-white mb-4 tracking-tight">System Access Restricted</h1>
+    <p className="text-zinc-500 text-base max-w-sm mb-10 leading-relaxed font-light">
+      {error || "Encountered a critical error while retrieving your strategic briefing data."}
     </p>
-    <Link to="/dashboard" className="px-6 py-2.5 bg-white text-black font-bold rounded-xl text-sm transition-all hover:opacity-90">
-      Back to Dashboard
+    <Link to="/generate-report">
+       <LiquidCtaButton>Return to Command</LiquidCtaButton>
     </Link>
   </div>
 );
@@ -214,7 +235,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("technical");
 
   if (loading) {
-    return <FullScreenLoader message="Loading your report..." />;
+    return <FullScreenLoader message="Initializing Strategic Briefing..." />;
   }
 
   if (error || !report) {
@@ -222,75 +243,92 @@ const Dashboard = () => {
   }
 
   const TABS = [
-    { id: "technical", label: "Technical", icon: Code2, desc: "Engineering" },
-    { id: "behavioral", label: "Behavioral", icon: Users, desc: "Alignment" },
-    { id: "roadmap", label: "Roadmap", icon: Map, desc: "Strategy" },
+    { id: "technical", label: "Technical", icon: Code2, desc: "Engineering Architecture" },
+    { id: "behavioral", label: "Behavioral", icon: Users, desc: "Alignment & Leadership" },
+    { id: "roadmap", label: "Roadmap", icon: Map, desc: "Preparation Deployment" },
   ];
 
   const activeTabData = TABS.find((t) => t.id === activeTab);
 
   return (
-    <div className="h-[calc(100vh-120px)] w-full text-gray-200 font-sans selection:bg-blue-600/30 px-4 md:px-8 pb-4">
+    <div className="h-[calc(100vh-120px)] w-full text-zinc-400 font-sans selection:bg-zinc-100/10 px-4 md:px-8 pb-4">
       {/* Dashboard Container */}
-      <div className="h-full glass border border-white/10 rounded-[32px] overflow-hidden flex flex-col shadow-2xl">
+      <div className="h-full glass border border-zinc-800/50 rounded-[32px] overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)]">
         
         {/* Header */}
-        <div className="shrink-0 px-8 py-5 border-b border-white/5 bg-black/10 flex items-center justify-between">
-           <div className="flex items-center gap-4">
+        <div className="shrink-0 px-8 py-6 border-b border-zinc-800/50 bg-zinc-950/50 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-6">
+           <div className="flex items-center gap-6">
+              <div className="size-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-100">
+                 <Hexagon size={24} className="fill-zinc-800" />
+              </div>
               <div className="flex flex-col">
-                <h1 className="text-lg font-bold text-white leading-none">
+                <div className="flex items-center gap-3 mb-1">
+                   <span className="text-[10px] font-mono font-bold text-zinc-600 uppercase tracking-[0.3em]">Operational Briefing</span>
+                   <Badge variant="blue">ID: {interviewId.slice(-6)}</Badge>
+                </div>
+                <h1 className="font-display text-2xl font-bold text-white tracking-tight leading-none">
                   {report.title}
                 </h1>
               </div>
            </div>
 
-           <button
+           <LiquidCtaButton
              onClick={async () => {
                try {
                  await getResumePdf(interviewId);
-                 showToast({ message: "PDF report exported", type: "success" });
+                 showToast({ message: "Strategic asset exported", type: "success" });
                } catch (err) {
-                 showToast({ message: "Failed to export PDF", type: "error" });
+                 showToast({ message: "Transmission failure", type: "error" });
                }
              }}
-             className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-lg shadow-blue-900/20"
            >
-             <Download size={14} />
-             Download Resume
-           </button>
+             Export PDF Report
+           </LiquidCtaButton>
         </div>
 
         {/* Grid Layout */}
-        <div className="flex-1 min-h-0 grid grid-cols-12 bg-white/5">
+        <div className="flex-1 min-h-0 grid grid-cols-12">
           
           {/* Sidebar Nav */}
-          <aside className="col-span-2 bg-[#020B18]/40 p-5 flex flex-col gap-6 border-r border-white/5">
-            <div className="space-y-1">
-              <p className="text-[10px] font-bold text-gray-500 px-3 mb-3 uppercase tracking-wider">Sections</p>
+          <aside className="col-span-12 lg:col-span-2 bg-zinc-950/20 p-6 flex flex-col gap-8 border-r border-zinc-800/50">
+            <div className="space-y-2">
+              <p className="text-[10px] font-mono font-bold text-zinc-600 px-3 mb-4 uppercase tracking-[0.2em]">Analysis Sections</p>
               {TABS.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group relative",
                     activeTab === tab.id 
-                      ? "bg-blue-600 text-white shadow-lg" 
-                      : "text-gray-400 hover:text-white hover:bg-white/5"
-                  }`}
+                      ? "bg-zinc-100 text-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.1)]" 
+                      : "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900/50"
+                  )}
                 >
-                  <tab.icon size={16} />
-                  <span className="text-sm font-semibold">{tab.label}</span>
+                  <tab.icon size={18} />
+                  <span className="text-sm font-bold tracking-tight">{tab.label}</span>
+                  {activeTab === tab.id && (
+                    <motion.div 
+                      layoutId="active-pill"
+                      className="absolute right-3 w-1.5 h-1.5 rounded-full bg-zinc-900"
+                    />
+                  )}
                 </button>
               ))}
             </div>
 
             <div className="mt-auto">
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <Activity size={14} className="text-blue-400" />
-                  <span className="text-[10px] font-bold text-blue-300">System Ready</span>
+              <div className="bg-zinc-900/40 p-5 rounded-2xl border border-zinc-800/50">
+                <div className="flex items-center gap-2 mb-3">
+                  <Activity size={14} className="text-zinc-400" />
+                  <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Protocol Active</span>
                 </div>
-                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 w-full" />
+                <div className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 2 }}
+                    className="h-full bg-zinc-400" 
+                  />
                 </div>
               </div>
             </div>
@@ -298,26 +336,30 @@ const Dashboard = () => {
 
           {/* Main Content Area */}
           <section 
-            className="col-span-7 bg-[#020B18]/10 overflow-y-auto p-8 lg:p-10"
+            className="col-span-12 lg:col-span-7 bg-black/10 overflow-y-auto p-8 lg:p-12"
             data-lenis-prevent
           >
             <div className="max-w-3xl mx-auto">
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  {activeTabData.label} Analysis
+              <div className="mb-12">
+                <div className="flex items-center gap-3 mb-4">
+                   <div className="w-8 h-[1px] bg-zinc-800" />
+                   <span className="text-[10px] font-mono font-bold text-zinc-600 uppercase tracking-[0.3em]">Deep Dive Analysis</span>
+                </div>
+                <h2 className="font-display text-4xl font-bold text-white mb-4 tracking-tighter">
+                  {activeTabData.label} <span className="text-zinc-500">Diagnostics</span>
                 </h2>
-                <p className="text-sm text-gray-400 leading-relaxed">
-                  Detailed review of your {activeTabData.desc.toLowerCase()} readiness for this role.
+                <p className="text-zinc-500 text-lg font-light leading-relaxed">
+                  Industrial-grade review of your <span className="text-zinc-300 underline underline-offset-4 decoration-zinc-800">{activeTabData.desc.toLowerCase()}</span> readiness.
                 </p>
               </div>
 
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}
-                  initial={{ opacity: 0, y: 5 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  transition={{ duration: 0.15 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
                 >
                   {activeTab === "technical" && <TechnicalFeed data={report.technicalQuestions} />}
                   {activeTab === "behavioral" && <BehavioralFeed data={report.behavioralQuestions} />}
@@ -329,52 +371,74 @@ const Dashboard = () => {
 
           {/* Right Sidebar - Diagnostics */}
           <aside 
-            className="col-span-3 bg-[#020B18]/40 flex flex-col min-h-0 border-l border-white/5 overflow-hidden"
+            className="col-span-12 lg:col-span-3 bg-zinc-950/20 flex flex-col min-h-0 border-l border-zinc-800/50 overflow-hidden"
           >
             {/* Small Gauge Section */}
-            <div className="p-6 border-b border-white/5 flex flex-col items-center shrink-0">
-              <p className="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-wider self-start">Readiness</p>
+            <div className="p-8 border-b border-zinc-800/50 flex flex-col items-center shrink-0">
+              <p className="text-[10px] font-mono font-bold text-zinc-600 mb-8 uppercase tracking-[0.2em] self-start">Operational Readiness</p>
               
-              <div className="relative flex items-center justify-center mb-2">
-                <div className="size-32 rounded-full border-8 border-white/5 flex flex-col items-center justify-center relative">
-                  <motion.div 
-                    initial={{ rotate: -225 }}
-                    animate={{ rotate: (report.matchScore / 100) * 360 - 225 }}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                    className="absolute inset-[-8px] rounded-full border-8 border-blue-500 border-t-transparent border-r-transparent"
-                  />
-                  <span className="text-4xl font-bold text-white leading-none">{report.matchScore}</span>
-                  <span className="text-[10px] font-bold text-blue-400 mt-1">%</span>
+              <LiquidMetalBorder 
+                borderRadius={9999} 
+                borderWidth={1} 
+                opacity={0.5}
+                speed={0.5}
+                className="mb-6"
+              >
+                <div className="size-40 rounded-full bg-zinc-950 flex flex-col items-center justify-center relative border border-zinc-800/50 shadow-2xl">
+                  <div className="absolute inset-4 rounded-full border border-zinc-900 border-dashed animate-[spin_20s_linear_infinite]" />
+                  <motion.span 
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="font-display text-6xl font-bold text-white leading-none"
+                  >
+                    {report.matchScore}
+                  </motion.span>
+                  <span className="text-[10px] font-mono font-bold text-zinc-500 mt-2 uppercase tracking-widest">Match Protocol</span>
                 </div>
-              </div>
-              <p className="text-xs font-semibold text-gray-300">Match Score</p>
+              </LiquidMetalBorder>
             </div>
 
             {/* Scrollable Skill Gaps */}
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-              <div className="px-6 pt-6 pb-3 shrink-0">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Skill Gaps</p>
+              <div className="px-8 pt-8 pb-4 shrink-0 flex items-center justify-between">
+                <p className="text-[10px] font-mono font-bold text-zinc-600 uppercase tracking-[0.2em]">Risk Analysis</p>
+                <div className="flex gap-1">
+                   <div className="w-1 h-1 rounded-full bg-zinc-800" />
+                   <div className="w-1 h-1 rounded-full bg-zinc-800" />
+                   <div className="w-1 h-1 rounded-full bg-zinc-800" />
+                </div>
               </div>
               <div 
-                className="flex-1 overflow-y-auto px-6 pb-6 space-y-2.5"
+                className="flex-1 overflow-y-auto px-8 pb-8 space-y-3"
                 data-lenis-prevent
               >
                 {report.skillGaps?.map((gap, i) => (
-                  <div key={i} className="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-white/10 transition-all">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold text-gray-200">{gap.skill}</span>
-                      <div className={`size-1.5 rounded-full ${
-                        gap.severity === "high" ? "bg-red-500 shadow-[0_0_8px_#ef4444]" : 
-                        gap.severity === "medium" ? "bg-yellow-500 shadow-[0_0_8px_#f59e0b]" : 
-                        "bg-blue-500 shadow-[0_0_8px_#3b82f6]"
-                      }`} />
+                  <div key={i} className="group p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800/50 hover:border-zinc-500/30 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm font-bold text-zinc-200 group-hover:text-white transition-colors">{gap.skill}</span>
+                      <div className={cn(
+                        "text-[8px] font-mono font-bold px-2 py-0.5 rounded-full border",
+                        gap.severity === "high" ? "bg-red-950/20 border-red-500/30 text-red-400" : 
+                        gap.severity === "medium" ? "bg-yellow-950/20 border-yellow-500/30 text-yellow-400" : 
+                        "bg-blue-950/20 border-blue-500/30 text-blue-400"
+                      )}>
+                        {gap.severity.toUpperCase()}
+                      </div>
                     </div>
-                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full ${
-                        gap.severity === "high" ? "bg-red-500 w-full" : 
-                        gap.severity === "medium" ? "bg-yellow-500 w-2/3" : 
-                        "bg-blue-500 w-1/3"
-                      }`} />
+                    <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        whileInView={{ 
+                          width: gap.severity === "high" ? "100%" : gap.severity === "medium" ? "66%" : "33%" 
+                        }}
+                        transition={{ duration: 1, delay: i * 0.1 }}
+                        className={cn(
+                          "h-full rounded-full transition-all duration-1000",
+                          gap.severity === "high" ? "bg-red-500" : 
+                          gap.severity === "medium" ? "bg-yellow-500" : 
+                          "bg-zinc-400"
+                        )} 
+                      />
                     </div>
                   </div>
                 ))}
