@@ -39,12 +39,12 @@ export default function Features() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
-             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">Engineering Excellence</span>
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Engineering Excellence</span>
           </div>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 tracking-tighter">
-            Strategic Tools for Career Superiority
+          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-3xl mx-auto">
+            Strategic Tools for <br className="hidden md:block" /> Career Superiority
           </h2>
-          <p className="text-zinc-400 max-w-2xl mx-auto text-lg leading-relaxed">
+          <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
             Move beyond anxiety with industrial-grade AI tools designed to analyze, optimize, and prepare you for high-stakes interviews.
           </p>
         </motion.div>
@@ -155,9 +155,33 @@ export default function Features() {
                   </motion.div>
                   <p className="font-display font-bold text-xl text-zinc-100">ATS Dominance</p>
                 </div>
-                <p className="text-zinc-400 text-sm mb-8 leading-relaxed">
+                <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
                   Generate professional, LaTeX-inspired resumes guaranteed to pass through Applicant Tracking Systems.
                 </p>
+
+                {/* Technical Compliance Checklist */}
+                <div className="grid grid-cols-1 gap-2.5 mb-8">
+                  {[
+                    { label: "Semantic Parsing", status: "Active" },
+                    { label: "Keyword Density", status: "Optimized" },
+                    { label: "Section Hierarchy", status: "Verified" },
+                    { label: "LaTeX Logic", status: "Enabled" }
+                  ].map((item, i) => (
+                    <motion.div 
+                      key={item.label}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + (i * 0.1) }}
+                      className="flex items-center justify-between p-2 rounded-xl bg-zinc-800/30 border border-zinc-700/30"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-1 h-1 rounded-full bg-zinc-500" />
+                        <span className="text-[11px] text-zinc-400 font-medium uppercase tracking-tight">{item.label}</span>
+                      </div>
+                      <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">{item.status}</span>
+                    </motion.div>
+                  ))}
+                </div>
                 
                 <div className="mt-auto pt-8 border-t border-zinc-800/50">
                   <div className="flex items-baseline gap-2 mb-4">

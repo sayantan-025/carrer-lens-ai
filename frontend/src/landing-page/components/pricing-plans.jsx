@@ -74,13 +74,13 @@ export default function PricingPlans() {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-6">
-            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.3em] font-bold">Invest in Strategy</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
+            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Invest in Strategy</span>
           </div>
-          <h2 className="font-display text-5xl md:text-7xl font-bold text-white mb-8 tracking-tighter leading-[1.05]">
+          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
             Industrial-Grade <br className="hidden md:block" /> Investment.
           </h2>
-          <p className="text-zinc-500 max-w-xl mx-auto text-balance text-xl font-light">
+          <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
             Transparent pricing designed to scale with your career trajectory. Zero technical debt, total tactical superiority.
           </p>
         </motion.div>

@@ -193,13 +193,13 @@ export default function WorkflowSteps() {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-6">
-             <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.3em] font-bold">The Protocol</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">The Protocol</span>
           </div>
-          <h2 className="font-display text-5xl md:text-7xl font-bold text-white mb-8 tracking-tighter leading-[1.05]">
+          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
             Strategic Deployment <br className="hidden md:block" /> Pipeline
           </h2>
-          <p className="text-zinc-400 max-w-2xl mx-auto text-xl leading-relaxed font-light text-pretty">
+          <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
             An industrial three-phase process designed to transform raw experience into a strategic advantage that dominates the interview loop.
           </p>
         </motion.div>
@@ -345,7 +345,7 @@ export default function WorkflowSteps() {
       </div>
       
       {/* Section End Bridge */}
-      <div className="mt-32 w-px h-24 bg-linear-to-b from-zinc-800 via-zinc-400 to-transparent mx-auto opacity-50" />
+      {/* <div className="mt-32 w-px h-24 bg-linear-to-b from-zinc-800 via-zinc-400 to-transparent mx-auto opacity-50" /> */}
     </section>
   )
 }

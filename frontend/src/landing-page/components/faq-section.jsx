@@ -106,14 +106,13 @@ export default function FaqSection() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
-             <HelpCircle className="w-3.5 h-3.5 text-zinc-400" />
-             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">Intelligence Base</span>
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Intelligence Base</span>
           </div>
           
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 tracking-tighter">
+          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
             Operational Queries
           </h2>
-          <p className="text-zinc-400 max-w-xl mx-auto text-lg leading-relaxed font-light">
+          <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
             Everything you need to know about the Career Lens protocol and how it transforms your trajectory.
           </p>
         </motion.div>

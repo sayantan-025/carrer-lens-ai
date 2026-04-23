@@ -147,7 +147,7 @@ export default function HeroSection() {
             variants={itemVariants}
           >
             <Link to="/register">
-              <LiquidCtaButton>Get Started Free</LiquidCtaButton>
+              <LiquidCtaButton>Initialize Strategy</LiquidCtaButton>
             </Link>
           </motion.div>
         </motion.div>

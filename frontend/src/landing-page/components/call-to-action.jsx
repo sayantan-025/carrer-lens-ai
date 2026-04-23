@@ -118,13 +118,13 @@ export default function CallToAction() {
         >
           {/* Synced Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
-             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">Final Deployment</span>
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Final Deployment</span>
           </div>
 
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 tracking-tighter">
-            Strategic Superiority Made Effortless.
+          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
+            Strategic Superiority <br className="hidden md:block" /> Made Effortless.
           </h2>
-          <p className="text-zinc-400 max-w-2xl mx-auto text-lg leading-relaxed font-light mb-10">
+          <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light mb-10">
             Join the elite circle of professionals who have transformed their interview performance into a repeatable science.
           </p>
         </motion.div>
@@ -137,7 +137,7 @@ export default function CallToAction() {
         >
           <Link to="/register">
             <LiquidCtaButton>
-              Signup for free
+              Deploy Strategic Protocol
             </LiquidCtaButton>
           </Link>
         </motion.div>

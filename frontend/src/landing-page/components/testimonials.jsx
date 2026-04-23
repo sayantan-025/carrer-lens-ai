@@ -82,13 +82,13 @@ export default function Testimonials() {
           className="flex flex-col items-center justify-center max-w-xl mx-auto mb-16 text-center"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
-             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">Wall of Victory</span>
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Wall of Victory</span>
           </div>
 
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 tracking-tighter">
-            Trusted by the Next Generation of Leaders.
+          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
+            Trusted by the Next <br className="hidden md:block" /> Generation of Leaders.
           </h2>
-          <p className="text-zinc-400 max-w-2xl mx-auto text-lg leading-relaxed font-light">
+          <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
             Join thousands of professionals who have accelerated their careers with industrial-grade AI insights and strategic preparation.
           </p>
         </motion.div>
