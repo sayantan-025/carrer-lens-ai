@@ -40,7 +40,7 @@ export default function Navbar() {
   };
 
   const UserAvatar = ({ size = "size-8" }) => (
-    <div className={cn(size, "rounded-full overflow-hidden border border-white/10 bg-brand-600 flex items-center justify-center text-black text-xs font-bold")}>
+    <div className={cn(size, "rounded-full overflow-hidden border border-white/10 bg-zinc-800 flex items-center justify-center text-white text-xs font-bold")}>
       {user?.avatar ? (
         <img src={user.avatar} alt={user.name} className="size-full object-cover" />
       ) : (
@@ -57,7 +57,7 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-2 group transition-transform hover:scale-105">
             <Logo className="h-7 w-7" />
             <span className="font-display text-lg font-bold tracking-tighter text-white hidden sm:block border-r border-white/10 pr-4 mr-2">
-              CareerLens<span className="text-brand-400">AI</span>
+              CareerLens<span className="text-zinc-500">AI</span>
             </span>
           </Link>
 
@@ -103,7 +103,7 @@ export default function Navbar() {
                         onClick={() => setIsProfileOpen(false)}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 text-zinc-400 hover:text-white transition-all group"
                       >
-                        <User className="size-4 group-hover:text-brand-400" />
+                        <User className="size-4 group-hover:text-white" />
                         <span className="text-sm font-medium">Profile Settings</span>
                       </Link>
                       <button

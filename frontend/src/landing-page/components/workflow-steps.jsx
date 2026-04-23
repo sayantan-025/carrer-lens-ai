@@ -345,7 +345,8 @@ export default function WorkflowSteps() {
       </div>
       
       {/* Section End Bridge */}
-      {/* <div className="mt-32 w-px h-24 bg-linear-to-b from-zinc-800 via-zinc-400 to-transparent mx-auto opacity-50" /> */}
+      {/* <div className="mt-32 w-px h-24 bg-linear-to-b from-zinc-800 via-zinc-400 to-transparent mx-auto opacity-50" />
+       */}
     </section>
   )
 }

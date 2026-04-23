@@ -73,28 +73,33 @@ NODE_ENV=development
 To maintain the elite software craft established for Career Lens AI, all future UI developments must adhere to these "Linear/Vercel-tier" standards:
 
 ### 1. The Design Persona
+
 - **Role**: Elite Product Designer & Frontend Engineer.
 - **Vibe**: High-authority, Industrial-grade, Precise, and Minimalist.
 - **Goal**: Move users from "Interview Anxiety" to "Strategic Superiority."
 
 ### 2. Typography & Hierarchy
+
 - **Display Text**: Use `font-display` (Cal Sans) with `tracking-tighter` and `leading-[1.05]`.
 - **Headings**: Use `Instrument Sans` or `Poppins` with tight tracking.
 - **Copy**: Benefit-first copywriting. Outcomes over features.
 - **Readability**: Maintain WCAG 2.1 AA contrast. Use `zinc-300/400` for subtext on black backgrounds.
 
 ### 3. Visual System & Tokens
+
 - **Base**: Pure `#000000` background.
 - **Accents**: High-vibrancy Purple/Violet (`brand-600`: `#9333ea`).
 - **Surface**: Use `zinc-900/40` backdrops with `backdrop-blur-xl` and `1px` border-white/10.
 - **Tactile feel**: Every button/link must have an `active:scale-95` micro-interaction.
 
 ### 4. Kinetic Motion (Framer Motion)
+
 - **Entrance**: Use staggered, choreographed entrances (`staggerChildren: 0.1`).
 - **Feel**: "Glacial" and atmospheric. Avoid bouncy or frantic animations.
 - **Backgrounds**: WebGL `SoftAurora` should run at low speeds (`0.3 - 0.6`) to provide "Living AI" atmosphere without distraction.
 
 ### 5. Conversion Patterns
+
 - **Social Proof First**: Lead with high-authority metrics (e.g., "10,000+ Professionals") and gold star ratings.
 - **Tactile CTAs**: Use the `LiquidCtaButton` for primary funnel entry points.
 - **Optical Balance**: Prioritize vertical centering in viewports over manual paddings.
