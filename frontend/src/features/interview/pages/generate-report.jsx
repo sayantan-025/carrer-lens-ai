@@ -371,10 +371,10 @@ const GenerateReport = () => {
               </button>
 
               {currentStep < steps.length - 1 ? (
-                <div className="shrink-0">
+                <div className="shrink-0 min-w-[200px]">
                   <LiquidCtaButton 
                     onClick={() => setCurrentStep(prev => prev + 1)} 
-                    className={cn(!canProceed && "opacity-50 grayscale pointer-events-none")}
+                    className={cn("w-full", !canProceed && "opacity-50 grayscale pointer-events-none")}
                   >
                     Continue
                   </LiquidCtaButton>
@@ -383,14 +383,16 @@ const GenerateReport = () => {
                 <div className="shrink-0 min-w-[240px]">
                   <LiquidCtaButton 
                     onClick={handleGenerate} 
-                    className={cn(!isFinalValid && "opacity-50 grayscale pointer-events-none")}
-                  >
-                    {loading ? (
+                    className={cn("w-full", !isFinalValid && "opacity-50 grayscale pointer-events-none")}
+                    loading={loading}
+                    loadingChild={
                       <div className="flex items-center gap-3">
                         <DotLoader />
-                        <span>Analyzing context...</span>
+                        <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Analyzing...</span>
                       </div>
-                    ) : "Generate Analysis"}
+                    }
+                  >
+                    Generate Analysis
                   </LiquidCtaButton>
                 </div>
               )}
