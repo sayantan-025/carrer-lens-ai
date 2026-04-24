@@ -119,7 +119,7 @@ exports.login = async (req, res) => {
 
   const user = await User.findOne({ email }).select("+password");
   if (!user || user.authProvider !== "local") {
-    return res.status(401).json({ success: false, message: "Invalid credentials" });
+    return res.status(401).json({ success: false, message: "Invalid email or password." });
   }
 
   if (!user.isVerified) {
@@ -128,7 +128,7 @@ exports.login = async (req, res) => {
 
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    return res.status(401).json({ success: false, message: "Invalid credentials" });
+    return res.status(401).json({ success: false, message: "Invalid email or password." });
   }
 
   const accessToken = generateAccessToken(user._id);

@@ -7,13 +7,13 @@ import { ToastProvider } from "./context/toast-context.jsx";
 
 const App = () => {
   return (
-    <AuthProvider>
-      <ToastProvider>
+    <ToastProvider>
+      <AuthProvider>
         <InterviewProvider>
           <RouterProvider router={router} />
         </InterviewProvider>
-      </ToastProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </ToastProvider>
   );
 };
 

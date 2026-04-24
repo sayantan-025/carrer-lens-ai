@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
   userName: {
     type: String,
-    unique: [true, "Terminal ID unavailable."],
+    unique: [true, "Username is already taken."],
     sparse: true,
   },
 
@@ -13,9 +14,9 @@ const userSchema = new mongoose.Schema({
 
   email: {
     type: String,
-    unique: [true, "Network ID already registered."],
-    required: [true, "Network ID required."],
-    match: [/^\S+@\S+\.\S+$/, "Invalid transmission format."],
+    unique: [true, "Email is already registered."],
+    required: [true, "Email is required."],
+    match: [/^\S+@\S+\.\S+$/, "Please use a valid email address."],
   },
 
   password: {
@@ -23,7 +24,8 @@ const userSchema = new mongoose.Schema({
     required: function() {
       return !this.googleId && !this.githubId;
     },
-    minlength: [8, "Security code length insufficient."],
+    minlength: [8, "Password must be at least 8 characters."],
+    select: false,
   },
 
   isVerified: {
@@ -70,6 +72,23 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 }, { timestamps: true });
+
+// Pre-save hook for password hashing
+userSchema.pre("save", async function() {
+  if (!this.isModified("password")) return;
+  
+  try {
+    const salt = await bcrypt.genSalt(Number(process.env.BCRYPT_ROUNDS) || 10);
+    this.password = await bcrypt.hash(this.password, salt);
+  } catch (err) {
+    throw err;
+  }
+});
+
+// Method to compare password
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 const userModel = mongoose.model("users", userSchema);
 

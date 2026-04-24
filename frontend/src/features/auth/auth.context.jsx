@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import * as authApi from "./services/auth.api";
 import { setGlobalAuthData } from "./api/axios-instance";
+import { useToast } from "../../context/toast-context";
 
 export const AuthContext = createContext();
 
@@ -8,42 +9,11 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { showToast } = useToast();
 
   const isAuthenticated = !!user;
 
-  const updateAuthData = useCallback((user, token) => {
-    setUser(user);
-    setAccessToken(token);
-    setGlobalAuthData(token, setAccessToken, logout);
-  }, []);
-
-  const login = useCallback(async (credentials) => {
-    setIsLoading(true);
-    try {
-      const data = await authApi.login(credentials);
-      updateAuthData(data.user, data.accessToken);
-      return data;
-    } catch (error) {
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [updateAuthData]);
-
-  const verifyOTP = useCallback(async (otpData) => {
-    setIsLoading(true);
-    try {
-      const data = await authApi.verifyOTP(otpData);
-      updateAuthData(data.user, data.accessToken);
-      return data;
-    } catch (error) {
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [updateAuthData]);
-
-  const logout = useCallback(async () => {
+  const logout = useCallback(async (reason) => {
     setIsLoading(true);
     try {
       await authApi.logout();
@@ -54,8 +24,41 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(null);
       setGlobalAuthData(null, null, null);
       setIsLoading(false);
+      
+      if (reason === "SESSION_EXPIRED") {
+        showToast({ 
+          message: "Your session has expired. Please log in again.", 
+          type: "error" 
+        });
+      }
     }
-  }, []);
+  }, [showToast]);
+
+  const updateAuthData = useCallback((user, token) => {
+    setUser(user);
+    setAccessToken(token);
+    setGlobalAuthData(token, setAccessToken, logout);
+  }, [logout]);
+
+  const login = useCallback(async (credentials) => {
+    try {
+      const data = await authApi.login(credentials);
+      updateAuthData(data.user, data.accessToken);
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }, [updateAuthData]);
+
+  const verifyOTP = useCallback(async (otpData) => {
+    try {
+      const data = await authApi.verifyOTP(otpData);
+      updateAuthData(data.user, data.accessToken);
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }, [updateAuthData]);
 
   const checkAuth = useCallback(async () => {
     // Silent check on mount

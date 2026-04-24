@@ -48,7 +48,7 @@ router.get(
       });
 
       // Redirect to frontend callback page
-      res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/oauth/callback?token=${accessToken}`);
+      res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/oauth/callback`);
     } catch (error) {
       console.error("Google OAuth error:", error);
       res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=server_error`);
@@ -88,7 +88,7 @@ router.get(
         path: "/api/auth/refresh-token",
       });
 
-      res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/oauth/callback?token=${accessToken}`);
+      res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/oauth/callback`);
     } catch (error) {
       console.error("GitHub OAuth error:", error);
       res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=server_error`);

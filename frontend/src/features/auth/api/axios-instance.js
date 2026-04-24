@@ -39,13 +39,15 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Use code: "TOKEN_EXPIRED" from backend to be precise
+    // Don't attempt to refresh on auth endpoints (login, register, etc.)
+    if (originalRequest.url?.includes("/auth/")) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        // Use standard axios for refresh to avoid interceptor loop if baseURL is inconsistent
-        // but since we have a proxy, /api/auth/refresh-token is correct
         const refreshRes = await axios.post("/api/auth/refresh-token", {}, { withCredentials: true });
         const { accessToken: newAccessToken } = refreshRes.data;
 
@@ -58,7 +60,7 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         if (logoutHandler) {
-          logoutHandler();
+          logoutHandler("SESSION_EXPIRED");
         }
         return Promise.reject(refreshError);
       }

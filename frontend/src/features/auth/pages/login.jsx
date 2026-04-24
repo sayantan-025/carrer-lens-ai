@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useToast } from "../../../context/toast-context";
 import { Spinner } from "../../../components/ui/spinner";
@@ -13,6 +13,7 @@ import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { isLoading, login } = useAuth();
   const { showToast } = useToast();
   const [email, setEmail] = useState("");
@@ -20,15 +21,26 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam === "oauth_failed") {
+      setError("Social login failed. Please try again.");
+    } else if (errorParam === "no_user") {
+      setError("We couldn't retrieve your profile data.");
+    } else if (errorParam === "server_error") {
+      setError("Server error during login. Please try again later.");
+    }
+  }, [searchParams]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
       await login({ email, password });
-      showToast({ message: "Welcome back.", type: "success" });
+      showToast({ message: "Successfully logged in.", type: "success" });
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid credentials.");
+      setError(err.response?.data?.message || "Invalid email or password.");
     }
   };
 
@@ -95,29 +107,16 @@ const Login = () => {
           </p>
         </div>
 
-        <AnimatePresence mode="wait">
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-8 p-5 bg-red-950/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-400 text-[11px] font-bold uppercase tracking-widest"
-            >
-              <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-              {error}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="flex flex-col space-y-4 mb-10">
+        {/* Social Login Buttons */}
+        <div className="grid grid-cols-2 gap-4 mb-10">
           <button
             onClick={() => handleSocialLogin("github")}
             className="flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-zinc-900 border border-white/5 px-4 text-[11px] font-bold uppercase tracking-widest text-zinc-400 transition-all hover:bg-zinc-800 hover:text-white hover:border-white/10 active:scale-95 cursor-pointer"
           >
             <svg className="size-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.744.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.181-1.305.289-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.213-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.833 1.233 1.903 1.233 3.213 0 4.61-2.803 5.625-5.475 5.92.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-            </svg>
-            Continue with GitHub
+            </svg> 
+            GitHub
           </button>
           <button
             onClick={() => handleSocialLogin("google")}
@@ -129,10 +128,11 @@ const Login = () => {
               <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" />
             </svg>
-            Continue with Google
+            Google
           </button>
         </div>
 
+        {/* Separator */}
         <div className="relative mb-10">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-white/5"></div>
@@ -152,8 +152,16 @@ const Login = () => {
               autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800"
+              className={cn(
+                "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
+                error && (error.toLowerCase().includes("email not") || error.toLowerCase().includes("user not")) && "border-red-500/50"
+              )}
             />
+            {error && (error.toLowerCase().includes("email not") || error.toLowerCase().includes("user not")) && (
+              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+                {error}
+              </p>
+            )}
           </div>
 
           <div className="w-full space-y-2 text-left">
@@ -171,7 +179,10 @@ const Login = () => {
                 autoComplete="current-password"
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl pr-12 placeholder:text-zinc-800"
+                className={cn(
+                  "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl pr-12 placeholder:text-zinc-800",
+                  error && (error.toLowerCase().includes("password") || error.toLowerCase().includes("credentials")) && "border-red-500/50"
+                )}
               />
               <button
                 type="button"
@@ -181,6 +192,11 @@ const Login = () => {
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+            {error && (error.toLowerCase().includes("password") || error.toLowerCase().includes("credentials")) && (
+              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+                {error}
+              </p>
+            )}
           </div>
 
           <div className="w-full pt-2">

@@ -56,8 +56,7 @@ const registerUserController = async (req, res) => {
         return res.status(400).json({ message: "Email already registered" });
       }
       // If user exists but not verified, we'll reuse the account and send new OTP
-      const hash = await bcrypt.hash(password, Number(process.env.BCRYPT_ROUNDS) || 10);
-      emailExists.password = hash;
+      emailExists.password = password; // Pre-save hook will hash this
       emailExists.userName = userName;
       const otp = generateOTP();
       emailExists.otp = otp;
@@ -72,14 +71,13 @@ const registerUserController = async (req, res) => {
       return res.status(400).json({ message: "Username already taken" });
     }
 
-    const hash = await bcrypt.hash(password, Number(process.env.BCRYPT_ROUNDS) || 10);
     const otp = generateOTP();
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
     await userModel.create({
       userName,
       email,
-      password: hash,
+      password, // Pre-save hook will hash this
       otp,
       otpExpiry,
       isVerified: false,
@@ -131,14 +129,20 @@ const loginUserController = async (req, res) => {
 
   try {
     const user = await userModel.findOne({ email }).select("+password");
-    if (!user) return res.status(404).json({ message: "No account found with this email" });
+    if (!user) return res.status(401).json({ message: "Invalid email or password." });
 
     if (!user.isVerified) {
       return res.status(403).json({ message: "Please verify your email first", email: user.email });
     }
 
+    if (user.authProvider !== "local" || !user.password) {
+      return res.status(400).json({ 
+        message: `This account uses ${user.authProvider} authentication. Please log in with ${user.authProvider}.` 
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+    if (!isMatch) return res.status(401).json({ message: "Invalid email or password." });
 
     const { accessToken } = await sendAuthCookies(res, user);
 
@@ -148,7 +152,7 @@ const loginUserController = async (req, res) => {
       accessToken
     });
   } catch (error) {
-    res.status(500).json({ message: "Login failed", error: error.message });
+    res.status(500).json({ message: "Login failed" });
   }
 };
 
@@ -250,7 +254,7 @@ const resetPasswordController = async (req, res) => {
       resetPasswordExpiry: { $gt: new Date() },
     });
     if (!user) return res.status(400).json({ message: "Invalid or expired OTP" });
-    user.password = await bcrypt.hash(newPassword, Number(process.env.BCRYPT_ROUNDS) || 10);
+    user.password = newPassword;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpiry = undefined;
     await user.save();
@@ -266,7 +270,7 @@ const changePasswordController = async (req, res) => {
     const user = await userModel.findById(req.user.id).select("+password");
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) return res.status(401).json({ message: "Incorrect password" });
-    user.password = await bcrypt.hash(newPassword, Number(process.env.BCRYPT_ROUNDS) || 10);
+    user.password = newPassword;
     await user.save();
     res.status(200).json({ message: "Password changed" });
   } catch (error) {

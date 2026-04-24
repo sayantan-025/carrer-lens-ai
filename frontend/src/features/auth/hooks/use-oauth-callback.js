@@ -9,16 +9,9 @@ const useOAuthCallback = () => {
 
   useEffect(() => {
     const processCallback = async () => {
-      // Backend redirect includes ?token=... in URL
-      const token = searchParams.get("token");
-
-      if (!token) {
-        navigate("/login?error=oauth_failed");
-        return;
-      }
-
+      // Backend redirect no longer includes ?token=... for security
+      // checkAuth() will call /api/auth/refresh-token which uses the httpOnly cookie
       try {
-        // The backend also sets a cookie, but we can use checkAuth to refresh state
         await checkAuth();
         navigate("/");
       } catch (err) {
@@ -28,7 +21,7 @@ const useOAuthCallback = () => {
     };
 
     processCallback();
-  }, [searchParams, checkAuth, navigate]);
+  }, [checkAuth, navigate]);
 };
 
 export default useOAuthCallback;

@@ -77,8 +77,16 @@ const ForgotPassword = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800"
+            className={cn(
+              "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
+              error && "border-red-500/50"
+            )}
           />
+          {error && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+              {error}
+            </p>
+          )}
         </div>
 
         <div className="w-full pt-2 flex justify-center">

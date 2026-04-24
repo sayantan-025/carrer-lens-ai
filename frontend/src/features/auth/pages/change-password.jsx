@@ -87,8 +87,16 @@ const ChangePassword = () => {
             value={oldPassword}
             onChange={(e) => setOldPassword(e.target.value)}
             required
-            className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800"
+            className={cn(
+              "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
+              error && error.toLowerCase().includes("current") && "border-red-500/50"
+            )}
           />
+          {error && error.toLowerCase().includes("current") && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+              {error}
+            </p>
+          )}
         </div>
 
         <div className="w-full space-y-2 text-left">
@@ -102,7 +110,10 @@ const ChangePassword = () => {
               onChange={(e) => setNewPassword(e.target.value)}
               required
               minLength={8}
-              className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl pr-12 placeholder:text-zinc-800"
+              className={cn(
+                "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl pr-12 placeholder:text-zinc-800",
+                error && error.toLowerCase().includes("new") && !error.toLowerCase().includes("match") && "border-red-500/50"
+              )}
             />
             <button
               type="button"
@@ -112,6 +123,11 @@ const ChangePassword = () => {
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+          {error && error.toLowerCase().includes("new") && !error.toLowerCase().includes("match") && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+              {error}
+            </p>
+          )}
         </div>
 
         <div className="w-full space-y-2 text-left">
@@ -123,8 +139,16 @@ const ChangePassword = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800"
+            className={cn(
+              "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
+              error && error.toLowerCase().includes("match") && "border-red-500/50"
+            )}
           />
+          {error && error.toLowerCase().includes("match") && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+              {error}
+            </p>
+          )}
         </div>
 
         <div className="w-full pt-4 flex justify-center">

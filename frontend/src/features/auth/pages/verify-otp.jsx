@@ -152,12 +152,18 @@ const VerifyOTP = () => {
                   onKeyDown={e => handleKeyDown(index, e)}
                   className={cn(
                     "w-full h-full text-center bg-zinc-900/30 border rounded-xl text-xl font-bold text-white transition-all duration-300 outline-none",
-                    digit ? "border-white/20 ring-1 ring-white/10 shadow-[0_0_15px_white/5]" : "border-white/5 hover:border-white/10 focus:border-white/20"
+                    digit ? "border-white/20 ring-1 ring-white/10 shadow-[0_0_15px_white/5]" : "border-white/5 hover:border-white/10 focus:border-white/20",
+                    error && "border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.1)]"
                   )}
                 />
               </div>
             ))}
           </div>
+          {error && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest animate-in fade-in slide-in-from-top-1">
+              {error}
+            </p>
+          )}
         </div>
 
         <div className="w-full pt-2 flex justify-center">

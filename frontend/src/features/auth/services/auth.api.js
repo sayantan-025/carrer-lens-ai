@@ -75,9 +75,9 @@ export const resetPassword = async ({ email, otp, newPassword }) => {
 };
 
 // change-password
-export const changePassword = async ({ oldPassword, newPassword }) => {
+export const changePassword = async ({ oldPassword: currentPassword, newPassword }) => {
   try {
-    const response = await axiosInstance.post("/auth/change-password", { oldPassword, newPassword });
+    const response = await axiosInstance.post("/auth/change-password", { currentPassword, newPassword });
     return response.data;
   } catch (error) {
     throw error;

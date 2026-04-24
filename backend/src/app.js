@@ -7,8 +7,18 @@ const interviewReport = require("./routes/interview.routes");
 const cors = require("cors");
 const path = require("path");
 const passport = require("./config/passport");
+const rateLimit = require("express-rate-limit");
 
 const projectRoot = path.resolve(__dirname, "../..");
+
+// Security: Rate Limiting
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 requests per window
+  message: { message: "Too many attempts from this IP. Please try again after 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 app.use(
   cors({
@@ -19,6 +29,12 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
+
+// Apply rate limiting to sensitive routes
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/register", authLimiter);
+app.use("/api/auth/verify-otp", authLimiter);
+app.use("/api/auth/forgot-password", authLimiter);
 
 app.use("/api/auth", authRouter);
 app.use("/api/oauth", oauthRouter);

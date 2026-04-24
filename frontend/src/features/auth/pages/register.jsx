@@ -53,7 +53,7 @@ const Register = () => {
     try {
       const response = await register({ userName, email, password });
       showToast({ 
-        message: response.message || "Account created successfully.", 
+        message: "Account created successfully.", 
         type: "success" 
       });
       navigate("/verify-otp", { state: { email } });
@@ -87,7 +87,6 @@ const Register = () => {
 
   return (
     <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6 text-left">
-      {/* Left Side - Value Prop */}
       <motion.div 
         className="hidden lg:flex flex-col gap-10"
         initial={{ opacity: 0, x: -20 }}
@@ -125,7 +124,6 @@ const Register = () => {
         </div>
       </motion.div>
 
-      {/* Right Side - Form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -143,20 +141,6 @@ const Register = () => {
             Set up your profile
           </p>
         </div>
-
-        <AnimatePresence mode="wait">
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-8 p-5 bg-red-950/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-400 text-[11px] font-bold uppercase tracking-widest"
-            >
-              <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-              {error}
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         <div className="flex flex-col space-y-4 mb-10">
           <button
@@ -202,10 +186,18 @@ const Register = () => {
                 autoComplete="name"
                 onChange={(e) => setUserName(e.target.value)}
                 required
-                className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800"
+                className={cn(
+                  "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
+                  error && error.toLowerCase().includes("taken") && "border-red-500/50"
+                )}
               />
               <ValidationCheck isValid={isNameValid} />
             </div>
+            {error && error.toLowerCase().includes("taken") && (
+              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+                {error}
+              </p>
+            )}
           </div>
           
           <div className="w-full space-y-2 text-left">
@@ -218,10 +210,18 @@ const Register = () => {
                 autoComplete="email"
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800"
+                className={cn(
+                  "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
+                  error && (error.toLowerCase().includes("email") || error.toLowerCase().includes("registered")) && "border-red-500/50"
+                )}
               />
               <ValidationCheck isValid={isEmailValid} />
             </div>
+            {error && (error.toLowerCase().includes("email") || error.toLowerCase().includes("registered")) && (
+              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+                {error}
+              </p>
+            )}
           </div>
 
           <div className="w-full space-y-2 text-left">
@@ -234,7 +234,10 @@ const Register = () => {
                 autoComplete="new-password"
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl pr-12 placeholder:text-zinc-800"
+                className={cn(
+                  "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl pr-12 placeholder:text-zinc-800",
+                  error && error.toLowerCase().includes("password") && "border-red-500/50"
+                )}
               />
               <button
                 type="button"
@@ -245,6 +248,11 @@ const Register = () => {
               </button>
               <ValidationCheck isValid={isPasswordValid} />
             </div>
+            {error && error.toLowerCase().includes("password") && (
+              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+                {error}
+              </p>
+            )}
           </div>
 
           <div className="w-full pt-2">
@@ -252,7 +260,7 @@ const Register = () => {
                {isSubmitting ? (
                  <div className="flex items-center justify-center gap-3">
                    <Spinner size="sm" />
-                   <span>Initializing...</span>
+                   <span>Registering...</span>
                  </div>
                ) : "Register"}
              </LiquidCtaButton>
