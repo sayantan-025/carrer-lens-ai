@@ -88,7 +88,7 @@ export default function HeroSection() {
             className="text-lg md:text-xl text-zinc-300 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light"
             variants={itemVariants}
           >
-            Career Lens AI uses your resume and the job description to create a 
+            Career Lens AI uses your resume or self-description and the job details to create a 
             personalized plan for your interview success.
           </motion.p>
 

@@ -51,9 +51,9 @@ const steps = [
   },
   {
     phase: "02",
-    protocol: "Resume Sync",
-    title: "Upload your Resume.",
-    description: "Submit your resume to sync your professional history. We map your skills against the job requirements, identifying exactly where you match and where you can improve.",
+    protocol: "Resume or Bio",
+    title: "Upload Resume or Self-Description.",
+    description: "Submit your resume or provide a brief self-description to sync your professional history. We map your skills against the job requirements to identify your strengths and gaps.",
     icon: UserSearch,
     color: "text-white",
     glow: "shadow-[0_0_40px_rgba(255,255,255,0.08)]",
@@ -70,7 +70,7 @@ const steps = [
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
                 <div className="text-zinc-600 font-mono text-[7px] uppercase tracking-tighter mb-1">Source</div>
-                <div className="text-white font-mono text-[9px] font-bold tracking-widest">RESUME</div>
+                <div className="text-white font-mono text-[9px] font-bold tracking-widest text-center">RESUME /<br/>PROFILE</div>
               </motion.div>
               <div className="relative w-24 h-px bg-zinc-800">
                  <motion.div 
