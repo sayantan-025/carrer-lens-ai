@@ -25,10 +25,12 @@ const ForgotPassword = () => {
     setIsSubmitting(true);
     try {
       await forgotPassword({ email });
-      showToast({ message: "Recovery code sent.", type: "success" });
+      showToast({ message: "Code sent.", type: "success" });
       navigate("/reset-password", { state: { email } });
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to send code.");
+      const errMsg = err.response?.data?.message || "Failed to send code.";
+      setError(errMsg);
+      showToast({ message: errMsg, type: "error" });
     } finally {
       setIsSubmitting(false);
     }

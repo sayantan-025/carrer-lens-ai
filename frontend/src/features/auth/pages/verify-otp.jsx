@@ -9,6 +9,7 @@ import Logo from "../../../components/ui/logo";
 import { Label } from "../../../components/ui/label";
 import { cn } from "../../../lib/utils";
 import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
+import { DotLoader } from "../../../components/ui/dot-loader";
 
 const VerifyOTP = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -81,10 +82,12 @@ const VerifyOTP = () => {
     setIsSubmitting(true);
     try {
       await verifyOTP({ email, otp: otpString });
-      showToast({ message: "Email verified.", type: "success" });
+      showToast({ message: "Verified successfully.", type: "success" });
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid verification code.");
+      const errMsg = err.response?.data?.message || "Invalid code.";
+      setError(errMsg);
+      showToast({ message: errMsg, type: "error" });
     } finally {
       setIsSubmitting(false);
     }
@@ -94,10 +97,10 @@ const VerifyOTP = () => {
     if (countdown > 0) return;
     try {
       await resendOTP({ email });
-      showToast({ message: "New code sent.", type: "info" });
+      showToast({ message: "New code sent.", type: "success" });
       setCountdown(60);
     } catch (err) {
-      showToast({ message: "Failed to resend code.", type: "error" });
+      showToast({ message: "Resend failed.", type: "error" });
     }
   };
 
@@ -170,7 +173,7 @@ const VerifyOTP = () => {
            <LiquidCtaButton type="submit" disabled={isSubmitting || !isOtpComplete} className="w-full text-center">
              {isSubmitting ? (
                <div className="flex items-center justify-center gap-3">
-                 <Spinner size="sm" />
+                 <DotLoader />
                  <span>Verifying...</span>
                </div>
              ) : "Verify Code"}

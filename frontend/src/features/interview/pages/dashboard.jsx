@@ -188,9 +188,9 @@ const Dashboard = () => {
     setIsDownloading(true);
     try {
       await getResumePdf(interviewId);
-      showToast({ message: "PDF Downloaded", type: "success" });
+      showToast({ message: "Downloaded.", type: "success" });
     } catch (err) {
-      showToast({ message: "Download failed", type: "error" });
+      showToast({ message: "Download failed.", type: "error" });
     } finally {
       setIsDownloading(false);
     }
@@ -221,7 +221,7 @@ const Dashboard = () => {
              className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white text-black font-bold text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
            >
              {isDownloading ? <Spinner size="sm" className="border-zinc-800 border-t-zinc-500" /> : <FileDown size={14} />} 
-             {isDownloading ? "Downloading..." : "Download PDF"}
+             {isDownloading ? "Downloading..." : "Download Resume"}
            </button>
         </div>
       </header>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useToast } from "../../../context/toast-context";
 import { Spinner } from "../../../components/ui/spinner";
+import { Skeleton } from "../../../components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, CheckCircle2, Check } from "lucide-react";
 
@@ -14,7 +15,7 @@ import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { isLoading: isAuthChecking, register } = useAuth();
   const { showToast } = useToast();
 
   const [userName, setUserName] = useState("");
@@ -45,20 +46,24 @@ const Register = () => {
     setError("");
     
     if (!isPasswordValid) {
-      setError("Password must be at least 8 characters.");
+      const msg = "Password must be at least 8 characters.";
+      setError(msg);
+      showToast({ message: msg, type: "error" });
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const response = await register({ userName, email, password });
+      await register({ userName, email, password });
       showToast({ 
         message: "Account created successfully.", 
         type: "success" 
       });
       navigate("/verify-otp", { state: { email } });
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed.");
+      const errMsg = err.response?.data?.message || "Registration failed.";
+      setError(errMsg);
+      showToast({ message: errMsg, type: "error" });
     } finally {
       setIsSubmitting(false);
     }
@@ -78,12 +83,55 @@ const Register = () => {
           className="absolute right-4 top-1/2 -translate-y-1/2 z-20"
         >
           <div className="bg-white rounded-full p-0.5 shadow-[0_0_10px_white]">
+            <span className="sr-only">Valid</span>
             <Check className="size-2.5 text-black stroke-[4px]" />
           </div>
         </motion.div>
       )}
     </AnimatePresence>
   );
+
+  if (isAuthChecking) {
+    return (
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6 text-left">
+        <div className="hidden lg:flex flex-col gap-10">
+          <Skeleton className="h-10 w-10 mb-4 rounded-xl" />
+          <div className="space-y-6">
+            <Skeleton className="h-6 w-32 rounded-full" />
+            <div className="space-y-3">
+              <Skeleton className="h-16 w-full rounded-2xl" />
+              <Skeleton className="h-16 w-3/4 rounded-2xl" />
+            </div>
+            <Skeleton className="h-20 w-4/5 rounded-2xl" />
+          </div>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-3">
+                <Skeleton className="size-4 rounded-full" />
+                <Skeleton className="h-4 w-48 rounded-md" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 shadow-2xl mx-auto lg:mr-0 relative h-[700px]">
+          <div className="flex flex-col items-center lg:items-start mb-10">
+            <Skeleton className="h-12 w-12 mb-8 lg:hidden rounded-xl" />
+            <Skeleton className="h-10 w-32 mb-4 rounded-xl" />
+            <Skeleton className="h-4 w-48 rounded-md" />
+          </div>
+          <div className="space-y-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-24 rounded-md" />
+                <Skeleton className="h-12 w-full rounded-xl" />
+              </div>
+            ))}
+            <Skeleton className="h-14 w-full rounded-full mt-4" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6 text-left">

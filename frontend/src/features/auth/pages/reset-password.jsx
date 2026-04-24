@@ -37,10 +37,12 @@ const ResetPassword = () => {
     setIsSubmitting(true);
     try {
       await resetPassword({ email, otp: otpValue, newPassword });
-      showToast({ message: "Password reset successful.", type: "success" });
+      showToast({ message: "Password updated.", type: "success" });
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to reset password.");
+      const errMsg = err.response?.data?.message || "Reset failed.";
+      setError(errMsg);
+      showToast({ message: errMsg, type: "error" });
     } finally {
       setIsSubmitting(false);
     }

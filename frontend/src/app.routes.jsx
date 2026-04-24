@@ -8,7 +8,6 @@ import OAuthCallback from "./features/auth/pages/oauth-callback";
 import Profile from "./features/auth/pages/profile";
 import ChangePassword from "./features/auth/pages/change-password";
 import LandingPage from "./landing-page/landing-page";
-import Protected from "./features/auth/components/protectet";
 import Dashboard from "./features/interview/pages/dashboard";
 import GenerateReport from "./features/interview/pages/generate-report";
 

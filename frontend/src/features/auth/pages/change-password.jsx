@@ -33,12 +33,14 @@ const ChangePassword = () => {
     setIsSubmitting(true);
     try {
       await changePassword({ oldPassword, newPassword });
-      showToast({ message: "Password updated successfully.", type: "success" });
+      showToast({ message: "Password updated.", type: "success" });
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update password.");
+      const errMsg = err.response?.data?.message || "Update failed.";
+      setError(errMsg);
+      showToast({ message: errMsg, type: "error" });
     } finally {
       setIsSubmitting(false);
     }

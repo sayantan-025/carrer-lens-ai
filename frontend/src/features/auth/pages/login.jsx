@@ -8,18 +8,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
+import { Skeleton } from "../../../components/ui/skeleton";
 import { cn } from "../../../lib/utils";
 import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
 
 const Login = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { isLoading, login } = useAuth();
+  const { isLoading: isAuthChecking, login } = useAuth();
   const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const errorParam = searchParams.get("error");
@@ -35,18 +37,70 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
     try {
       await login({ email, password });
       showToast({ message: "Successfully logged in.", type: "success" });
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid email or password.");
+      const errMsg = err.response?.data?.message || "Invalid email or password.";
+      setError(errMsg);
+      // Only show toast if it's a server error (500)
+      if (!err.response || err.response.status === 500) {
+        showToast({ message: "Login failed. Please try again.", type: "error" });
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleSocialLogin = (provider) => {
     window.location.href = `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/oauth/${provider}`;
   };
+
+  if (isAuthChecking) {
+    return (
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6 text-left">
+        <div className="hidden lg:flex flex-col gap-10">
+          <Skeleton className="h-10 w-10 mb-4 rounded-xl" />
+          <div className="space-y-6">
+            <Skeleton className="h-6 w-32 rounded-full" />
+            <div className="space-y-3">
+              <Skeleton className="h-16 w-full rounded-2xl" />
+              <Skeleton className="h-16 w-3/4 rounded-2xl" />
+            </div>
+            <Skeleton className="h-20 w-4/5 rounded-2xl" />
+          </div>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-3">
+                <Skeleton className="size-4 rounded-full" />
+                <Skeleton className="h-4 w-48 rounded-md" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 shadow-2xl mx-auto lg:mr-0 relative h-[600px]">
+          <div className="flex flex-col items-center lg:items-start mb-10">
+            <Skeleton className="h-12 w-12 mb-8 lg:hidden rounded-xl" />
+            <Skeleton className="h-10 w-32 mb-4 rounded-xl" />
+            <Skeleton className="h-4 w-48 rounded-md" />
+          </div>
+          <div className="space-y-8">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24 rounded-md" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24 rounded-md" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
+            <Skeleton className="h-14 w-full rounded-full mt-4" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6 text-left">
@@ -201,7 +255,7 @@ const Login = () => {
 
           <div className="w-full pt-2">
              <LiquidCtaButton type="submit" className="w-full">
-               {isLoading ? (
+               {isSubmitting ? (
                  <div className="flex items-center justify-center gap-3">
                    <Spinner size="sm" />
                    <span>Authenticating...</span>

@@ -1,14 +1,20 @@
 import React from "react";
 import { Outlet, Navigate } from "react-router";
 import { useAuthContext } from "../features/auth/auth.context";
-import FullScreenLoader from "../components/ui/full-screen-loader";
+import { Skeleton } from "../components/ui/skeleton";
 import GlobalBackground from "../components/ui/global-background";
+
+const AuthLayoutSkeleton = () => (
+  <div className="min-h-screen w-full bg-black flex items-center justify-center p-6">
+    <Skeleton className="w-full max-w-md h-[600px] rounded-[2.5rem]" />
+  </div>
+);
 
 const AuthLayout = () => {
   const { isAuthenticated, isLoading } = useAuthContext();
 
   if (isLoading) {
-    return <FullScreenLoader />;
+    return <AuthLayoutSkeleton />;
   }
 
   if (isAuthenticated) {

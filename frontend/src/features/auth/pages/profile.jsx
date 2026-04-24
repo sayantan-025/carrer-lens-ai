@@ -7,10 +7,35 @@ import Logo from "../../../components/ui/logo";
 import { cn } from "../../../lib/utils";
 import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
 
-const Profile = () => {
-  const { user } = useAuth();
+const ProfileSkeleton = () => (
+  <div className="w-full max-w-4xl mx-auto py-12 px-6 relative z-10">
+    <div className="bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] p-10 md:p-16 shadow-2xl relative overflow-hidden">
+      <div className="flex flex-col md:flex-row items-center gap-12 mb-16 relative">
+        <Skeleton className="size-32 md:size-40 rounded-[2.5rem]" />
+        <div className="text-center md:text-left space-y-4 flex-1">
+          <Skeleton className="h-6 w-32 rounded-full" />
+          <Skeleton className="h-12 w-64 rounded-xl" />
+          <Skeleton className="h-4 w-24 rounded-md" />
+        </div>
+        <Skeleton className="h-12 w-32 rounded-2xl md:ml-auto" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+        {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />)}
+      </div>
+      <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+        <Skeleton className="h-14 w-48 rounded-[2rem]" />
+        <Skeleton className="h-14 w-48 rounded-[2rem]" />
+      </div>
+    </div>
+  </div>
+);
 
-  if (!user) return null;
+const Profile = () => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading || !user) {
+    return <ProfileSkeleton />;
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto py-12 px-6 relative z-10">

@@ -64,9 +64,9 @@ const GenerateReport = () => {
   const handleFileChange = (file) => {
     if (file && file.type === "application/pdf") {
       setFormData(prev => ({ ...prev, resumeFile: file }));
-      showToast({ message: "Resume uploaded successfully.", type: "success" });
+      showToast({ message: "Resume uploaded.", type: "success" });
     } else {
-      showToast({ message: "Please upload a valid PDF.", type: "error" });
+      showToast({ message: "Please upload a PDF.", type: "error" });
     }
   };
 
@@ -74,8 +74,13 @@ const GenerateReport = () => {
     if (!isFinalValid) return;
     try {
       const result = await generateReport(formData);
-      if (result) navigate(`/dashboard/${result._id}`);
-    } catch (err) { showToast({ message: "Analysis failed to initialize.", type: "error" }); }
+      if (result) {
+        showToast({ message: "Report generated.", type: "success" });
+        navigate(`/dashboard/${result._id}`);
+      }
+    } catch (err) { 
+      showToast({ message: "Generation failed.", type: "error" }); 
+    }
   };
 
   const formatDate = (dateStr) => {
@@ -151,32 +156,73 @@ const GenerateReport = () => {
             })}
           </div>
 
-          {/* AI Intelligence Card */}
+          {/* Validation Requirements Card (Replaces AI Insight) */}
           <div className="px-8 pb-4">
-            <div className="p-6 bg-zinc-900/30 border border-white/5 rounded-[2rem] relative overflow-hidden group">
-              <div className="flex items-center gap-2 text-zinc-300 mb-4">
-                 <BrainCircuit size={14} className="text-white/40" />
-                 <span className="text-[11px] font-bold uppercase tracking-wider">AI Insight</span>
+            <div className="p-6 bg-zinc-900/30 border border-white/5 rounded-[2rem] relative overflow-hidden group transition-all duration-500">
+              <div className="flex items-center gap-2 text-zinc-300 mb-6">
+                 <ShieldCheck size={14} className="text-white/40" />
+                 <span className="text-[11px] font-bold uppercase tracking-wider">System Rules</span>
               </div>
-              <p className="text-xs text-zinc-500 leading-relaxed font-light mb-4">
-                Our analysis modules are currently active. Providing context results in 40% higher accuracy.
-              </p>
-              {loading && (
-                <div className="flex items-center gap-3 py-2 px-3 bg-white/5 rounded-xl border border-white/5">
-                  <DotLoader />
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 animate-pulse">Analyzing...</span>
-                </div>
-              )}
+              
+              <div className="space-y-4">
+                {currentStep === 0 ? (
+                  <div className={cn(
+                    "flex items-start gap-3 transition-colors",
+                    isStep1Valid ? "text-white" : "text-zinc-600"
+                  )}>
+                    <div className={cn(
+                      "size-1.5 rounded-full mt-1.5 transition-all duration-500",
+                      isStep1Valid ? "bg-white shadow-[0_0_8px_white]" : "bg-zinc-800"
+                    )} />
+                    <div className="flex flex-col">
+                      <span className="text-[11px] font-bold uppercase tracking-widest">Min. 50 characters</span>
+                      <span className="text-[9px] font-medium opacity-40 mt-1 leading-relaxed">Detailed job description ensures precise matching.</span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className={cn(
+                      "flex items-start gap-3 transition-colors",
+                      (formData.resumeFile || formData.selfDescription.trim().length >= 20) ? "text-white" : "text-zinc-600"
+                    )}>
+                      <div className={cn(
+                        "size-1.5 rounded-full mt-1.5 transition-all duration-500",
+                        (formData.resumeFile || formData.selfDescription.trim().length >= 20) ? "bg-white shadow-[0_0_8px_white]" : "bg-zinc-800"
+                      )} />
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-wrap">Resume PDF or Description</span>
+                      </div>
+                    </div>
+                    
+                    {!formData.resumeFile && (
+                      <div className={cn(
+                        "flex items-start gap-3 ml-4 transition-colors",
+                        formData.selfDescription.trim().length >= 20 ? "text-zinc-400" : "text-zinc-700"
+                      )}>
+                        <div className={cn(
+                          "size-1 rounded-full mt-1.5",
+                          formData.selfDescription.trim().length >= 20 ? "bg-zinc-500" : "bg-zinc-800"
+                        )} />
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-bold uppercase tracking-widest italic">Min. 20 characters</span>
+                          <span className="text-[9px] font-medium opacity-30 mt-1 leading-relaxed italic">Required for AI context mapping.</span>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Past Reports */}
-          {reports && reports.length > 0 && (
-            <div className="px-8 pb-8 mt-2 flex-1">
-              <div className="border-t border-white/5 pt-6">
-                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                  <Clock size={10} /> History
-                </p>
+          <div className="px-8 pb-8 mt-2 flex-1 flex flex-col">
+            <div className="border-t border-white/5 pt-6 flex-1 flex flex-col">
+              <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                <Clock size={10} /> History
+              </p>
+              
+              {reports && reports.length > 0 ? (
                 <div className="space-y-2">
                   {reports.slice(0, 5).map((report) => (
                     <Link
@@ -196,9 +242,18 @@ const GenerateReport = () => {
                     </Link>
                   ))}
                 </div>
-              </div>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[2rem] p-8 opacity-40">
+                  <div className="size-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center mb-4">
+                    <Clock size={16} className="text-zinc-800" />
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 text-center leading-relaxed">
+                    Terminal idle <br /> No logs detected
+                  </p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </aside>
 
         {/* Main Input Area */}
@@ -332,8 +387,8 @@ const GenerateReport = () => {
                   >
                     {loading ? (
                       <div className="flex items-center gap-3">
-                        <Spinner size="sm" />
-                        <span>Initializing...</span>
+                        <DotLoader />
+                        <span>Analyzing context...</span>
                       </div>
                     ) : "Generate Analysis"}
                   </LiquidCtaButton>
