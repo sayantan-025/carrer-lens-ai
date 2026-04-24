@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useToast } from "../../../context/toast-context";
+import { Spinner } from "../../../components/ui/spinner";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import Logo from "../../../components/ui/logo";
@@ -13,19 +14,23 @@ import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const { forgotPassword, isLoading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { forgotPassword } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
     try {
       await forgotPassword({ email });
       showToast({ message: "Recovery code sent.", type: "success" });
       navigate("/reset-password", { state: { email } });
     } catch (err) {
       setError(err.response?.data?.message || "Failed to send code.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -40,10 +45,10 @@ const ForgotPassword = () => {
         <div className="flex justify-center mb-8">
           <Logo className="h-12 w-12" />
         </div>
-        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter">
+        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter text-center">
           Forgot Password
         </h1>
-        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em]">
+        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] text-center">
           Enter your email to reset
         </p>
       </div>
@@ -77,8 +82,13 @@ const ForgotPassword = () => {
         </div>
 
         <div className="w-full pt-2 flex justify-center">
-           <LiquidCtaButton type="submit" disabled={isLoading} className="w-full">
-             Send Reset Link
+           <LiquidCtaButton type="submit" disabled={isSubmitting} className="w-full">
+             {isSubmitting ? (
+               <div className="flex items-center justify-center gap-3">
+                 <Spinner size="sm" />
+                 <span>Sending...</span>
+               </div>
+             ) : "Send Reset Link"}
            </LiquidCtaButton>
         </div>
       </form>

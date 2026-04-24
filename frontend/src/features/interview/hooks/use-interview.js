@@ -97,7 +97,6 @@ export const useInterview = () => {
 
   const getResumePdf = useCallback(
     async (interviewReportId) => {
-      setLoading(true);
       try {
         const response = await generateResumePdf({ interviewReportId });
         const url = window.URL.createObjectURL(
@@ -111,11 +110,9 @@ export const useInterview = () => {
       } catch (error) {
         console.log(error);
         throw error;
-      } finally {
-        setLoading(false);
       }
     },
-    [setLoading],
+    [],
   );
 
   useEffect(() => {

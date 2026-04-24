@@ -19,6 +19,9 @@ import { useNavigate, Link } from "react-router";
 import { useInterview } from "../hooks/use-interview";
 import { useToast } from "../../../context/toast-context";
 import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
+import { Spinner } from "../../../components/ui/spinner";
+import { DotLoader } from "../../../components/ui/dot-loader";
+import { ProgressBar } from "../../../components/ui/progress-bar";
 import SoftAurora from "../../../components/ui/SoftAurora";
 import Logo from "../../../components/ui/logo";
 import { cn } from "../../../lib/utils";
@@ -43,6 +46,9 @@ const GenerateReport = () => {
 
   useEffect(() => { getReports(); }, [getReports]);
 
+  // Progress percentage
+  const progressValue = useMemo(() => ((currentStep + 1) / steps.length) * 100, [currentStep]);
+
   // Validation Logic
   const isStep1Valid = useMemo(() => formData.jobDescription.trim().length >= 50, [formData.jobDescription]);
   const isStep2Valid = useMemo(() => formData.resumeFile !== null || formData.selfDescription.trim().length >= 20, [formData.resumeFile, formData.selfDescription]);
@@ -58,9 +64,9 @@ const GenerateReport = () => {
   const handleFileChange = (file) => {
     if (file && file.type === "application/pdf") {
       setFormData(prev => ({ ...prev, resumeFile: file }));
-      showToast({ message: "Resume uploaded", type: "success" });
+      showToast({ message: "Resume uploaded successfully.", type: "success" });
     } else {
-      showToast({ message: "Please upload a PDF", type: "error" });
+      showToast({ message: "Please upload a valid PDF.", type: "error" });
     }
   };
 
@@ -69,7 +75,7 @@ const GenerateReport = () => {
     try {
       const result = await generateReport(formData);
       if (result) navigate(`/dashboard/${result._id}`);
-    } catch (err) { showToast({ message: "Report generation failed", type: "error" }); }
+    } catch (err) { showToast({ message: "Analysis failed to initialize.", type: "error" }); }
   };
 
   const formatDate = (dateStr) => {
@@ -98,10 +104,15 @@ const GenerateReport = () => {
         <div className="flex items-center gap-4">
            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-white/5 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
              <ShieldCheck size={12} className="text-white/40" />
-             Private
+             Private Session
            </div>
         </div>
       </header>
+
+      {/* Top Progress Bar */}
+      <div className="shrink-0 bg-black/40">
+        <ProgressBar value={progressValue} />
+      </div>
 
       <main className="flex-1 min-h-0 grid grid-cols-12 overflow-hidden">
         
@@ -115,7 +126,7 @@ const GenerateReport = () => {
               const Icon = step.icon;
               const isActive = currentStep === index;
               const isCompleted = currentStep > index;
-              const isLocked = (index === 1 && !isStep1Valid) || (index === 2 && !isStep2Valid);
+              const isLocked = (index === 1 && !isStep1Valid);
 
               return (
                 <div key={step.id} className={cn(
@@ -140,33 +151,31 @@ const GenerateReport = () => {
             })}
           </div>
 
-          {/* Tips Card */}
+          {/* AI Intelligence Card */}
           <div className="px-8 pb-4">
             <div className="p-6 bg-zinc-900/30 border border-white/5 rounded-[2rem] relative overflow-hidden group">
               <div className="flex items-center gap-2 text-zinc-300 mb-4">
-                 <Info size={14} className="text-white/40" />
-                 <span className="text-[11px] font-bold uppercase tracking-wider">Tips</span>
+                 <BrainCircuit size={14} className="text-white/40" />
+                 <span className="text-[11px] font-bold uppercase tracking-wider">AI Insight</span>
               </div>
-              <ul className="space-y-3">
-                {[
-                  "Paste the job description (50+ chars)",
-                  "Upload PDF or Bio (20+ chars)"
-                ].map((text, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                     <div className="size-1 rounded-full bg-zinc-700 mt-2 shrink-0" />
-                     <p className="text-xs text-zinc-500 leading-relaxed font-light">{text}</p>
-                  </li>
-                ))}
-              </ul>
+              <p className="text-xs text-zinc-500 leading-relaxed font-light mb-4">
+                Our analysis modules are currently active. Providing context results in 40% higher accuracy.
+              </p>
+              {loading && (
+                <div className="flex items-center gap-3 py-2 px-3 bg-white/5 rounded-xl border border-white/5">
+                  <DotLoader />
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 animate-pulse">Analyzing...</span>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Past Reports */}
           {reports && reports.length > 0 && (
-            <div className="px-8 pb-8 mt-2">
+            <div className="px-8 pb-8 mt-2 flex-1">
               <div className="border-t border-white/5 pt-6">
                 <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                  <Clock size={10} /> Past Reports
+                  <Clock size={10} /> History
                 </p>
                 <div className="space-y-2">
                   {reports.slice(0, 5).map((report) => (
@@ -177,10 +186,10 @@ const GenerateReport = () => {
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-zinc-400 group-hover:text-white transition-colors truncate">
-                          {report.title || "Untitled Report"}
+                          {report.title || "Untitled Analysis"}
                         </p>
                         <p className="text-[10px] text-zinc-600 mt-0.5">
-                          {formatDate(report.createdAt)} · {report.matchScore ?? "—"}% match
+                          {formatDate(report.createdAt)} · {report.matchScore ?? "—"}%
                         </p>
                       </div>
                       <ChevronRight size={12} className="text-zinc-700 group-hover:text-zinc-400 shrink-0 ml-2 transition-colors" />
@@ -202,7 +211,7 @@ const GenerateReport = () => {
                  className="flex items-center gap-3 mb-6"
                >
                   <div className="h-px w-6 bg-white/20" />
-                  <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.3em]">Step {currentStep + 1} of {steps.length}</span>
+                  <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.3em]">Module {currentStep + 1}</span>
                </motion.div>
                <h1 className="font-display text-6xl font-bold text-white tracking-tighter leading-tight mb-4">
                  {steps[currentStep].title}
@@ -226,14 +235,14 @@ const GenerateReport = () => {
                     <div className="relative group h-[400px]">
                       <textarea
                         id="job-description-input"
-                        placeholder="Paste Job Description here..."
+                        placeholder="Paste the Job Description details..."
                         value={formData.jobDescription}
                         onChange={(e) => setFormData(prev => ({ ...prev, jobDescription: e.target.value }))}
-                        className="w-full h-full bg-zinc-900/20 rounded-[2.5rem] p-10 text-zinc-100 placeholder:text-zinc-700 focus:outline-none focus:ring-0 border-none transition-all resize-none font-light leading-relaxed text-2xl scrollbar-hidden"
+                        className="w-full h-full bg-zinc-900/20 rounded-[2.5rem] p-10 text-zinc-100 placeholder:text-zinc-800 focus:outline-none focus:ring-0 border border-white/5 focus:border-white/10 transition-all resize-none font-light leading-relaxed text-2xl scrollbar-hidden"
                       />
                       <div className={cn(
                         "absolute bottom-8 right-10 text-[11px] font-bold tracking-[0.2em] uppercase transition-colors",
-                        isStep1Valid ? "text-white/60" : "text-zinc-700"
+                        isStep1Valid ? "text-white/60" : "text-zinc-800"
                       )}>
                         {formData.jobDescription.length} <span className="opacity-40">/ 50 MIN</span>
                       </div>
@@ -262,10 +271,10 @@ const GenerateReport = () => {
                         </div>
                         <div className="text-center px-4">
                           <p className="text-white font-bold text-xl tracking-tight">
-                            {formData.resumeFile ? formData.resumeFile.name : "Resume"}
+                            {formData.resumeFile ? formData.resumeFile.name : "Resume.pdf"}
                           </p>
                           <p className="text-zinc-500 text-xs font-light mt-3 uppercase tracking-widest">
-                            {formData.resumeFile ? "READY" : "UPLOAD RESUME"}
+                            {formData.resumeFile ? "FILE SECURED" : "SELECT PDF FILE"}
                           </p>
                         </div>
                       </div>
@@ -274,14 +283,14 @@ const GenerateReport = () => {
                       <div className="relative group">
                         <textarea
                           id="self-description-input"
-                          placeholder="OR: Paste Self Description (20+ chars)..."
+                          placeholder="Or provide a brief self description..."
                           value={formData.selfDescription}
                           onChange={(e) => setFormData(prev => ({ ...prev, selfDescription: e.target.value }))}
-                          className="w-full h-full bg-zinc-900/20 rounded-[2.5rem] p-10 text-zinc-100 placeholder:text-zinc-700 focus:outline-none focus:ring-0 border-none transition-all resize-none font-light leading-relaxed text-xl scrollbar-hidden"
+                          className="w-full h-full bg-zinc-900/20 rounded-[2.5rem] p-10 text-zinc-100 placeholder:text-zinc-800 focus:outline-none focus:ring-0 border border-white/5 focus:border-white/10 transition-all resize-none font-light leading-relaxed text-xl scrollbar-hidden"
                         />
                         <div className={cn(
                           "absolute bottom-6 right-8 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors",
-                          formData.selfDescription.length >= 20 ? "text-white/60" : "text-zinc-700"
+                          formData.selfDescription.length >= 20 ? "text-white/60" : "text-zinc-800"
                         )}>
                           {formData.selfDescription.length} <span className="opacity-40">/ 20 MIN</span>
                         </div>
@@ -300,7 +309,7 @@ const GenerateReport = () => {
                   "flex items-center gap-3 px-8 py-4 rounded-2xl transition-all duration-300 font-bold uppercase tracking-[0.2em] text-[11px] outline-none cursor-pointer",
                   currentStep === 0 
                     ? "hidden" 
-                    : "bg-zinc-900/50 text-zinc-500 hover:text-white active:scale-95"
+                    : "bg-zinc-900/50 text-zinc-500 hover:text-white active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
                 )}
               >
                 <ArrowLeft size={16} /> Back
@@ -312,16 +321,21 @@ const GenerateReport = () => {
                     onClick={() => setCurrentStep(prev => prev + 1)} 
                     className={cn(!canProceed && "opacity-50 grayscale pointer-events-none")}
                   >
-                    Next Step
+                    Continue
                   </LiquidCtaButton>
                 </div>
               ) : (
-                <div className="shrink-0">
+                <div className="shrink-0 min-w-[240px]">
                   <LiquidCtaButton 
                     onClick={handleGenerate} 
                     className={cn(!isFinalValid && "opacity-50 grayscale pointer-events-none")}
                   >
-                    Generate Report
+                    {loading ? (
+                      <div className="flex items-center gap-3">
+                        <Spinner size="sm" />
+                        <span>Initializing...</span>
+                      </div>
+                    ) : "Generate Analysis"}
                   </LiquidCtaButton>
                 </div>
               )}

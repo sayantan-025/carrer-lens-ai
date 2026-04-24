@@ -3,39 +3,63 @@ import { useParams, Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInterview } from "../hooks/use-interview";
 import { useToast } from "../../../context/toast-context";
-import FullScreenLoader from "../../../components/ui/full-screen-loader";
+import { Skeleton } from "../../../components/ui/skeleton";
+import { Spinner } from "../../../components/ui/spinner";
 import {
   Code2,
   Users,
   Map,
-  ChevronRight,
   Target,
-  TerminalSquare,
-  Activity,
-  ShieldAlert,
-  ShieldCheck,
-  Zap,
   ChevronDown,
-  Hexagon,
   Cpu,
   CheckCircle2,
   FileDown,
   Clock,
-  ExternalLink,
-  LayoutDashboard,
-  AlertCircle,
-  Dna,
-  FileText,
-  Plus
+  ChevronRight,
+  ShieldAlert,
+  AlertCircle
 } from "lucide-react";
 import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
-import { LiquidMetalBorder } from "../../../components/ui/LiquidMetalBorder";
-import { Card, CardContent } from "../../../components/ui/card";
 import SoftAurora from "../../../components/ui/SoftAurora";
 import Logo from "../../../components/ui/logo";
 import { cn } from "../../../lib/utils";
 
 // --- Simple UI Components ---
+
+const DashboardSkeleton = () => (
+  <div className="h-screen w-full bg-black flex flex-col overflow-hidden">
+    <header className="h-16 border-b border-white/5 bg-zinc-950/40 px-8 flex items-center justify-between shrink-0">
+      <div className="flex items-center gap-6">
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+      <Skeleton className="h-10 w-32 rounded-xl" />
+    </header>
+    <main className="flex-1 min-h-0 grid grid-cols-12 overflow-hidden">
+      <aside className="col-span-2 border-r border-white/5 p-8 space-y-4">
+        <Skeleton className="h-4 w-20 mb-8" />
+        {[1, 2, 3].map(i => <Skeleton key={i} className="h-14 w-full rounded-2xl" />)}
+      </aside>
+      <section className="col-span-7 p-16 space-y-12 overflow-y-auto scrollbar-hidden">
+        <div className="space-y-4">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-16 w-3/4" />
+        </div>
+        {[1, 2, 3].map(i => <Skeleton key={i} className="h-40 w-full rounded-[2.5rem]" />)}
+      </section>
+      <aside className="col-span-3 border-l border-white/5 p-8 space-y-12">
+        <div className="flex flex-col items-center space-y-6">
+          <Skeleton className="size-32 rounded-full" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+        <div className="space-y-6">
+          <Skeleton className="h-4 w-32" />
+          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-10 w-full rounded-xl" />)}
+        </div>
+      </aside>
+    </main>
+  </div>
+);
 
 const StatusBadge = ({ children, color = "zinc" }) => {
   const colors = {
@@ -147,8 +171,9 @@ const Dashboard = () => {
   const { report, loading, error, getResumePdf } = useInterview();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState("technical");
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  if (loading) return <FullScreenLoader message="Loading your report..." />;
+  if (loading) return <DashboardSkeleton />;
   if (error || !report) return <ErrorState error={error} />;
 
   const SECTORS = [
@@ -158,6 +183,18 @@ const Dashboard = () => {
   ];
 
   const activeSector = SECTORS.find(s => s.id === activeTab);
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      await getResumePdf(interviewId);
+      showToast({ message: "PDF Downloaded", type: "success" });
+    } catch (err) {
+      showToast({ message: "Download failed", type: "error" });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <div className="h-screen w-full bg-black text-zinc-400 font-sans selection:bg-white/10 relative overflow-hidden flex flex-col">
@@ -179,17 +216,12 @@ const Dashboard = () => {
         </div>
         <div className="flex items-center gap-4">
            <button
-             onClick={async () => {
-               try {
-                 await getResumePdf(interviewId);
-                 showToast({ message: "PDF Downloaded", type: "success" });
-               } catch (err) {
-                 showToast({ message: "Download failed", type: "error" });
-               }
-             }}
-             className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white text-black font-bold text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-all cursor-pointer active:scale-95"
+             onClick={handleDownload}
+             disabled={isDownloading}
+             className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white text-black font-bold text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
            >
-             <FileDown size={14} /> Download PDF
+             {isDownloading ? <Spinner size="sm" className="border-zinc-800 border-t-zinc-500" /> : <FileDown size={14} />} 
+             {isDownloading ? "Downloading..." : "Download PDF"}
            </button>
         </div>
       </header>
@@ -349,7 +381,7 @@ const Dashboard = () => {
           {/* Diagnostic Part 3: Action */}
           <div className="p-8 shrink-0 flex justify-center">
              <Link to="/generate-report" className="block w-full max-w-[200px]">
-               <LiquidCtaButton>New Report</LiquidCtaButton>
+               <LiquidCtaButton className="w-full">New Report</LiquidCtaButton>
              </Link>
           </div>
         </aside>

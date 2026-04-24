@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useToast } from "../../../context/toast-context";
+import { Spinner } from "../../../components/ui/spinner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, CheckCircle2, Check } from "lucide-react";
 
-import FullScreenLoader from "../../../components/ui/full-screen-loader";
 import Logo from "../../../components/ui/logo";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
@@ -14,7 +14,7 @@ import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { isLoading, register } = useAuth();
+  const { register } = useAuth();
   const { showToast } = useToast();
 
   const [userName, setUserName] = useState("");
@@ -22,6 +22,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
@@ -48,6 +49,7 @@ const Register = () => {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const response = await register({ userName, email, password });
       showToast({ 
@@ -57,16 +59,14 @@ const Register = () => {
       navigate("/verify-otp", { state: { email } });
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleSocialLogin = (provider) => {
     window.location.href = `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/oauth/${provider}`;
   };
-
-  if (isLoading) {
-    return <FullScreenLoader />;
-  }
 
   const ValidationCheck = ({ isValid }) => (
     <AnimatePresence>
@@ -86,7 +86,7 @@ const Register = () => {
   );
 
   return (
-    <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6">
+    <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6 text-left">
       {/* Left Side - Value Prop */}
       <motion.div 
         className="hidden lg:flex flex-col gap-10"
@@ -97,7 +97,7 @@ const Register = () => {
         <Link to="/" className="inline-block w-fit group">
           <Logo className="h-10 w-10 mb-4 transition-transform group-hover:scale-110 duration-500" />
         </Link>
-        <div className="space-y-6 text-left">
+        <div className="space-y-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50">
             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">
               Join CareerLens AI
@@ -248,8 +248,13 @@ const Register = () => {
           </div>
 
           <div className="w-full pt-2">
-             <LiquidCtaButton type="submit" className="w-full">
-               Register
+             <LiquidCtaButton type="submit" className="w-full" disabled={isSubmitting}>
+               {isSubmitting ? (
+                 <div className="flex items-center justify-center gap-3">
+                   <Spinner size="sm" />
+                   <span>Initializing...</span>
+                 </div>
+               ) : "Register"}
              </LiquidCtaButton>
           </div>
         </form>

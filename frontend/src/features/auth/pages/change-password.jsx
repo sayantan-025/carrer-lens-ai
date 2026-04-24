@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/use-auth";
 import { useToast } from "../../../context/toast-context";
+import { Spinner } from "../../../components/ui/spinner";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router";
@@ -16,8 +17,9 @@ const ChangePassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { changePassword, isLoading } = useAuth();
+  const { changePassword } = useAuth();
   const { showToast } = useToast();
 
   const handleSubmit = async (e) => {
@@ -28,6 +30,7 @@ const ChangePassword = () => {
     }
     
     setError("");
+    setIsSubmitting(true);
     try {
       await changePassword({ oldPassword, newPassword });
       showToast({ message: "Password updated successfully.", type: "success" });
@@ -36,6 +39,8 @@ const ChangePassword = () => {
       setConfirmPassword("");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to update password.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -50,10 +55,10 @@ const ChangePassword = () => {
         <div className="flex justify-center mb-8">
           <Logo className="h-12 w-12" />
         </div>
-        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter">
+        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter text-center">
           Change Password
         </h1>
-        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em]">
+        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] text-center">
           Update your account security
         </p>
       </div>
@@ -123,8 +128,13 @@ const ChangePassword = () => {
         </div>
 
         <div className="w-full pt-4 flex justify-center">
-           <LiquidCtaButton type="submit" disabled={isLoading} className="w-full">
-             Update Password
+           <LiquidCtaButton type="submit" disabled={isSubmitting} className="w-full">
+             {isSubmitting ? (
+               <div className="flex items-center justify-center gap-3">
+                 <Spinner size="sm" />
+                 <span>Updating...</span>
+               </div>
+             ) : "Update Password"}
            </LiquidCtaButton>
         </div>
       </form>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useToast } from "../../../context/toast-context";
-import FullScreenLoader from "../../../components/ui/full-screen-loader";
+import { Spinner } from "../../../components/ui/spinner";
 import Logo from "../../../components/ui/logo";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
@@ -25,10 +25,10 @@ const Login = () => {
     setError("");
     try {
       await login({ email, password });
-      showToast({ message: "Successfully logged in.", type: "success" });
+      showToast({ message: "Welcome back.", type: "success" });
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid email or password.");
+      setError(err.response?.data?.message || "Invalid credentials.");
     }
   };
 
@@ -36,12 +36,8 @@ const Login = () => {
     window.location.href = `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/oauth/${provider}`;
   };
 
-  if (isLoading) {
-    return <FullScreenLoader />;
-  }
-
   return (
-    <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6">
+    <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6 text-left">
       {/* Left Side - Value Prop */}
       <motion.div 
         className="hidden lg:flex flex-col gap-10"
@@ -52,7 +48,7 @@ const Login = () => {
         <Link to="/" className="inline-block w-fit group">
           <Logo className="h-10 w-10 mb-4 transition-transform group-hover:scale-110 duration-500" />
         </Link>
-        <div className="space-y-6 text-left">
+        <div className="space-y-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50">
             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">
               Secure Access
@@ -189,7 +185,12 @@ const Login = () => {
 
           <div className="w-full pt-2">
              <LiquidCtaButton type="submit" className="w-full">
-               Sign In
+               {isLoading ? (
+                 <div className="flex items-center justify-center gap-3">
+                   <Spinner size="sm" />
+                   <span>Authenticating...</span>
+                 </div>
+               ) : "Sign In"}
              </LiquidCtaButton>
           </div>
         </form>

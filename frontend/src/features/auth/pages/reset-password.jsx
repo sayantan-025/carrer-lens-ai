@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useToast } from "../../../context/toast-context";
+import { Spinner } from "../../../components/ui/spinner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import Logo from "../../../components/ui/logo";
@@ -16,8 +17,9 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { resetPassword, isLoading } = useAuth();
+  const { resetPassword } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,12 +34,15 @@ const ResetPassword = () => {
     }
 
     setError("");
+    setIsSubmitting(true);
     try {
       await resetPassword({ email, otp: otpValue, newPassword });
       showToast({ message: "Password reset successful.", type: "success" });
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to reset password.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -52,10 +57,10 @@ const ResetPassword = () => {
         <div className="flex justify-center mb-8">
           <Logo className="h-12 w-12" />
         </div>
-        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter">
+        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter text-center">
           Reset Password
         </h1>
-        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] px-4 leading-relaxed">
+        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] px-4 leading-relaxed text-center">
           For <span className="text-zinc-100">{email}</span>
         </p>
       </div>
@@ -125,8 +130,13 @@ const ResetPassword = () => {
         </div>
 
         <div className="w-full pt-4 flex justify-center">
-           <LiquidCtaButton type="submit" disabled={isLoading} className="w-full">
-             Reset Password
+           <LiquidCtaButton type="submit" disabled={isSubmitting} className="w-full">
+             {isSubmitting ? (
+               <div className="flex items-center justify-center gap-3">
+                 <Spinner size="sm" />
+                 <span>Resetting...</span>
+               </div>
+             ) : "Reset Password"}
            </LiquidCtaButton>
         </div>
       </form>

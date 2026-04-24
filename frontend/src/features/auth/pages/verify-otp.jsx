@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useToast } from "../../../context/toast-context";
+import { Spinner } from "../../../components/ui/spinner";
 import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw } from "lucide-react";
 import Logo from "../../../components/ui/logo";
@@ -12,12 +13,13 @@ import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
 const VerifyOTP = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const inputRefs = useRef([]);
   
   const navigate = useNavigate();
   const location = useLocation();
-  const { verifyOTP, resendOTP, isLoading } = useAuth();
+  const { verifyOTP, resendOTP } = useAuth();
   const { showToast } = useToast();
 
   const email = location.state?.email;
@@ -76,12 +78,15 @@ const VerifyOTP = () => {
     setError("");
     const otpString = otp.join("");
     
+    setIsSubmitting(true);
     try {
       await verifyOTP({ email, otp: otpString });
-      showToast({ message: "Verification successful.", type: "success" });
+      showToast({ message: "Email verified.", type: "success" });
       navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Invalid verification code.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -89,7 +94,7 @@ const VerifyOTP = () => {
     if (countdown > 0) return;
     try {
       await resendOTP({ email });
-      showToast({ message: "New code sent to your email.", type: "info" });
+      showToast({ message: "New code sent.", type: "info" });
       setCountdown(60);
     } catch (err) {
       showToast({ message: "Failed to resend code.", type: "error" });
@@ -109,10 +114,10 @@ const VerifyOTP = () => {
         <div className="flex justify-center mb-8">
           <Logo className="h-12 w-12" />
         </div>
-        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter">
+        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter text-center">
           Verify Email
         </h1>
-        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] px-4 leading-relaxed">
+        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] px-4 leading-relaxed text-center">
           Sent to <span className="text-zinc-100">{email}</span>
         </p>
       </div>
@@ -132,7 +137,7 @@ const VerifyOTP = () => {
       </AnimatePresence>
 
       <form onSubmit={handleVerify} className="space-y-10 flex flex-col items-center">
-        <div className="flex flex-col items-center gap-4 w-full">
+        <div className="flex flex-col items-center gap-4 w-full text-center">
           <Label className="text-center w-full mb-2 text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Verification Code</Label>
           <div className="flex justify-between w-full gap-2" onPaste={handlePaste}>
             {otp.map((digit, index) => (
@@ -156,8 +161,13 @@ const VerifyOTP = () => {
         </div>
 
         <div className="w-full pt-2 flex justify-center">
-           <LiquidCtaButton type="submit" disabled={isLoading || !isOtpComplete} className="w-full">
-             Verify Code
+           <LiquidCtaButton type="submit" disabled={isSubmitting || !isOtpComplete} className="w-full text-center">
+             {isSubmitting ? (
+               <div className="flex items-center justify-center gap-3">
+                 <Spinner size="sm" />
+                 <span>Verifying...</span>
+               </div>
+             ) : "Verify Code"}
            </LiquidCtaButton>
         </div>
       </form>
