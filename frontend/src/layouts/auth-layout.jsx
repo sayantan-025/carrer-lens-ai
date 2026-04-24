@@ -16,9 +16,10 @@ const AuthLayout = () => {
   }
 
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center bg-black">
+    <div className="min-h-screen relative flex flex-col items-center justify-center bg-black overflow-hidden">
+      <div className="tactical-overlay" />
       <GlobalBackground />
-      <main className="relative z-10 w-full">
+      <main className="relative z-10 w-full flex items-center justify-center p-6">
         <Outlet />
       </main>
     </div>

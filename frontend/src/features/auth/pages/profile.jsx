@@ -1,10 +1,11 @@
 import React from "react";
 import { useAuth } from "../hooks/use-auth";
 import { motion } from "framer-motion";
-import { User, Mail, Calendar, Shield, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { User, Mail, Calendar, Shield, ArrowLeft, CheckCircle2, Settings } from "lucide-react";
 import { Link } from "react-router";
 import Logo from "../../../components/ui/logo";
 import { cn } from "../../../lib/utils";
+import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
 
 const Profile = () => {
   const { user } = useAuth();
@@ -12,96 +13,86 @@ const Profile = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden px-4 py-12 bg-black selection:bg-white/20">
-      {/* Background Ambience */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_50%)] pointer-events-none" />
-
+    <div className="w-full max-w-4xl mx-auto py-12 px-6 relative z-10">
       <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-2xl bg-zinc-900/20 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-3xl mx-auto relative group overflow-hidden"
+        className="bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] p-10 md:p-16 shadow-2xl relative overflow-hidden"
       >
-        <div className="flex flex-col md:flex-row items-center gap-8 mb-12">
-          <div className="relative">
-            <div className="size-24 md:size-32 rounded-full bg-zinc-800/50 flex items-center justify-center border-2 border-white/10 overflow-hidden shadow-inner">
+        {/* Profile Header */}
+        <div className="flex flex-col md:flex-row items-center gap-12 mb-16 relative">
+          <div className="relative group">
+            <div className="size-32 md:size-40 rounded-[2.5rem] bg-zinc-900 border border-white/5 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:border-white/20 shadow-2xl">
               {user?.avatar ? (
-                <img src={user.avatar} alt={user.name} className="size-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <img src={user.avatar} alt={user.name} className="size-full object-cover transition-all duration-700 group-hover:scale-110" />
               ) : (
-                <User size={48} className="text-white/60" />
+                <User size={64} className="text-zinc-800 transition-colors group-hover:text-zinc-500 duration-500" />
               )}
             </div>
-            <div className="absolute bottom-1 right-1 size-7 bg-white rounded-full border-4 border-zinc-950 flex items-center justify-center shadow-xl" title="Verified Protocol">
-              <CheckCircle2 size={14} className="text-black" />
+            <div className="absolute -bottom-2 -right-2 size-10 bg-white rounded-2xl border-4 border-[#050505] flex items-center justify-center shadow-[0_0_20px_white/20]" title="Verified Account">
+              <CheckCircle2 size={18} className="text-black" />
             </div>
           </div>
           
-          <div className="text-center md:text-left">
-            <h1 className="text-3xl font-display font-bold text-white tracking-tighter">{user.name}</h1>
-            <p className="text-zinc-500 font-mono text-xs uppercase tracking-[0.2em] mt-1">Status: Career Enthusiast</p>
+          <div className="text-center md:text-left space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em] font-bold">
+                User Profile
+              </span>
+            </div>
+            <h1 className="text-5xl font-display font-bold text-white tracking-tighter leading-none">{user.name}</h1>
+            <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.3em]">Status: Active</p>
           </div>
 
-          <div className="md:ml-auto flex items-center gap-4">
-            <Logo size={40} className="hidden md:flex opacity-30 hover:opacity-100 transition-opacity duration-500" />
-            <Link to="/" className="flex items-center gap-2 text-zinc-400 hover:text-white transition-all text-xs font-mono uppercase tracking-widest bg-white/5 border border-white/5 px-6 py-3 rounded-full hover:bg-white/10 hover:border-white/20 active:scale-95">
+          <div className="md:ml-auto">
+            <Link to="/" className="flex items-center gap-3 text-zinc-500 hover:text-white transition-all text-[10px] font-bold uppercase tracking-widest bg-zinc-900/50 border border-white/5 px-8 py-4 rounded-2xl hover:border-white/20 cursor-pointer active:scale-95">
               <ArrowLeft size={14} /> Back
             </Link>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* User Details */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
           {[
             { icon: Mail, label: "Email Address", value: user.email },
-            { icon: Calendar, label: "Account Status", value: "Verified Account" },
-            { icon: Shield, label: "Role", value: "Job Seeker" },
-            { icon: User, label: "Username", value: user.name }
+            { icon: Calendar, label: "Member Since", value: "Verified Account" },
+            { icon: Shield, label: "Account Type", value: "Standard Unit" },
+            { icon: User, label: "Full Name", value: user.name }
           ].map((item, i) => (
-            <motion.div 
+            <div 
               key={i} 
-              whileHover={{ 
-                y: -4, 
-                backgroundColor: "rgba(255, 255, 255, 0.04)",
-                borderColor: "rgba(255, 255, 255, 0.15)",
-                boxShadow: "0 10px 30px -15px rgba(0,0,0,0.5)"
-              }}
-              className="p-6 rounded-2xl bg-zinc-950/40 border border-white/5 flex flex-col gap-1 group/item transition-all duration-300"
+              className="p-8 rounded-[2rem] bg-zinc-900/20 border border-white/5 flex flex-col gap-3 group transition-all duration-500 hover:border-white/10 hover:bg-zinc-900/40"
             >
-              <div className="flex items-center gap-2 text-zinc-600 mb-2 group-hover/item:text-zinc-400 transition-colors">
-                <item.icon size={14} className="transition-transform duration-300 group-hover/item:scale-110" />
-                <span className="text-[10px] font-mono font-bold uppercase tracking-widest">{item.label}</span>
+              <div className="flex items-center gap-3 text-zinc-600 group-hover:text-zinc-400 transition-colors">
+                <item.icon size={16} className="text-zinc-700 transition-colors group-hover:text-white" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">{item.label}</span>
               </div>
-              <p className="text-white font-medium tracking-tight group-hover/item:text-white transition-colors">{item.value}</p>
-            </motion.div>
+              <p className="text-zinc-300 text-lg font-light tracking-tight transition-colors group-hover:text-white">{item.value}</p>
+            </div>
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col sm:flex-row gap-4">
+        {/* Profile Actions */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
           <Link 
             to="/change-password"
-            className="group/btn relative flex-1 bg-zinc-900 border border-white/5 hover:border-white/10 text-zinc-400 hover:text-white font-bold py-4 rounded-xl text-center transition-all overflow-hidden active:scale-98"
+            className="w-full md:w-auto min-w-[200px]"
           >
-            <span className="relative z-10">Change Password</span>
-            <BottomGradient />
+            <button className="w-full flex items-center justify-center gap-3 bg-zinc-900/50 border border-white/5 hover:border-white/20 text-zinc-500 hover:text-white font-bold py-5 px-8 rounded-[2rem] text-[11px] uppercase tracking-widest transition-all cursor-pointer active:scale-98">
+              <Settings size={14} /> Change Password
+            </button>
           </Link>
-          <Link 
-            to="/generate-report"
-            className="group/btn relative flex-1 bg-white hover:bg-zinc-100 text-black font-bold py-4 rounded-xl text-center transition-all shadow-xl shadow-white/5 overflow-hidden active:scale-98"
-          >
-            <span className="relative z-10">Create New Report</span>
-            <BottomGradient />
-          </Link>
+          <div className="w-full md:w-auto min-w-[200px]">
+             <Link to="/generate-report">
+               <LiquidCtaButton className="w-full">
+                 New Report
+               </LiquidCtaButton>
+             </Link>
+          </div>
         </div>
       </motion.div>
     </div>
-  );
-};
-
-const BottomGradient = () => {
-  return (
-    <>
-      <span className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-zinc-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
-      <span className="absolute inset-x-10 -bottom-px mx-auto block h-px w-1/2 bg-gradient-to-r from-transparent via-zinc-200 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />
-    </>
   );
 };
 

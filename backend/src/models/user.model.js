@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   userName: {
     type: String,
-    unique: [true, "Username already exists"],
-    sparse: true, // Allow null for social logins initially
+    unique: [true, "Terminal ID unavailable."],
+    sparse: true,
   },
 
   name: {
@@ -13,18 +13,17 @@ const userSchema = new mongoose.Schema({
 
   email: {
     type: String,
-    unique: [true, "Email already exists"],
-    required: true,
-    match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
+    unique: [true, "Network ID already registered."],
+    required: [true, "Network ID required."],
+    match: [/^\S+@\S+\.\S+$/, "Invalid transmission format."],
   },
 
   password: {
     type: String,
-    // Password not required for social login users
     required: function() {
       return !this.googleId && !this.githubId;
     },
-    minlength: [8, "Password must be at least 8 characters long"],
+    minlength: [8, "Security code length insufficient."],
   },
 
   isVerified: {
@@ -68,7 +67,7 @@ const userSchema = new mongoose.Schema({
 
   refreshToken: {
     type: String,
-    select: false, // Don't return refresh token by default
+    select: false,
   },
 }, { timestamps: true });
 

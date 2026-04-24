@@ -15,7 +15,7 @@ export function LiquidCtaButton({ children, className, onClick, theme = "dark" }
         <LiquidMetalBorder borderRadius={9999} borderWidth={2} theme={theme} opacity={1} speed={1.2} scale={3}>
           <div
             className={cn(
-              "flex items-center gap-2 px-6 py-3 rounded-full",
+              "flex items-center justify-center gap-2 px-6 py-3 rounded-full",
               isLight
                 ? "bg-gradient-to-b from-zinc-100 via-zinc-200 to-zinc-300"
                 : "bg-gradient-to-b from-zinc-800 to-zinc-900",

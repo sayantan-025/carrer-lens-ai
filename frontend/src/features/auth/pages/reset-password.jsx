@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useToast } from "../../../context/toast-context";
-import { motion } from "framer-motion";
-import { ArrowRight, Lock, ShieldCheck, Eye, EyeOff } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Eye, EyeOff } from "lucide-react";
 import Logo from "../../../components/ui/logo";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { cn } from "../../../lib/utils";
+import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
 
 const ResetPassword = () => {
   const [otpValue, setOtpValue] = useState("");
@@ -26,133 +27,110 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Passwords do not match.");
       return;
     }
 
     setError("");
     try {
       await resetPassword({ email, otp: otpValue, newPassword });
-      showToast({ message: "Password reset successful! Please login.", type: "success" });
+      showToast({ message: "Password reset successful.", type: "success" });
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to reset password. Please check the code.");
+      setError(err.response?.data?.message || "Failed to reset password.");
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden px-4 bg-black selection:bg-white/20">
-      {/* Background Ambience */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_50%)] pointer-events-none" />
-
-      <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-md bg-zinc-900/20 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-3xl mx-auto relative group overflow-hidden"
-      >
-        <div className="text-center mb-10">
-          <div className="flex justify-center mb-6">
-            <Logo size={48} />
-          </div>
-          <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter">
-            Reset Protocol
-          </h1>
-          <p className="text-zinc-500 font-light text-sm px-4 leading-relaxed">
-            Enter the security code sent to <span className="text-white font-medium">{email}</span>
-          </p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 shadow-2xl mx-auto relative"
+    >
+      <div className="text-center mb-10">
+        <div className="flex justify-center mb-8">
+          <Logo className="h-12 w-12" />
         </div>
+        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter">
+          Reset Password
+        </h1>
+        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] px-4 leading-relaxed">
+          For <span className="text-zinc-100">{email}</span>
+        </p>
+      </div>
 
+      <AnimatePresence mode="wait">
         {error && (
           <motion.div 
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
-            className="mb-6 p-4 bg-zinc-800 border border-white/5 rounded-2xl flex items-center gap-3 text-zinc-300 text-sm font-medium"
+            exit={{ opacity: 0, height: 0 }}
+            className="mb-8 p-5 bg-red-950/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-400 text-[11px] font-bold uppercase tracking-widest"
           >
-            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
             {error}
           </motion.div>
         )}
+      </AnimatePresence>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <LabelInputContainer>
-            <Label htmlFor="otp">Security Code</Label>
+      <form onSubmit={handleSubmit} className="space-y-6 flex flex-col items-center">
+        <div className="w-full space-y-2 text-left">
+          <Label htmlFor="otp" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">Verification Code</Label>
+          <Input 
+            id="otp" 
+            placeholder="XXXXXX" 
+            type="text" 
+            maxLength={6}
+            value={otpValue}
+            onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ""))}
+            required
+            className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl text-center tracking-[0.5em] font-bold text-lg placeholder:text-zinc-800"
+          />
+        </div>
+
+        <div className="w-full space-y-2 text-left">
+          <Label htmlFor="newPassword" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">New Password</Label>
+          <div className="relative">
             <Input 
-              id="otp" 
-              placeholder="123456" 
-              type="text" 
-              maxLength={6}
-              value={otpValue}
-              onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ""))}
-              required
-              className="text-center tracking-[0.5em] font-bold text-lg"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer>
-            <Label htmlFor="newPassword">New Security Password</Label>
-            <div className="relative">
-              <Input 
-                id="newPassword" 
-                placeholder="••••••••" 
-                type={showPassword ? "text" : "password"}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                className="pr-12"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-500 hover:text-white transition-colors"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </LabelInputContainer>
-
-          <LabelInputContainer>
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input 
-              id="confirmPassword" 
+              id="newPassword" 
               placeholder="••••••••" 
               type={showPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
               required
+              className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl pr-12 placeholder:text-zinc-800"
             />
-          </LabelInputContainer>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-700 hover:text-white transition-colors cursor-pointer"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </div>
 
-          <button
-            className="group/btn relative block h-12 w-full rounded-xl bg-white font-bold text-black shadow-[0px_1px_0px_0px_rgba(255,255,255,0.1)_inset] active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
-            type="submit"
-            disabled={isLoading}
-          >
-            <span className="flex items-center justify-center gap-2">
-              {isLoading ? "Resetting..." : "Update Password"} <ArrowRight size={18} />
-            </span>
-            <BottomGradient />
-          </button>
-        </form>
-      </motion.div>
-    </div>
-  );
-};
+        <div className="w-full space-y-2 text-left">
+          <Label htmlFor="confirmPassword" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">Confirm Password</Label>
+          <Input 
+            id="confirmPassword" 
+            placeholder="••••••••" 
+            type={showPassword ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            className="h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800"
+          />
+        </div>
 
-const BottomGradient = () => {
-  return (
-    <>
-      <span className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-zinc-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
-      <span className="absolute inset-x-10 -bottom-px mx-auto block h-px w-1/2 bg-gradient-to-r from-transparent via-zinc-200 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />
-    </>
-  );
-};
-
-const LabelInputContainer = ({ children, className }) => {
-  return (
-    <div className={cn("flex w-full flex-col", className)}>
-      {children}
-    </div>
+        <div className="w-full pt-4 flex justify-center">
+           <LiquidCtaButton type="submit" disabled={isLoading} className="w-full">
+             Reset Password
+           </LiquidCtaButton>
+        </div>
+      </form>
+    </motion.div>
   );
 };
 

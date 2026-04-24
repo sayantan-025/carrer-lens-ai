@@ -161,6 +161,7 @@ const Dashboard = () => {
 
   return (
     <div className="h-screen w-full bg-black text-zinc-400 font-sans selection:bg-white/10 relative overflow-hidden flex flex-col">
+      <div className="tactical-overlay" />
       
       <div className="absolute inset-0 -z-10 pointer-events-none opacity-30">
         <SoftAurora speed={0.4} color1="#18181b" color2="#000000" />
