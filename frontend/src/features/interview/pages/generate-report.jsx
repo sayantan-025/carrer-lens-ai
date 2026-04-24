@@ -26,8 +26,8 @@ import { cn } from "../../../lib/utils";
 // --- Main Page ---
 
 const steps = [
-  { id: "target", title: "Job Description", description: "Paste the job description.", icon: Target },
-  { id: "resume", title: "Resume or Bio", description: "Upload your resume or write a self description.", icon: FileText }
+  { id: "target", title: "Job Description", description: "Paste the target job description to analyze requirements.", icon: Target },
+  { id: "resume", title: "Resume & Self Description", description: "Provide your resume and optional self description for context.", icon: FileText }
 ];
 
 const GenerateReport = () => {
@@ -226,7 +226,7 @@ const GenerateReport = () => {
                     <div className="relative group h-[400px]">
                       <textarea
                         id="job-description-input"
-                        placeholder="Paste the job description..."
+                        placeholder="Paste Job Description here..."
                         value={formData.jobDescription}
                         onChange={(e) => setFormData(prev => ({ ...prev, jobDescription: e.target.value }))}
                         className="w-full h-full bg-zinc-900/20 rounded-[2.5rem] p-10 text-zinc-100 placeholder:text-zinc-700 focus:outline-none focus:ring-0 border-none transition-all resize-none font-light leading-relaxed text-2xl scrollbar-hidden"
@@ -262,19 +262,19 @@ const GenerateReport = () => {
                         </div>
                         <div className="text-center px-4">
                           <p className="text-white font-bold text-xl tracking-tight">
-                            {formData.resumeFile ? formData.resumeFile.name : "Upload PDF"}
+                            {formData.resumeFile ? formData.resumeFile.name : "Resume"}
                           </p>
                           <p className="text-zinc-500 text-xs font-light mt-3 uppercase tracking-widest">
-                            {formData.resumeFile ? "READY" : "UPLOAD PDF"}
+                            {formData.resumeFile ? "READY" : "UPLOAD RESUME"}
                           </p>
                         </div>
                       </div>
 
-                      {/* Bio Alternative */}
+                      {/* Self Description Alternative */}
                       <div className="relative group">
                         <textarea
-                          id="bio-input"
-                          placeholder="OR: Write a self description (20+ chars)..."
+                          id="self-description-input"
+                          placeholder="OR: Paste Self Description (20+ chars)..."
                           value={formData.selfDescription}
                           onChange={(e) => setFormData(prev => ({ ...prev, selfDescription: e.target.value }))}
                           className="w-full h-full bg-zinc-900/20 rounded-[2.5rem] p-10 text-zinc-100 placeholder:text-zinc-700 focus:outline-none focus:ring-0 border-none transition-all resize-none font-light leading-relaxed text-xl scrollbar-hidden"
@@ -288,7 +288,6 @@ const GenerateReport = () => {
                       </div>
                     </div>
                   )}
-
                 </motion.div>
               </AnimatePresence>
             </div>
