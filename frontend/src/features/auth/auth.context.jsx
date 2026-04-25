@@ -8,7 +8,8 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
   const { showToast } = useToast();
 
   const isAuthenticated = !!user;
@@ -62,6 +63,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = useCallback(async () => {
     // Silent check on mount
+    setIsAuthChecking(true);
     try {
       // 1. Try refreshing the token (using the refreshToken cookie)
       const refreshData = await authApi.refreshToken();
@@ -73,7 +75,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setAccessToken(null);
     } finally {
-      setIsLoading(false);
+      setIsAuthChecking(false);
     }
   }, [updateAuthData]);
 
@@ -88,6 +90,7 @@ export const AuthProvider = ({ children }) => {
     setAccessToken,
     isLoading,
     setIsLoading,
+    isAuthChecking,
     isAuthenticated,
     login,
     register: authApi.register,

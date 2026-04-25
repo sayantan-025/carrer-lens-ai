@@ -11,9 +11,9 @@ const AuthLayoutSkeleton = () => (
 );
 
 const AuthLayout = () => {
-  const { isAuthenticated, isLoading } = useAuthContext();
+  const { isAuthenticated, isLoading, isAuthChecking } = useAuthContext();
 
-  if (isLoading) {
+  if (isAuthChecking || isLoading) {
     return <AuthLayoutSkeleton />;
   }
 

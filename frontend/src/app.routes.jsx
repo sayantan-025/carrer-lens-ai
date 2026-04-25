@@ -1,19 +1,28 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router";
-import Login from "./features/auth/pages/login";
-import Register from "./features/auth/pages/register";
-import VerifyOTP from "./features/auth/pages/verify-otp";
-import ForgotPassword from "./features/auth/pages/forgot-password";
-import ResetPassword from "./features/auth/pages/reset-password";
-import OAuthCallback from "./features/auth/pages/oauth-callback";
-import Profile from "./features/auth/pages/profile";
-import ChangePassword from "./features/auth/pages/change-password";
-import LandingPage from "./landing-page/landing-page";
-import Dashboard from "./features/interview/pages/dashboard";
-import GenerateReport from "./features/interview/pages/generate-report";
+import { Spinner } from "./components/ui/spinner";
+
+const Login = lazy(() => import("./features/auth/pages/login"));
+const Register = lazy(() => import("./features/auth/pages/register"));
+const VerifyOTP = lazy(() => import("./features/auth/pages/verify-otp"));
+const ForgotPassword = lazy(() => import("./features/auth/pages/forgot-password"));
+const ResetPassword = lazy(() => import("./features/auth/pages/reset-password"));
+const OAuthCallback = lazy(() => import("./features/auth/pages/oauth-callback"));
+const Profile = lazy(() => import("./features/auth/pages/profile"));
+const ChangePassword = lazy(() => import("./features/auth/pages/change-password"));
+const LandingPage = lazy(() => import("./landing-page/landing-page"));
+const Dashboard = lazy(() => import("./features/interview/pages/dashboard"));
+const GenerateReport = lazy(() => import("./features/interview/pages/generate-report"));
 
 import MainLayout from "./layouts/main-layout";
 import AuthLayout from "./layouts/auth-layout";
 import ProtectedLayout from "./layouts/protected-layout";
+
+const PageLoader = () => (
+  <div className="flex h-[50vh] w-full items-center justify-center">
+    <Spinner size="lg" />
+  </div>
+);
 
 export const router = createBrowserRouter([
   {
@@ -22,7 +31,11 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <LandingPage />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <LandingPage />
+          </Suspense>
+        ),
       },
     ],
   },
@@ -31,27 +44,51 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/login",
-        element: <Login />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Login />
+          </Suspense>
+        ),
       },
       {
         path: "/register",
-        element: <Register />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Register />
+          </Suspense>
+        ),
       },
       {
         path: "/verify-otp",
-        element: <VerifyOTP />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <VerifyOTP />
+          </Suspense>
+        ),
       },
       {
         path: "/forgot-password",
-        element: <ForgotPassword />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ForgotPassword />
+          </Suspense>
+        ),
       },
       {
         path: "/reset-password",
-        element: <ResetPassword />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ResetPassword />
+          </Suspense>
+        ),
       },
       {
         path: "/oauth/callback",
-        element: <OAuthCallback />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OAuthCallback />
+          </Suspense>
+        ),
       },
     ],
   },
@@ -60,19 +97,35 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/generate-report",
-        element: <GenerateReport />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <GenerateReport />
+          </Suspense>
+        ),
       },
       {
         path: "/dashboard/:interviewId",
-        element: <Dashboard />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Dashboard />
+          </Suspense>
+        ),
       },
       {
         path: "/profile",
-        element: <Profile />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Profile />
+          </Suspense>
+        ),
       },
       {
         path: "/change-password",
-        element: <ChangePassword />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ChangePassword />
+          </Suspense>
+        ),
       },
     ],
   },

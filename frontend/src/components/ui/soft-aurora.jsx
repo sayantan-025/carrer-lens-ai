@@ -150,10 +150,13 @@ export default function SoftAurora({
     }
 
     function resize() {
-      renderer.setSize(container.offsetWidth, container.offsetHeight);
-      if (program) {
-        program.uniforms.uResolution.value = [gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height];
-      }
+      requestAnimationFrame(() => {
+        if (!container) return;
+        renderer.setSize(container.offsetWidth, container.offsetHeight);
+        if (program) {
+          program.uniforms.uResolution.value = [gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height];
+        }
+      });
     }
     window.addEventListener('resize', resize);
     resize();

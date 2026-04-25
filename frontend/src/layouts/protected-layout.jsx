@@ -32,10 +32,10 @@ const AuthenticatedSkeleton = () => (
 );
 
 const ProtectedLayout = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, isAuthChecking } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
+  if (isAuthChecking || isLoading) {
     return <AuthenticatedSkeleton />;
   }
 

@@ -78,8 +78,10 @@ export default function HeroSection() {
           {/* Headline - Simple English */}
           <motion.h1 
             /* lighthouse-fix: Accessibility - added subtle text-shadow for contrast on light background */
+            /* lighthouse-fix: Performance - high fetchpriority for LCP element */
             className="font-display text-8xl font-bold tracking-tighter mb-8 leading-[1.05] max-lg:text-7xl max-md:text-6xl max-sm:text-4xl max-md:mb-6 [text-shadow:0_2px_10px_rgba(0,0,0,0.2)]"
             variants={itemVariants}
+            fetchpriority="high"
           >
             <span className="text-zinc-100 block">Get the Job.</span>
             <span className="text-zinc-100 block">

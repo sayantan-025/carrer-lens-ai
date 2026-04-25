@@ -34,15 +34,13 @@ const LandingPageSkeleton = () => (
 );
 
 const MainLayout = () => {
-  const { isLoading } = useAuthContext();
-
   return (
     <div className="min-h-screen relative flex flex-col bg-black">
       <LenisScroll />
       <GlobalBackground />
       <Navbar />
       <main className="flex-1 relative z-10 pt-20">
-        {isLoading ? <LandingPageSkeleton /> : <Outlet />}
+        <Outlet />
       </main>
       <Footer />
     </div>
