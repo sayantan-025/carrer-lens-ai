@@ -17,7 +17,9 @@ import {
   Clock,
   ChevronRight,
   ShieldAlert,
-  AlertCircle
+  AlertCircle,
+  Menu,
+  LayoutGrid
 } from "lucide-react";
 import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 import SoftAurora from "../../../components/ui/soft-aurora";
@@ -28,26 +30,26 @@ import { cn } from "../../../lib/utils";
 
 const DashboardSkeleton = () => (
   <div className="h-screen w-full bg-black flex flex-col overflow-hidden">
-    <header className="h-16 border-b border-white/5 bg-zinc-950/40 px-8 flex items-center justify-between shrink-0">
+    <header className="h-16 border-b border-white/5 bg-zinc-950/40 px-4 md:px-8 flex items-center justify-between shrink-0">
       <div className="flex items-center gap-6">
-        <Skeleton className="h-6 w-40" />
-        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-6 w-32 md:w-40" />
+        <Skeleton className="hidden md:block h-4 w-32" />
       </div>
-      <Skeleton className="h-10 w-32 rounded-xl" />
+      <Skeleton className="h-10 w-28 md:w-32 rounded-xl" />
     </header>
-    <main className="flex-1 min-h-0 grid grid-cols-12 overflow-hidden">
-      <aside className="col-span-2 border-r border-white/5 p-8 space-y-4">
+    <main className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
+      <aside className="hidden md:block md:col-span-2 border-r border-white/5 p-8 space-y-4">
         <Skeleton className="h-4 w-20 mb-8" />
         {[1, 2, 3].map(i => <Skeleton key={i} className="h-14 w-full rounded-2xl" />)}
       </aside>
-      <section className="col-span-7 p-16 space-y-12 overflow-y-auto scrollbar-hidden">
+      <section className="col-span-1 md:col-span-7 p-6 md:p-16 space-y-8 md:space-y-12 overflow-y-auto scrollbar-hidden">
         <div className="space-y-4">
           <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-16 w-3/4" />
+          <Skeleton className="h-12 md:h-16 w-3/4" />
         </div>
         {[1, 2, 3].map(i => <Skeleton key={i} className="h-40 w-full rounded-[2.5rem]" />)}
       </section>
-      <aside className="col-span-3 border-l border-white/5 p-8 space-y-12">
+      <aside className="hidden lg:block lg:col-span-3 border-l border-white/5 p-8 space-y-12">
         <div className="flex flex-col items-center space-y-6">
           <Skeleton className="size-32 rounded-full" />
           <Skeleton className="h-4 w-24" />
@@ -120,43 +122,43 @@ const IntelligenceCard = ({ item, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       className={cn(
-        "border transition-all duration-500 relative group overflow-hidden rounded-[2.5rem] mb-6",
+        "border transition-all duration-500 relative group overflow-hidden rounded-[2rem] md:rounded-[2.5rem] mb-4 md:mb-6",
         isOpen ? "border-white/10 bg-white/[0.03] shadow-2xl" : "border-white/5 bg-zinc-950/10 hover:border-white/10"
       )}
     >
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full text-left p-10 flex items-start gap-8 cursor-pointer outline-none">
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full text-left p-6 md:p-10 flex items-start gap-4 md:gap-8 cursor-pointer outline-none min-h-[44px]"> {/* responsive: mobile fix */}
         <div className={cn(
-          "shrink-0 size-12 rounded-2xl flex items-center justify-center font-bold transition-all duration-500 border",
+          "shrink-0 size-10 md:size-12 rounded-xl md:rounded-2xl flex items-center justify-center font-bold transition-all duration-500 border text-sm md:text-base",
           isOpen ? "bg-white border-white text-black scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]" : "bg-zinc-900 border-white/5 text-zinc-500"
         )}>
           {index + 1}
         </div>
         <div className="flex-1">
-          <h4 className={cn("font-display text-2xl font-bold tracking-tight leading-snug transition-colors", isOpen ? "text-white" : "text-zinc-400 group-hover:text-zinc-200")}>
+          <h4 className={cn("font-display text-xl md:text-2xl font-bold tracking-tight leading-snug transition-colors", isOpen ? "text-white" : "text-zinc-400 group-hover:text-zinc-200")}>
             {item.question}
           </h4>
         </div>
-        <div className="pt-3">
-           <ChevronDown className={cn("size-6 text-zinc-700 transition-all duration-500", isOpen ? "rotate-180 text-white" : "group-hover:text-zinc-400")} />
+        <div className="pt-2">
+           <ChevronDown className={cn("size-5 md:size-6 text-zinc-700 transition-all duration-500", isOpen ? "rotate-180 text-white" : "group-hover:text-zinc-400")} />
         </div>
       </button>
       
       <AnimatePresence>
         {isOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
-            <div className="px-12 pb-12 pt-2 space-y-10">
+            <div className="px-6 md:px-12 pb-8 md:pb-12 pt-2 space-y-6 md:space-y-10">
               <div className="h-px bg-white/5" />
-              <div className="space-y-4">
-                <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.3em] flex items-center gap-2">
+              <div className="space-y-3 md:space-y-4">
+                <p className="text-[10px] md:text-[11px] font-bold text-zinc-500 uppercase tracking-[0.3em] flex items-center gap-2">
                   <Target size={14} className="text-white/40" /> Why this question?
                 </p>
-                <p className="text-zinc-400 text-lg leading-relaxed font-light italic">"{item.intention}"</p>
+                <p className="text-zinc-400 text-base md:text-lg leading-relaxed font-light italic">"{item.intention}"</p>
               </div>
-              <div className="p-10 bg-zinc-900/30 border border-white/5 rounded-[2.5rem]">
-                <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
+              <div className="p-6 md:p-10 bg-zinc-900/30 border border-white/5 rounded-[1.5rem] md:rounded-[2.5rem]">
+                <p className="text-[10px] md:text-[11px] font-bold text-zinc-400 uppercase tracking-[0.3em] mb-4 md:mb-6 flex items-center gap-2">
                   <Cpu size={14} className="text-white/40" /> Sample Answer
                 </p>
-                <p className="text-zinc-200 text-lg leading-relaxed font-light">{item.answer}</p>
+                <p className="text-zinc-200 text-base md:text-lg leading-relaxed font-light">{item.answer}</p>
               </div>
             </div>
           </motion.div>
@@ -172,14 +174,15 @@ const Dashboard = () => {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState("technical");
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); /* responsive: mobile fix */
 
   if (loading) return <DashboardSkeleton />;
   if (error || !report) return <ErrorState error={error} />;
 
   const SECTORS = [
-    { id: "technical", label: "Technical Questions", icon: Code2, desc: "Coding and system architecture" },
-    { id: "behavioral", label: "Behavioral Questions", icon: Users, desc: "Situational and soft skills" },
-    { id: "roadmap", label: "Preparation Plan", icon: Map, desc: "Your strategic preparation roadmap" },
+    { id: "technical", label: "Technical", fullLabel: "Technical Questions", icon: Code2, desc: "Coding and system architecture" },
+    { id: "behavioral", label: "Behavioral", fullLabel: "Behavioral Questions", icon: Users, desc: "Situational and soft skills" },
+    { id: "roadmap", label: "Preparation", fullLabel: "Preparation Plan", icon: Map, desc: "Your strategic preparation roadmap" },
   ];
 
   const activeSector = SECTORS.find(s => s.id === activeTab);
@@ -205,31 +208,52 @@ const Dashboard = () => {
       </div>
 
       {/* Header */}
-      <header className="shrink-0 h-16 border-b border-white/5 bg-zinc-950/40 backdrop-blur-xl flex items-center justify-between px-8 z-50">
-        <div className="flex items-center gap-6">
+      <header className="shrink-0 h-16 border-b border-white/5 bg-zinc-950/40 backdrop-blur-xl flex items-center justify-between px-4 md:px-8 z-50">
+        <div className="flex items-center gap-4 md:gap-6">
           <Link to="/" className="flex items-center gap-2 group">
             <Logo className="h-6 w-6" />
-            <span className="font-display text-base font-bold text-white tracking-tighter">CareerLens<span className="text-zinc-500">AI</span></span>
+            <span className="font-display text-base font-bold text-white tracking-tighter max-sm:hidden">CareerLens<span className="text-zinc-500">AI</span></span>
           </Link>
           <div className="h-4 w-px bg-zinc-800" />
-          <h2 className="text-xs font-bold text-zinc-100 tracking-tight uppercase truncate max-w-[300px]">{report.title}</h2>
+          <h2 className="text-xs font-bold text-zinc-100 tracking-tight uppercase truncate max-w-[120px] md:max-w-[300px]">{report.title}</h2>
         </div>
         <div className="flex items-center gap-4">
            <button
              onClick={handleDownload}
              disabled={isDownloading}
-             className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white text-black font-bold text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+             className="flex items-center gap-2.5 px-3 md:px-4 py-2 rounded-xl bg-white text-black font-bold text-[9px] md:text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
            >
              {isDownloading ? <Spinner size="sm" className="border-zinc-800 border-t-zinc-500" /> : <FileDown size={14} />} 
-             {isDownloading ? "Downloading..." : "Download Resume"}
+             <span className="max-sm:hidden">{isDownloading ? "Downloading..." : "Download Resume"}</span>
+             <span className="sm:hidden">{isDownloading ? "" : "PDF"}</span>
            </button>
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 grid grid-cols-12 overflow-hidden">
+      {/* Mobile Tabs */}
+      <div className="md:hidden flex overflow-x-auto scrollbar-hidden bg-zinc-950/40 border-b border-white/5 shrink-0">
+        {SECTORS.map((sector) => (
+          <button
+            key={sector.id}
+            onClick={() => setActiveTab(sector.id)}
+            className={cn(
+              "flex-1 flex flex-col items-center justify-center py-4 px-6 min-w-[120px] gap-2 transition-all relative min-h-[44px]",
+              activeTab === sector.id ? "text-white" : "text-zinc-500"
+            )}
+          >
+            <sector.icon size={16} className={cn(activeTab === sector.id ? "text-white" : "text-zinc-700")} />
+            <span className="text-[10px] font-bold uppercase tracking-widest">{sector.label}</span>
+            {activeTab === sector.id && (
+              <motion.div layoutId="mobileTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
+            )}
+          </button>
+        ))}
+      </div>
+
+      <main className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
         
-        {/* Section 1: Left Navigation */}
-        <aside className="col-span-2 border-r border-white/5 bg-zinc-950/20 flex flex-col p-8 gap-12 min-h-0">
+        {/* Section 1: Left Navigation (Desktop Only) */}
+        <aside className="hidden md:flex md:col-span-2 border-r border-white/5 bg-zinc-950/20 flex-col p-8 gap-12 min-h-0 overflow-y-auto scrollbar-hidden">
           <div className="space-y-2">
             <p className="text-[10px] font-bold text-zinc-500 px-2 uppercase tracking-[0.2em] mb-6">Sections</p>
             {SECTORS.map((sector) => (
@@ -259,19 +283,19 @@ const Dashboard = () => {
         </aside>
 
         {/* Section 2: Center Content */}
-        <section className="col-span-7 flex flex-col min-h-0 bg-black/40 overflow-y-auto scrollbar-hidden">
-          <div className="p-16 max-w-4xl mx-auto w-full">
-            <div className="mb-14">
+        <section className="col-span-1 md:col-span-10 lg:col-span-7 flex flex-col min-h-0 bg-black/40 overflow-y-auto scrollbar-hidden"> {/* responsive: mobile fix */}
+          <div className="p-6 md:p-16 max-w-4xl mx-auto w-full">
+            <div className="mb-8 md:mb-14">
                <motion.div 
                  initial={{ opacity: 0, y: 10 }}
                  animate={{ opacity: 1, y: 0 }}
-                 className="flex items-center gap-3 mb-6"
+                 className="flex items-center gap-3 mb-4 md:mb-6"
                >
                   <div className="h-px w-6 bg-white/20" />
-                  <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.3em]">{activeSector.desc}</span>
+                  <span className="text-[10px] md:text-[11px] font-bold text-zinc-500 uppercase tracking-[0.3em]">{activeSector.desc}</span>
                </motion.div>
-               <h1 className="font-display text-6xl font-bold text-white tracking-tighter leading-tight">
-                 {activeSector.label}
+               <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tighter leading-tight">
+                 {activeSector.fullLabel}
                </h1>
             </div>
 
@@ -298,21 +322,21 @@ const Dashboard = () => {
                 )}
 
                 {activeTab === "roadmap" && (
-                  <div className="space-y-12 relative pl-10 py-4">
+                  <div className="space-y-8 md:space-y-12 relative pl-6 md:pl-10 py-4">
                      <div className="absolute left-0 top-0 bottom-0 w-px bg-white/5" />
                      {report.preparationPlan?.map((plan, i) => (
-                       <motion.div key={i} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative pb-12">
-                         <div className="absolute -left-[45px] top-2 size-2 rounded-full bg-white shadow-[0_0_15px_white] z-10" />
-                         <div className="space-y-8">
+                       <motion.div key={i} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative pb-8 md:pb-12">
+                         <div className="absolute -left-[27px] md:-left-[45px] top-2 size-2 rounded-full bg-white shadow-[0_0_15px_white] z-10" />
+                         <div className="space-y-6 md:space-y-8">
                             <div>
                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Day {plan.day} Focus</span>
-                               <h3 className="font-display text-3xl font-bold text-white mt-2 tracking-tight">{plan.focus}</h3>
+                               <h3 className="font-display text-2xl md:text-3xl font-bold text-white mt-2 tracking-tight">{plan.focus}</h3>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                                {plan.tasks?.map((task, j) => (
-                                 <div key={j} className="p-6 bg-zinc-900/30 border border-white/5 rounded-[2rem] flex gap-4 items-start hover:border-white/10 transition-all">
-                                    <CheckCircle2 size={18} className="text-zinc-600 mt-1" />
-                                    <p className="text-zinc-400 text-base leading-relaxed font-light">{task}</p>
+                                 <div key={j} className="p-5 md:p-6 bg-zinc-900/30 border border-white/5 rounded-[1.5rem] md:rounded-[2rem] flex gap-3 md:gap-4 items-start hover:border-white/10 transition-all">
+                                    <CheckCircle2 size={16} className="text-zinc-600 mt-1 shrink-0" />
+                                    <p className="text-zinc-400 text-sm md:text-base leading-relaxed font-light">{task}</p>
                                  </div>
                                ))}
                             </div>
@@ -323,13 +347,51 @@ const Dashboard = () => {
                 )}
               </motion.div>
             </AnimatePresence>
+
+            {/* Mobile Diagnostic View - shown only on small screens at the end of content */}
+            <div className="lg:hidden mt-16 space-y-12 pb-12">
+              <div className="h-px bg-white/5" />
+              <div className="flex flex-col items-center">
+                <p className="w-full text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-8 text-center">Diagnostic Score</p>
+                <MatchGauge value={report.matchScore} size={150} />
+              </div>
+              <div className="space-y-6">
+                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                  <ShieldAlert size={12} className="text-zinc-700" /> Skill Gaps
+                </p>
+                <div className="space-y-6">
+                  {report.skillGaps?.map((gap, i) => (
+                    <div key={i} className="space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-zinc-400 tracking-tight leading-none">{gap.skill}</span>
+                        <StatusBadge color={gap.severity === "high" ? "red" : gap.severity === "medium" ? "blue" : "zinc"}>
+                          {gap.severity}
+                        </StatusBadge>
+                      </div>
+                      <div className="h-0.5 w-full bg-zinc-900 rounded-full overflow-hidden border border-white/5">
+                          <div 
+                             style={{ width: gap.severity === "high" ? "100%" : gap.severity === "medium" ? "65%" : "30%" }}
+                             className={cn(
+                               "h-full rounded-full transition-all duration-1000",
+                               gap.severity === "high" ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]" : gap.severity === "medium" ? "bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)]" : "bg-zinc-600"
+                             )}
+                          />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Link to="/generate-report" className="block w-full">
+                <LiquidCtaButton className="w-full">New Analysis Protocol</LiquidCtaButton>
+              </Link>
+            </div>
           </div>
         </section>
 
-        {/* Section 3: Right Diagnostics */}
-        <aside className="col-span-3 border-l border-white/5 bg-zinc-950/20 flex flex-col min-h-0">
+        {/* Section 3: Right Diagnostics (Desktop Only) */}
+        <aside className="hidden lg:flex lg:col-span-3 border-l border-white/5 bg-zinc-950/20 flex-col min-h-0 overflow-y-auto scrollbar-hidden">
           
-          {/* Diagnostic Part 1: Match Score (Made Smaller) */}
+          {/* Diagnostic Part 1: Match Score */}
           <div className="p-8 flex flex-col items-center shrink-0">
              <p className="w-full text-[9px] font-bold text-zinc-500 px-2 uppercase tracking-[0.2em] mb-6">Match Score</p>
              <MatchGauge value={report.matchScore} size={130} />
@@ -339,7 +401,7 @@ const Dashboard = () => {
             <div className="h-px bg-white/5" />
           </div>
 
-          {/* Diagnostic Part 2: Skill Gaps (Scrollable - Prioritized Space) */}
+          {/* Diagnostic Part 2: Skill Gaps */}
           <div className="flex-1 flex flex-col min-h-0">
              <div className="px-10 pt-8 pb-4 shrink-0">
                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
@@ -391,7 +453,7 @@ const Dashboard = () => {
 };
 
 const EmptyState = ({ text }) => (
-  <div className="py-40 flex flex-col items-center justify-center text-center opacity-20">
+  <div className="py-40 flex flex-col items-center justify-center text-center opacity-20 px-6">
      <AlertCircle size={64} className="mb-8 text-zinc-800" />
      <p className="text-sm font-bold uppercase tracking-[0.4em] text-zinc-600">{text}</p>
   </div>
@@ -400,8 +462,8 @@ const EmptyState = ({ text }) => (
 const ErrorState = ({ error }) => (
   <div className="h-screen w-full flex flex-col items-center justify-center bg-black p-6 text-center">
     <ShieldAlert size={64} className="text-zinc-800 mb-10" />
-    <h1 className="font-display text-5xl font-bold text-white mb-6 tracking-tighter uppercase">Error</h1>
-    <p className="text-zinc-500 text-lg max-w-sm mb-12 font-light leading-relaxed mx-auto">{error || "Could not retrieve report data."}</p>
+    <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 tracking-tighter uppercase">Error</h1>
+    <p className="text-zinc-500 text-base md:text-lg max-w-sm mb-12 font-light leading-relaxed mx-auto">{error || "Could not retrieve report data."}</p>
     <Link to="/generate-report">
        <LiquidCtaButton>Go Back</LiquidCtaButton>
     </Link>
