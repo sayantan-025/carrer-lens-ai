@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../hooks/use-auth";
+import { useRegister } from "../hooks/use-register";
 import { useToast } from "../../../context/toast-context";
-import { Spinner } from "../../../components/ui/spinner";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, CheckCircle2, Check } from "lucide-react";
@@ -15,58 +15,43 @@ import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { isLoading: isAuthChecking, register } = useAuth();
+  const { isLoading: isAuthChecking } = useAuth();
   const { showToast } = useToast();
 
-  const [userName, setUserName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    handleRegister,
+    isSubmitting,
+    errors,
+    formData,
+    handleInputChange
+  } = useRegister(() => {
+    showToast({ 
+      message: "Account created.", 
+      type: "success" 
+    });
+    navigate("/verify-otp", { state: { email: formData.email } });
+  });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [isNameValid, setIsNameValid] = useState(false);
 
   useEffect(() => {
-    setIsEmailValid(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
-  }, [email]);
+    setIsEmailValid(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email));
+  }, [formData.email]);
 
   useEffect(() => {
-    setIsPasswordValid(password.length >= 8);
-  }, [password]);
+    setIsPasswordValid(formData.password.length >= 8);
+  }, [formData.password]);
 
   useEffect(() => {
-    setIsNameValid(userName.trim().length > 2);
-  }, [userName]);
+    setIsNameValid(formData.userName.trim().length > 2);
+  }, [formData.userName]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    
-    if (!isPasswordValid) {
-      const msg = "Password too short.";
-      setError(msg);
-      showToast({ message: msg, type: "error" });
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await register({ userName, email, password });
-      showToast({ 
-        message: "Account created.", 
-        type: "success" 
-      });
-      navigate("/verify-otp", { state: { email } });
-    } catch (err) {
-      const errMsg = err.response?.data?.message || "Error. Try again.";
-      setError(errMsg);
-      showToast({ message: errMsg, type: "error" });
-    } finally {
-      setIsSubmitting(false);
-    }
+    await handleRegister(e);
   };
 
   const handleSocialLogin = (provider) => {
@@ -222,15 +207,21 @@ const Register = () => {
                 placeholder="Your Name" 
                 type="text" 
                 autoComplete="name"
-                onChange={(e) => setUserName(e.target.value)}
+                value={formData.userName}
+                onChange={(e) => handleInputChange("userName", e.target.value)}
                 required
                 className={cn(
                   "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
-                  error && error.toLowerCase().includes("taken") && "border-red-500/50"
+                  errors.userName && "border-red-500/50"
                 )}
               />
               <ValidationCheck isValid={isNameValid} />
             </div>
+            {errors.userName && (
+              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 animate-in fade-in slide-in-from-top-1">
+                {errors.userName}
+              </p>
+            )}
           </div>
           
           <div className="w-full space-y-2 text-left">
@@ -241,15 +232,21 @@ const Register = () => {
                 placeholder="name@example.com" 
                 type="email" 
                 autoComplete="email"
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 required
                 className={cn(
                   "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
-                  error && (error.toLowerCase().includes("email") || error.toLowerCase().includes("registered")) && "border-red-500/50"
+                  errors.email && "border-red-500/50"
                 )}
               />
               <ValidationCheck isValid={isEmailValid} />
             </div>
+            {errors.email && (
+              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 animate-in fade-in slide-in-from-top-1">
+                {errors.email}
+              </p>
+            )}
           </div>
 
           <div className="w-full space-y-2 text-left">
@@ -260,11 +257,12 @@ const Register = () => {
                 placeholder="••••••••" 
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
                 required
                 className={cn(
                   "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl pr-12 placeholder:text-zinc-800",
-                  error && error.toLowerCase().includes("password") && "border-red-500/50"
+                  errors.password && "border-red-500/50"
                 )}
               />
               <button
@@ -277,7 +275,18 @@ const Register = () => {
               </button>
               <ValidationCheck isValid={isPasswordValid} />
             </div>
+            {errors.password && (
+              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 animate-in fade-in slide-in-from-top-1">
+                {errors.password}
+              </p>
+            )}
           </div>
+
+          {errors.general && (
+            <p className="w-full text-[10px] text-red-500 font-bold uppercase tracking-widest text-center animate-in fade-in slide-in-from-top-1">
+              {errors.general}
+            </p>
+          )}
 
           <div className="w-full pt-2 flex justify-center">
              <LiquidCtaButton type="submit" className="w-full max-w-[280px]" disabled={isSubmitting}>

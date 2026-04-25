@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/use-auth";
+import { useResetPassword } from "../hooks/use-password-hooks";
 import { useToast } from "../../../context/toast-context";
 import { Spinner } from "../../../components/ui/spinner";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import Logo from "../../../components/ui/logo";
 import { Input } from "../../../components/ui/input";
@@ -12,41 +13,47 @@ import { cn } from "../../../lib/utils";
 import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 
 const ResetPassword = () => {
-  const [otpValue, setOtpValue] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const { resetPassword } = useAuth();
-  const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-
+  const { showToast } = useToast();
+  const { isLoading: isAuthChecking } = useAuth();
+  
   const email = location.state?.email;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      setError("Must match.");
+  const {
+    handleResetPassword,
+    isSubmitting,
+    errors,
+    formData,
+    handleInputChange,
+    setFormData,
+    setErrors
+  } = useResetPassword(() => {
+    showToast({ message: "Password changed successfully.", type: "success" });
+    navigate("/login");
+  });
+
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (!email) {
+      navigate("/forgot-password");
       return;
     }
+    setFormData(prev => ({ ...prev, email }));
+  }, [email, navigate, setFormData]);
 
-    setError("");
-    setIsSubmitting(true);
-    try {
-      await resetPassword({ email, otp: otpValue, newPassword });
-      showToast({ message: "Changed.", type: "success" });
-      navigate("/login");
-    } catch (err) {
-      const errMsg = err.response?.data?.message || "Error.";
-      setError(errMsg);
-      showToast({ message: errMsg, type: "error" });
-    } finally {
-      setIsSubmitting(false);
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.password !== confirmPassword) {
+      setErrors({ confirmPassword: "Passwords do not match." });
+      return;
     }
+    await handleResetPassword(e);
   };
+
+  if (isAuthChecking) return null;
 
   return (
     <motion.div
@@ -67,21 +74,7 @@ const ResetPassword = () => {
         </p>
       </div>
 
-      <AnimatePresence mode="wait">
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-6 p-4 bg-red-950/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-[10px] xs:text-[11px] font-bold uppercase tracking-widest"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-            {error}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <form onSubmit={handleSubmit} className="space-y-6 xs:space-y-8 flex flex-col items-center">
+      <form onSubmit={onSubmit} className="space-y-6 xs:space-y-8 flex flex-col items-center">
         <div className="w-full space-y-2 text-left">
           <Label htmlFor="otp" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">Verification Code</Label>
           <Input 
@@ -89,29 +82,34 @@ const ResetPassword = () => {
             placeholder="XXXXXX" 
             type="text" 
             maxLength={6}
-            value={otpValue}
-            onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ""))}
+            value={formData.otp}
+            onChange={(e) => handleInputChange("otp", e.target.value.replace(/\D/g, ""))}
             required
             className={cn(
               "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl text-center tracking-[0.5em] font-bold text-lg placeholder:text-zinc-800",
-              error && (error.toLowerCase().includes("code") || error.toLowerCase().includes("otp") || error.toLowerCase().includes("invalid")) && "border-red-500/50"
+              errors.otp && "border-red-500/50"
             )}
           />
+          {errors.otp && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+              {errors.otp}
+            </p>
+          )}
         </div>
 
         <div className="w-full space-y-2 text-left">
-          <Label htmlFor="newPassword" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">New Password</Label>
+          <Label htmlFor="password" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">New Password</Label>
           <div className="relative">
             <Input 
-              id="newPassword" 
+              id="password" 
               placeholder="••••••••" 
               type={showPassword ? "text" : "password"}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              value={formData.password}
+              onChange={(e) => handleInputChange("password", e.target.value)}
               required
               className={cn(
                 "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl pr-12 placeholder:text-zinc-800",
-                error && error.toLowerCase().includes("password") && "border-red-500/50"
+                errors.password && "border-red-500/50"
               )}
             />
             <button
@@ -122,6 +120,11 @@ const ResetPassword = () => {
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+          {errors.password && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+              {errors.password}
+            </p>
+          )}
         </div>
 
         <div className="w-full space-y-2 text-left">
@@ -131,14 +134,28 @@ const ResetPassword = () => {
             placeholder="••••••••" 
             type={showPassword ? "text" : "password"}
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: "" }));
+            }}
             required
             className={cn(
               "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
-              error && error.toLowerCase().includes("match") && "border-red-500/50"
+              errors.confirmPassword && "border-red-500/50"
             )}
           />
+          {errors.confirmPassword && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+              {errors.confirmPassword}
+            </p>
+          )}
         </div>
+
+        {errors.general && (
+          <p className="w-full text-[10px] text-red-500 font-bold uppercase tracking-widest text-center animate-in fade-in slide-in-from-top-1">
+            {errors.general}
+          </p>
+        )}
 
         <div className="w-full pt-2 flex justify-center">
            <LiquidCtaButton type="submit" disabled={isSubmitting} className="w-full max-w-[280px]">

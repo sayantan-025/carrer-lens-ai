@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useAuth } from "../hooks/use-auth";
+import { useChangePassword } from "../hooks/use-password-hooks";
 import { useToast } from "../../../context/toast-context";
 import { Spinner } from "../../../components/ui/spinner";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router";
 import Logo from "../../../components/ui/logo";
@@ -12,38 +12,32 @@ import { cn } from "../../../lib/utils";
 import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 
 const ChangePassword = () => {
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const { changePassword } = useAuth();
   const { showToast } = useToast();
 
-  const handleSubmit = async (e) => {
+  const {
+    handleChangePassword,
+    isSubmitting,
+    errors,
+    formData,
+    handleInputChange,
+    setFormData,
+    setErrors
+  } = useChangePassword(() => {
+    showToast({ message: "Password updated successfully.", type: "success" });
+    setFormData({ oldPassword: "", newPassword: "" });
+    setConfirmPassword("");
+  });
+
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match.");
+    if (formData.newPassword !== confirmPassword) {
+      setErrors({ confirmPassword: "Passwords do not match." });
       return;
     }
-    
-    setError("");
-    setIsSubmitting(true);
-    try {
-      await changePassword({ oldPassword, newPassword });
-      showToast({ message: "Password updated.", type: "success" });
-      setOldPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (err) {
-      const errMsg = err.response?.data?.message || "Update failed.";
-      setError(errMsg);
-      showToast({ message: errMsg, type: "error" });
-    } finally {
-      setIsSubmitting(false);
-    }
+    await handleChangePassword(e);
   };
 
   return (
@@ -65,35 +59,26 @@ const ChangePassword = () => {
         </p>
       </div>
 
-      <AnimatePresence mode="wait">
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-6 p-4 bg-red-950/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-[10px] xs:text-[11px] font-bold uppercase tracking-widest"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-            {error}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <form onSubmit={handleSubmit} className="space-y-6 xs:space-y-8 flex flex-col items-center">
+      <form onSubmit={onSubmit} className="space-y-6 xs:space-y-8 flex flex-col items-center">
         <div className="w-full space-y-2 text-left">
           <Label htmlFor="oldPassword" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">Current Password</Label>
           <Input 
             id="oldPassword" 
             placeholder="••••••••" 
             type={showPassword ? "text" : "password"}
-            value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
+            value={formData.oldPassword}
+            onChange={(e) => handleInputChange("oldPassword", e.target.value)}
             required
             className={cn(
               "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
-              error && error.toLowerCase().includes("current") && "border-red-500/50"
+              errors.oldPassword && "border-red-500/50"
             )}
           />
+          {errors.oldPassword && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+              {errors.oldPassword}
+            </p>
+          )}
         </div>
 
         <div className="w-full space-y-2 text-left">
@@ -103,13 +88,13 @@ const ChangePassword = () => {
               id="newPassword" 
               placeholder="••••••••" 
               type={showPassword ? "text" : "password"}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              value={formData.newPassword}
+              onChange={(e) => handleInputChange("newPassword", e.target.value)}
               required
               minLength={8}
               className={cn(
                 "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl pr-12 placeholder:text-zinc-800",
-                error && error.toLowerCase().includes("new") && !error.toLowerCase().includes("match") && "border-red-500/50"
+                errors.newPassword && "border-red-500/50"
               )}
             />
             <button
@@ -120,6 +105,11 @@ const ChangePassword = () => {
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+          {errors.newPassword && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+              {errors.newPassword}
+            </p>
+          )}
         </div>
 
         <div className="w-full space-y-2 text-left">
@@ -129,18 +119,32 @@ const ChangePassword = () => {
             placeholder="••••••••" 
             type={showPassword ? "text" : "password"}
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: "" }));
+            }}
             required
             className={cn(
               "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
-              error && error.toLowerCase().includes("match") && "border-red-500/50"
+              errors.confirmPassword && "border-red-500/50"
             )}
           />
+          {errors.confirmPassword && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
+              {errors.confirmPassword}
+            </p>
+          )}
         </div>
+
+        {errors.general && (
+          <p className="w-full text-[10px] text-red-500 font-bold uppercase tracking-widest text-center animate-in fade-in slide-in-from-top-1">
+            {errors.general}
+          </p>
+        )}
 
         <div className="w-full pt-2 flex justify-center">
            <LiquidCtaButton type="submit" disabled={isSubmitting} className="w-full max-w-[280px]">
-             {isSubmitting ? "..." : "Update Password"}
+             {isSubmitting ? <Spinner size="sm" /> : "Update Password"}
            </LiquidCtaButton>
         </div>
       </form>

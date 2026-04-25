@@ -16,35 +16,32 @@ import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 const Login = () => {
   const navigate = useNavigate();
   const { isLoading: isAuthChecking } = useAuth();
-  const { handleLogin, isSubmitting, errors, clearError } = useLogin();
   const { oauthError, clearOAuthError } = useOAuthError();
   const { showToast } = useToast();
   
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { 
+    handleLogin, 
+    isSubmitting, 
+    errors, 
+    formData, 
+    handleInputChange 
+  } = useLogin(() => {
+    showToast({ message: "Signed in.", type: "success" });
+    navigate("/");
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState({ google: false, github: false });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await handleLogin({ email, password });
-    if (result.success) {
-      showToast({ message: "Signed in.", type: "success" });
-      navigate("/");
-    }
+    await handleLogin(e);
   };
 
   const handleSocialLogin = (provider) => {
     setIsRedirecting(prev => ({ ...prev, [provider]: true }));
     const baseUrl = import.meta.env.VITE_API_URL || window.location.origin;
     window.location.href = `${baseUrl}/api/oauth/${provider}`;
-  };
-
-  const handleInputChange = (field, value, setter) => {
-    setter(value);
-    if (errors[field]) {
-      clearError(field);
-    }
   };
 
   if (isAuthChecking) {
@@ -123,32 +120,6 @@ const Login = () => {
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2rem] xs:rounded-[2.5rem] p-6 xs:p-8 lg:p-10 shadow-2xl mx-auto lg:mr-0 relative"
       >
-        {/* Error Banners */}
-        <AnimatePresence mode="wait">
-          {(errors.general || oauthError) && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-start gap-3 relative group"
-            >
-              <AlertCircle className="size-4 text-red-500 shrink-0 mt-0.5" />
-              <p className="text-[11px] font-bold text-red-200/80 leading-relaxed uppercase tracking-wider">
-                {errors.general || oauthError}
-              </p>
-              <button 
-                onClick={() => {
-                    if (errors.general) clearError("general");
-                    if (oauthError) clearOAuthError();
-                }}
-                className="absolute top-3 right-3 text-red-500/40 hover:text-red-500 transition-colors"
-              >
-                <X size={14} />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         <div className="text-center lg:text-left mb-8 xs:mb-10">
           <div className="lg:hidden flex justify-center mb-6 xs:mb-8">
             <Logo className="h-10 w-10 xs:h-12 xs:w-12" />
@@ -220,8 +191,8 @@ const Login = () => {
               placeholder="name@example.com" 
               type="email" 
               autoComplete="email"
-              value={email}
-              onChange={(e) => handleInputChange("email", e.target.value, setEmail)}
+              value={formData.email}
+              onChange={(e) => handleInputChange("email", e.target.value)}
               required
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
@@ -250,8 +221,8 @@ const Login = () => {
                 placeholder="••••••••" 
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                value={password}
-                onChange={(e) => handleInputChange("password", e.target.value, setPassword)}
+                value={formData.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
                 required
                 aria-invalid={!!errors.password}
                 aria-describedby={errors.password ? "password-error" : undefined}
@@ -275,6 +246,12 @@ const Login = () => {
               </p>
             )}
           </div>
+
+          {errors.general && (
+            <p className="w-full text-[10px] text-red-500 font-bold uppercase tracking-widest text-center animate-in fade-in slide-in-from-top-1">
+              {errors.general}
+            </p>
+          )}
 
           <div className="w-full pt-2 flex justify-center">
              <LiquidCtaButton 

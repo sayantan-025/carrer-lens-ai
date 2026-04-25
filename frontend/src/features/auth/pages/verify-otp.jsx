@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/use-auth";
+import { useVerifyOTP } from "../hooks/use-verify-otp";
 import { useToast } from "../../../context/toast-context";
-import { Spinner } from "../../../components/ui/spinner";
 import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw } from "lucide-react";
 import Logo from "../../../components/ui/logo";
@@ -12,28 +12,40 @@ import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 import { DotLoader } from "../../../components/ui/dot-loader";
 
 const VerifyOTP = () => {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [countdown, setCountdown] = useState(60);
-  const inputRefs = useRef([]);
-  
   const navigate = useNavigate();
   const location = useLocation();
-  const { verifyOTP, resendOTP } = useAuth();
+  const { resendOTP } = useAuth();
   const { showToast } = useToast();
-
   const email = location.state?.email;
+
+  const {
+    handleVerify,
+    isSubmitting,
+    errors,
+    formData,
+    handleInputChange,
+    setFormData
+  } = useVerifyOTP(() => {
+    showToast({ message: "Verified.", type: "success" });
+    navigate("/");
+  });
+
+  const [otpArray, setOtpArray] = useState(["", "", "", "", "", ""]);
+  const [countdown, setCountdown] = useState(60);
+  const inputRefs = useRef([]);
 
   useEffect(() => {
     if (!email) {
       navigate("/register");
       return;
     }
+    setFormData(prev => ({ ...prev, email }));
+  }, [email, navigate, setFormData]);
 
+  useEffect(() => {
     const timer = countdown > 0 && setInterval(() => setCountdown(countdown - 1), 1000);
     return () => clearInterval(timer);
-  }, [countdown, email, navigate]);
+  }, [countdown]);
 
   useEffect(() => {
     if (inputRefs.current[0]) {
@@ -44,9 +56,12 @@ const VerifyOTP = () => {
   const handleChange = (index, value) => {
     if (value && !/^\d+$/.test(value)) return;
 
-    const newOtp = [...otp];
-    newOtp[index] = value.substring(value.length - 1);
-    setOtp(newOtp);
+    const newOtpArray = [...otpArray];
+    newOtpArray[index] = value.substring(value.length - 1);
+    setOtpArray(newOtpArray);
+    
+    const otpString = newOtpArray.join("");
+    handleInputChange("otp", otpString);
 
     if (value && index < 5) {
       inputRefs.current[index + 1].focus();
@@ -54,7 +69,7 @@ const VerifyOTP = () => {
   };
 
   const handleKeyDown = (index, e) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
+    if (e.key === "Backspace" && !otpArray[index] && index > 0) {
       inputRefs.current[index - 1].focus();
     }
   };
@@ -64,33 +79,22 @@ const VerifyOTP = () => {
     const pasteData = e.clipboardData.getData("text").slice(0, 6).split("");
     if (!pasteData.every(char => /^\d+$/.test(char))) return;
 
-    const newOtp = [...otp];
+    const newOtpArray = [...otpArray];
     pasteData.forEach((char, i) => {
-      if (i < 6) newOtp[i] = char;
+      if (i < 6) newOtpArray[i] = char;
     });
-    setOtp(newOtp);
+    setOtpArray(newOtpArray);
+    
+    const otpString = newOtpArray.join("");
+    handleInputChange("otp", otpString);
     
     const nextFocus = Math.min(pasteData.length, 5);
     inputRefs.current[nextFocus].focus();
   };
 
-  const handleVerify = async (e) => {
+  const onVerify = async (e) => {
     e.preventDefault();
-    setError("");
-    const otpString = otp.join("");
-    
-    setIsSubmitting(true);
-    try {
-      await verifyOTP({ email, otp: otpString });
-      showToast({ message: "Verified.", type: "success" });
-      navigate("/");
-    } catch (err) {
-      const errMsg = err.response?.data?.message || "Wrong code.";
-      setError(errMsg);
-      showToast({ message: errMsg, type: "error" });
-    } finally {
-      setIsSubmitting(false);
-    }
+    await handleVerify(e);
   };
 
   const handleResend = async () => {
@@ -100,11 +104,14 @@ const VerifyOTP = () => {
       showToast({ message: "Code sent.", type: "success" });
       setCountdown(60);
     } catch (err) {
-      showToast({ message: "Error.", type: "error" });
+      // Errors handled by toast here since it's not the primary form submission
+      // But we could also map it to the OTP error
+      const msg = err.response?.data?.message || "Error resending code.";
+      showToast({ message: msg, type: "error" });
     }
   };
 
-  const isOtpComplete = otp.every(digit => digit !== "");
+  const isOtpComplete = formData.otp.length === 6;
 
   return (
     <motion.div
@@ -125,25 +132,11 @@ const VerifyOTP = () => {
         </p>
       </div>
 
-      <AnimatePresence mode="wait">
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-8 p-5 bg-red-950/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-400 text-[11px] font-bold uppercase tracking-widest"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-            {error}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <form onSubmit={handleVerify} className="space-y-10 flex flex-col items-center">
+      <form onSubmit={onVerify} className="space-y-10 flex flex-col items-center">
         <div className="flex flex-col items-center gap-4 w-full text-center">
           <Label className="text-center w-full mb-2 text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Verification Code</Label>
           <div className="flex justify-between w-full gap-2" onPaste={handlePaste}>
-            {otp.map((digit, index) => (
+            {otpArray.map((digit, index) => (
               <div key={index} className="relative flex-1 aspect-square max-w-[56px]">
                 <input
                   ref={el => inputRefs.current[index] = el}
@@ -156,15 +149,15 @@ const VerifyOTP = () => {
                   className={cn(
                     "w-full h-full text-center bg-zinc-900/30 border rounded-xl text-xl font-bold text-white transition-all duration-300 outline-none",
                     digit ? "border-white/20 ring-1 ring-white/10 shadow-[0_0_15px_white/5]" : "border-white/5 hover:border-white/10 focus:border-white/20",
-                    error && "border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.1)]"
+                    errors.otp && "border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.1)]"
                   )}
                 />
               </div>
             ))}
           </div>
-          {error && (
+          {(errors.otp || errors.general) && (
             <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest animate-in fade-in slide-in-from-top-1">
-              {error}
+              {errors.otp || errors.general}
             </p>
           )}
         </div>

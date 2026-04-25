@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate, Link } from "react-router";
 import { useAuth } from "../hooks/use-auth";
+import { useForgotPassword } from "../hooks/use-password-hooks";
 import { useToast } from "../../../context/toast-context";
 import { Spinner } from "../../../components/ui/spinner";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import Logo from "../../../components/ui/logo";
 import { Input } from "../../../components/ui/input";
@@ -12,28 +13,23 @@ import { cn } from "../../../lib/utils";
 import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { forgotPassword } = useAuth();
-  const { showToast } = useToast();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
-  const handleSubmit = async (e) => {
+  const {
+    handleForgotPassword,
+    isSubmitting,
+    errors,
+    formData,
+    handleInputChange
+  } = useForgotPassword(() => {
+    showToast({ message: "Code sent.", type: "success" });
+    navigate("/reset-password", { state: { email: formData.email } });
+  });
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setIsSubmitting(true);
-    try {
-      await forgotPassword({ email });
-      showToast({ message: "Code sent.", type: "success" });
-      navigate("/reset-password", { state: { email } });
-    } catch (err) {
-      const errMsg = err.response?.data?.message || "Error.";
-      setError(errMsg);
-      showToast({ message: errMsg, type: "error" });
-    } finally {
-      setIsSubmitting(false);
-    }
+    await handleForgotPassword(e);
   };
 
   return (
@@ -55,38 +51,24 @@ const ForgotPassword = () => {
         </p>
       </div>
 
-      <AnimatePresence mode="wait">
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-8 p-5 bg-red-950/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-400 text-[10px] xs:text-[11px] font-bold uppercase tracking-widest"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-            {error}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <form onSubmit={handleSubmit} className="space-y-6 xs:space-y-8 flex flex-col items-center">
+      <form onSubmit={onSubmit} className="space-y-6 xs:space-y-8 flex flex-col items-center">
         <div className="w-full space-y-2 text-left">
           <Label htmlFor="email" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">Email Address</Label>
           <Input 
             id="email" 
             placeholder="name@example.com" 
             type="email" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={(e) => handleInputChange("email", e.target.value)}
             required
             className={cn(
               "h-12 bg-zinc-900/30 border-white/5 focus:border-white/20 transition-all rounded-xl placeholder:text-zinc-800",
-              error && "border-red-500/50"
+              errors.email && "border-red-500/50"
             )}
           />
-          {error && (
+          {(errors.email || errors.general) && (
             <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
-              {error}
+              {errors.email || errors.general}
             </p>
           )}
         </div>
