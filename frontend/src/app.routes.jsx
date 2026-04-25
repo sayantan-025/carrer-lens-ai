@@ -1,6 +1,5 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { createBrowserRouter } from "react-router";
-import { Spinner } from "./components/ui/spinner";
 
 const Login = lazy(() => import("./features/auth/pages/login"));
 const Register = lazy(() => import("./features/auth/pages/register"));
@@ -18,12 +17,6 @@ import MainLayout from "./layouts/main-layout";
 import AuthLayout from "./layouts/auth-layout";
 import ProtectedLayout from "./layouts/protected-layout";
 
-const PageLoader = () => (
-  <div className="flex h-[50vh] w-full items-center justify-center">
-    <Spinner size="lg" />
-  </div>
-);
-
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -31,11 +24,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <LandingPage />
-          </Suspense>
-        ),
+        element: <LandingPage />,
       },
     ],
   },
@@ -44,51 +33,27 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/login",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Login />
-          </Suspense>
-        ),
+        element: <Login />,
       },
       {
         path: "/register",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Register />
-          </Suspense>
-        ),
+        element: <Register />,
       },
       {
         path: "/verify-otp",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <VerifyOTP />
-          </Suspense>
-        ),
+        element: <VerifyOTP />,
       },
       {
         path: "/forgot-password",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ForgotPassword />
-          </Suspense>
-        ),
+        element: <ForgotPassword />,
       },
       {
         path: "/reset-password",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ResetPassword />
-          </Suspense>
-        ),
+        element: <ResetPassword />,
       },
       {
         path: "/oauth/callback",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <OAuthCallback />
-          </Suspense>
-        ),
+        element: <OAuthCallback />,
       },
     ],
   },
@@ -97,35 +62,19 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/generate-report",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <GenerateReport />
-          </Suspense>
-        ),
+        element: <GenerateReport />,
       },
       {
         path: "/dashboard/:interviewId",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Dashboard />
-          </Suspense>
-        ),
+        element: <Dashboard />,
       },
       {
         path: "/profile",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Profile />
-          </Suspense>
-        ),
+        element: <Profile />,
       },
       {
         path: "/change-password",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ChangePassword />
-          </Suspense>
-        ),
+        element: <ChangePassword />,
       },
     ],
   },

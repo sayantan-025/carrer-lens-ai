@@ -8,11 +8,16 @@ const logger = require("../utils/logger");
 const ApiError = require("../utils/api-error");
 
 const COOKIE_OPTIONS = (req) => {
-  const isLocalhost = req.hostname === "localhost" || req.get("host")?.includes("localhost");
+  const host = req.get("host") || "";
+  // Localhost check should handle 'localhost', '127.0.0.1', or '::1'
+  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1") || host.includes("[::1]");
+  
   return {
     httpOnly: true,
+    // On localhost, cookies cannot be 'secure' if served via plain HTTP
     secure: isLocalhost ? false : true,
-    sameSite: "lax", 
+    // 'lax' allows cookies to be sent on same-site requests (including cross-port localhost)
+    sameSite: isLocalhost ? "lax" : "none",
     path: "/",
   };
 };
@@ -42,7 +47,6 @@ const sendAuthCookies = async (req, res, user) => {
   res.cookie("refreshToken", refreshToken, {
     ...options,
     maxAge: REFRESH_TOKEN_MAX_AGE,
-    path: "/", 
   });
 
   return { accessToken };
@@ -189,14 +193,27 @@ const loginUserController = async (req, res, next) => {
 // refresh token controller
 const refreshTokenController = async (req, res, next) => {
   const token = req.cookies.refreshToken;
-  if (!token) return next(new ApiError(401, "Refresh token missing", "general"));
+  
+  if (!token) {
+    logger.warn("Refresh attempt failed: No refreshToken cookie found in request");
+    return next(new ApiError(401, "Refresh token missing", "general"));
+  }
 
   try {
     const decoded = tokenService.verifyRefreshToken(token);
-    if (!decoded) return next(new ApiError(401, "Invalid refresh token", "general"));
+    if (!decoded) {
+      logger.warn("Refresh attempt failed: Token verification failed (possibly expired or invalid secret)");
+      return next(new ApiError(401, "Invalid refresh token", "general"));
+    }
 
     const user = await userModel.findById(decoded.id).select("+refreshToken");
-    if (!user || user.refreshToken !== tokenService.hashToken(token)) {
+    if (!user) {
+      logger.warn(`Refresh attempt failed: User ${decoded.id} not found in database`);
+      return next(new ApiError(401, "User not found", "general"));
+    }
+
+    if (user.refreshToken !== tokenService.hashToken(token)) {
+      logger.warn(`Refresh attempt failed: Token rotation check failed for user ${user._id}. Possible reuse or stale token.`);
       return next(new ApiError(401, "Invalid or rotated refresh token", "general"));
     }
 
@@ -204,6 +221,7 @@ const refreshTokenController = async (req, res, next) => {
 
     res.status(200).json({ success: true, accessToken });
   } catch (error) {
+    logger.error("Refresh token controller error:", error);
     next(error);
   }
 };

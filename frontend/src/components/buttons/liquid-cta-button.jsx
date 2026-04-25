@@ -1,9 +1,8 @@
-"use client"
-
 import React from "react"
 import { ArrowRight } from "lucide-react"
 import { LiquidMetalBorder } from "../ui/liquid-metal-border"
 import { cn } from "../../lib/utils"
+import { Spinner } from "../ui/spinner"
 
 export function LiquidCtaButton({ 
   children, 
@@ -13,7 +12,9 @@ export function LiquidCtaButton({
   disabled = false, 
   theme = "dark",
   loading = false,
-  loadingChild 
+  loadingText,
+  icon: Icon = ArrowRight,
+  showIcon = true
 }) {
   const isLight = theme === "light"
 
@@ -34,35 +35,28 @@ export function LiquidCtaButton({
                 : "bg-gradient-to-b from-zinc-800 to-zinc-900",
             )}
           >
-            {/* Stable Layout Grid for Loading Overlay */}
-            <div className="grid grid-cols-1 grid-rows-1 items-center justify-center w-full">
-              {/* Primary Label and Icon */}
-              <div className={cn(
-                "col-start-1 row-start-1 flex items-center justify-center gap-2 transition-opacity duration-300", 
-                loading ? "opacity-0" : "opacity-100"
-              )}>
-                <span className={cn("text-sm font-medium transition-colors whitespace-nowrap", isLight ? "text-zinc-600" : "text-zinc-200")}>
-                  {children}
-                </span>
-                <ArrowRight
-                  className={cn(
-                    "w-5 h-5 group-hover:translate-x-1 transition-all duration-300",
-                    isLight ? "text-zinc-600" : "text-zinc-200",
+            <div className="flex items-center justify-center gap-2.5">
+              {loading ? (
+                <>
+                  <Spinner size="sm" className={isLight ? "border-zinc-400 border-t-zinc-800" : "border-zinc-800 border-t-zinc-200"} />
+                  <span className={cn("text-sm font-medium tracking-tight", isLight ? "text-zinc-800" : "text-zinc-100")}>
+                    {loadingText || "Processing..."}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className={cn("text-sm font-medium tracking-tight transition-colors whitespace-nowrap", isLight ? "text-zinc-600" : "text-zinc-200")}>
+                    {children}
+                  </span>
+                  {showIcon && Icon && (
+                    <Icon
+                      className={cn(
+                        "w-4 h-4 group-hover:translate-x-0.5 transition-all duration-300 shrink-0",
+                        isLight ? "text-zinc-600" : "text-zinc-200",
+                      )}
+                    />
                   )}
-                />
-              </div>
-
-              {/* Loader Overlay */}
-              {loading && (
-                <div className="col-start-1 row-start-1 flex items-center justify-center animate-in fade-in duration-300">
-                  {loadingChild || (
-                    <div className="flex gap-1">
-                      <div className="w-1 h-1 rounded-full bg-current animate-bounce [animation-delay:-0.3s]" />
-                      <div className="w-1 h-1 rounded-full bg-current animate-bounce [animation-delay:-0.15s]" />
-                      <div className="w-1 h-1 rounded-full bg-current animate-bounce" />
-                    </div>
-                  )}
-                </div>
+                </>
               )}
             </div>
           </div>

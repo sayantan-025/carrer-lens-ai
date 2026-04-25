@@ -1,8 +1,6 @@
 import React from "react";
 import { useNavigate, Link } from "react-router";
-import { useAuth } from "../hooks/use-auth";
 import { useForgotPassword } from "../hooks/use-password-hooks";
-import { Spinner } from "../../../components/ui/spinner";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import Logo from "../../../components/ui/logo";
@@ -71,13 +69,14 @@ const ForgotPassword = () => {
         </div>
 
         <div className="w-full pt-2 flex justify-center">
-           <LiquidCtaButton type="submit" disabled={isSubmitting} className="w-full max-w-[280px]">
-             {isSubmitting ? (
-               <div className="flex items-center justify-center gap-3">
-                 <Spinner size="sm" />
-                 <span>Sending...</span>
-               </div>
-             ) : "Send Reset Link"}
+           <LiquidCtaButton 
+             type="submit" 
+             disabled={isSubmitting} 
+             className="w-full max-w-[280px]"
+             loading={isSubmitting}
+             loadingText="Sending..."
+           >
+             Send Reset Link
            </LiquidCtaButton>
         </div>
       </form>

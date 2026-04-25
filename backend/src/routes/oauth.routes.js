@@ -4,7 +4,9 @@ const passport = require("../config/passport");
 const { generateAccessToken, rotateRefreshToken } = require("../services/token.service");
 
 const COOKIE_OPTIONS = (req) => {
-  const isLocalhost = req.hostname === "localhost" || req.get("host")?.includes("localhost");
+  const host = req.get("host") || "";
+  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1") || host.includes("[::1]");
+  
   return {
     httpOnly: true,
     secure: isLocalhost ? false : true,

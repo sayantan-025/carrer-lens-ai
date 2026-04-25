@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import * as authApi from "./services/auth.api";
 import { setGlobalAuthData } from "./api/axios-instance";
 import { useToast } from "../../context/toast-context";
@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const { showErrorToast } = useToast();
+  const checkAuthInProgress = useRef(false);
 
   const isAuthenticated = !!user;
 
@@ -59,8 +60,12 @@ export const AuthProvider = ({ children }) => {
   }, [updateAuthData]);
 
   const checkAuth = useCallback(async () => {
+    if (checkAuthInProgress.current) return;
+    
     // Silent check on mount
     setIsAuthChecking(true);
+    checkAuthInProgress.current = true;
+    
     try {
       // 1. Try refreshing the token (using the refreshToken cookie)
       const refreshData = await authApi.refreshToken();
@@ -68,11 +73,12 @@ export const AuthProvider = ({ children }) => {
       const userData = await authApi.getCurrentUser();
       updateAuthData(userData.user, refreshData.accessToken);
     } catch (error) {
-      // Silent fail - user is just not logged in
+      // Silent fail - user is just not logged in or refresh failed
       setUser(null);
       setAccessToken(null);
     } finally {
       setIsAuthChecking(false);
+      checkAuthInProgress.current = false;
     }
   }, [updateAuthData]);
 

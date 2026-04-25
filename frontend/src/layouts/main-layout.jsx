@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Outlet } from "react-router";
 import Navbar from "../components/ui/navbar";
 import Footer from "../components/ui/footer";
@@ -34,15 +34,35 @@ const LandingPageSkeleton = () => (
 );
 
 const MainLayout = () => {
+  const { isAuthChecking } = useAuthContext();
+
+  if (isAuthChecking) {
+    return (
+      <div className="min-h-screen relative flex flex-col bg-black">
+        <GlobalBackground />
+        <main className="flex-1 relative z-10">
+          <LandingPageSkeleton />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen relative flex flex-col bg-black">
       <LenisScroll />
       <GlobalBackground />
-      <Navbar />
-      <main className="flex-1 relative z-10">
-        <Outlet />
-      </main>
-      <Footer />
+      
+      <Suspense fallback={
+        <main className="flex-1 relative z-10">
+          <LandingPageSkeleton />
+        </main>
+      }>
+        <Navbar />
+        <main className="flex-1 relative z-10">
+          <Outlet />
+        </main>
+        <Footer />
+      </Suspense>
     </div>
   );
 };

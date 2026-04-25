@@ -27,19 +27,20 @@ const authLimiter = rateLimit({
 // CORS configuration
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl) or same-origin
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Allow same-origin requests or allowed origins
+      if (!origin || allowedOrigins.includes(origin) || origin.includes("localhost") || origin.includes("127.0.0.1")) {
         return callback(null, true);
       }
-      // In production, if it's same-origin (served by this server), it should be fine.
-      // But we can also just allow the host itself.
-      return callback(null, true); 
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   }),

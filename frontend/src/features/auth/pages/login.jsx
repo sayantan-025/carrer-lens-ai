@@ -255,9 +255,10 @@ const Login = () => {
              <LiquidCtaButton 
                 type="submit" 
                 className="w-full max-w-[280px]"
-                disabled={isSubmitting || isRedirecting.google || isRedirecting.github}
+                loading={isSubmitting}
+                loadingText="Signing In..."
              >
-               {isSubmitting ? "Signing In..." : "Sign In"}
+               Sign In
              </LiquidCtaButton>
           </div>
         </form>

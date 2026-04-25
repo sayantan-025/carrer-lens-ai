@@ -18,6 +18,7 @@ import {
   X
 } from "lucide-react";
 import { useNavigate, Link } from "react-router";
+import { useAuth } from "../../auth/hooks/use-auth";
 import { useInterview } from "../hooks/use-interview";
 import { useToast } from "../../../context/toast-context";
 import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
@@ -39,11 +40,13 @@ const GenerateReport = () => {
   const navigate = useNavigate();
   const { generateReport, loading, reports, getReports } = useInterview();
   const { showSuccessToast, showErrorToast } = useToast();
+  const { isAuthChecking } = useAuth();
   
   const [currentStep, setCurrentStep] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [formData, setFormData] = useState({ jobDescription: "", resumeFile: null, selfDescription: "" });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); /* responsive: mobile fix */
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   
   const fileInputRef = useRef(null);
 
@@ -67,7 +70,18 @@ const GenerateReport = () => {
   const handleFileChange = (file) => {
     if (file && file.type === "application/pdf") {
       setFormData(prev => ({ ...prev, resumeFile: file }));
-      showSuccessToast("Resume uploaded.");
+      // Simulate upload progress for UI consistency
+      setUploadProgress(0);
+      const interval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            showSuccessToast("Resume secured.");
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 100);
     } else {
       showErrorToast("Please upload a PDF.");
     }
@@ -78,11 +92,11 @@ const GenerateReport = () => {
     try {
       const result = await generateReport(formData);
       if (result) {
-        showSuccessToast("Report generated.");
+        showSuccessToast("Analysis complete.");
         navigate(`/dashboard/${result._id}`);
       }
     } catch (err) { 
-      showErrorToast("Generation failed."); 
+      showErrorToast("Analysis failed."); 
     }
   };
 
@@ -100,7 +114,7 @@ const GenerateReport = () => {
       </div>
 
       {/* Header */}
-      <header className="shrink-0 h-16 border-b border-white/5 bg-zinc-950/40 backdrop-blur-xl flex items-center justify-between px-4 md:px-8 z-50"> {/* responsive: mobile fix */}
+      <header className="shrink-0 h-16 border-b border-white/5 bg-zinc-950/40 backdrop-blur-xl flex items-center justify-between px-4 md:px-8 z-50">
         <div className="flex items-center gap-4 md:gap-6">
           <button 
             onClick={() => setIsSidebarOpen(true)}
@@ -128,9 +142,9 @@ const GenerateReport = () => {
         <ProgressBar value={progressValue} />
       </div>
 
-      <main className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 overflow-hidden"> {/* responsive: mobile fix */}
+      <main className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
         
-        {/* Left Sidebar - Drawer on mobile */}
+        {/* Left Sidebar */}
         <AnimatePresence>
           {(isSidebarOpen || window.innerWidth >= 768) && (
             <motion.aside 
@@ -140,7 +154,7 @@ const GenerateReport = () => {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className={cn(
                 "md:col-span-3 border-r border-white/5 bg-zinc-950/20 md:flex flex-col min-h-0 overflow-y-auto scrollbar-hidden z-[60]",
-                "fixed inset-0 md:relative bg-black md:bg-zinc-950/20", /* responsive: mobile drawer fix */
+                "fixed inset-0 md:relative bg-black md:bg-zinc-950/20",
                 !isSidebarOpen && "hidden md:flex"
               )}
             >
@@ -183,110 +197,62 @@ const GenerateReport = () => {
                 })}
               </div>
 
-              {/* Validation Requirements Card */}
-              <div className="px-6 md:px-8 pb-4">
-                <div className="p-6 bg-zinc-900/30 border border-white/5 rounded-[2rem] relative overflow-hidden group transition-all duration-500">
-                  <div className="flex items-center gap-2 text-zinc-300 mb-6">
-                    <ShieldCheck size={14} className="text-white/40" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider">System Rules</span>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {currentStep === 0 ? (
-                      <div className={cn(
-                        "flex items-start gap-3 transition-colors",
-                        isStep1Valid ? "text-white" : "text-zinc-600"
-                      )}>
-                        <div className={cn(
-                          "size-1.5 rounded-full mt-1.5 transition-all duration-500",
-                          isStep1Valid ? "bg-white shadow-[0_0_8px_white]" : "bg-zinc-800"
-                        )} />
-                        <div className="flex flex-col">
-                          <span className="text-[11px] font-bold uppercase tracking-widest">Min. 50 characters</span>
-                          <span className="text-[9px] font-medium opacity-40 mt-1 leading-relaxed">Detailed job description ensures precise matching.</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className={cn(
-                          "flex items-start gap-3 transition-colors",
-                          (formData.resumeFile || formData.selfDescription.trim().length >= 20) ? "text-white" : "text-zinc-600"
-                        )}>
-                          <div className={cn(
-                            "size-1.5 rounded-full mt-1.5 transition-all duration-500",
-                            (formData.resumeFile || formData.selfDescription.trim().length >= 20) ? "bg-white shadow-[0_0_8px_white]" : "bg-zinc-800"
-                          )} />
-                          <div className="flex flex-col">
-                            <span className="text-[11px] font-bold uppercase tracking-widest text-wrap">Resume PDF or Description</span>
-                          </div>
-                        </div>
-                        
-                        {!formData.resumeFile && (
-                          <div className={cn(
-                            "flex items-start gap-3 ml-4 transition-colors",
-                            formData.selfDescription.trim().length >= 20 ? "text-zinc-400" : "text-zinc-700"
-                          )}>
-                            <div className={cn(
-                              "size-1 rounded-full mt-1.5",
-                              formData.selfDescription.trim().length >= 20 ? "bg-zinc-500" : "bg-zinc-800"
-                            )} />
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-bold uppercase tracking-widest italic">Min. 20 characters</span>
-                              <span className="text-[9px] font-medium opacity-30 mt-1 leading-relaxed italic">Required for AI context mapping.</span>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-
               {/* Past Reports */}
-              <div className="px-6 md:px-8 pb-8 mt-2 flex-1 flex flex-col">
-                <div className="border-t border-white/5 pt-6 flex-1 flex flex-col">
+              <div className="px-6 md:px-8 pb-8 mt-2 flex-1 flex flex-col min-h-0">
+                <div className="border-t border-white/5 pt-6 flex-1 flex flex-col min-h-0">
                   <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                     <Clock size={10} /> History
                   </p>
                   
-                  {reports && reports.length > 0 ? (
-                    <div className="space-y-2">
-                      {reports.slice(0, 5).map((report) => (
-                        <Link
-                          key={report._id}
-                          to={`/dashboard/${report._id}`}
-                          onClick={() => setIsSidebarOpen(false)}
-                          className="group flex items-center justify-between px-3 py-3 rounded-xl hover:bg-white/[0.03] border border-transparent hover:border-white/5 transition-all"
-                        >
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-zinc-400 group-hover:text-white transition-colors truncate">
-                              {report.title || "Untitled Analysis"}
-                            </p>
-                            <p className="text-[10px] text-zinc-600 mt-0.5">
-                              {formatDate(report.createdAt)} · {report.matchScore ?? "—"}%
-                            </p>
+                  <div className="flex-1 overflow-y-auto scrollbar-hidden pr-1">
+                    {loading && !reports ? (
+                      <div className="space-y-4">
+                        {[1, 2, 3, 4].map(i => (
+                          <div key={i} className="px-3 py-3 space-y-2">
+                             <Skeleton className="h-4 w-3/4 rounded-lg" />
+                             <Skeleton className="h-3 w-1/2 rounded-lg" />
                           </div>
-                          <ChevronRight size={12} className="text-zinc-700 group-hover:text-zinc-400 shrink-0 ml-2 transition-colors" />
-                        </Link>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[2rem] p-8 opacity-40">
-                      <div className="size-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center mb-4">
-                        <Clock size={16} className="text-zinc-800" />
+                        ))}
                       </div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 text-center leading-relaxed">
-                        Terminal idle <br /> No logs detected
-                      </p>
-                    </div>
-                  )}
+                    ) : reports && reports.length > 0 ? (
+                      <div className="space-y-2">
+                        {reports.slice(0, 8).map((report) => (
+                          <Link
+                            key={report._id}
+                            to={`/dashboard/${report._id}`}
+                            onClick={() => setIsSidebarOpen(false)}
+                            className="group flex items-center justify-between px-3 py-3 rounded-xl hover:bg-white/[0.03] border border-transparent hover:border-white/5 transition-all"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-zinc-400 group-hover:text-white transition-colors truncate">
+                                {report.title || "Untitled Analysis"}
+                              </p>
+                              <p className="text-[10px] text-zinc-600 mt-0.5">
+                                {formatDate(report.createdAt)} · {report.matchScore ?? "—"}%
+                              </p>
+                            </div>
+                            <ChevronRight size={12} className="text-zinc-700 group-hover:text-zinc-400 shrink-0 ml-2 transition-colors" />
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="h-full flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[2rem] p-8 opacity-40">
+                        <div className="size-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center mb-4">
+                          <Clock size={16} className="text-zinc-800" />
+                        </div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 text-center leading-relaxed">
+                          Terminal idle <br /> No logs detected
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.aside>
           )}
         </AnimatePresence>
 
-        {/* Backdrop for mobile sidebar */}
+        {/* Backdrop */}
         <AnimatePresence>
           {isSidebarOpen && (
             <motion.div 
@@ -300,9 +266,9 @@ const GenerateReport = () => {
         </AnimatePresence>
 
         {/* Main Input Area */}
-        <section className="col-span-1 md:col-span-9 flex flex-col min-h-0 bg-black/40 p-6 md:p-16 overflow-y-auto scrollbar-hidden"> {/* responsive: mobile fix */}
+        <section className="col-span-1 md:col-span-9 flex flex-col min-h-0 bg-black/40 p-6 md:p-16 overflow-y-auto scrollbar-hidden">
           <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
-            <div className="mb-8 md:mb-14"> {/* responsive: mobile fix */}
+            <div className="mb-8 md:mb-14">
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -311,10 +277,10 @@ const GenerateReport = () => {
                 <div className="h-px w-6 bg-white/20" />
                 <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.3em]">Module {currentStep + 1}</span>
               </motion.div>
-              <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tighter leading-tight mb-4"> {/* responsive: scaled typography */}
+              <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tighter leading-tight mb-4">
                 {steps[currentStep].title}
               </h1>
-              <p className="text-zinc-500 text-lg md:text-2xl font-light leading-relaxed max-w-2xl"> {/* responsive: scaled typography */}
+              <p className="text-zinc-500 text-lg md:text-2xl font-light leading-relaxed max-w-2xl">
                 {steps[currentStep].description}
               </p>
             </div>
@@ -330,7 +296,7 @@ const GenerateReport = () => {
                   className="h-full"
                 >
                   {currentStep === 0 && (
-                    <div className="relative group h-[300px] md:h-[400px]"> {/* responsive: mobile fix */}
+                    <div className="relative group h-[300px] md:h-[400px]">
                       <textarea
                         id="job-description-input"
                         placeholder="Paste the Job Description details..."
@@ -348,7 +314,7 @@ const GenerateReport = () => {
                   )}
 
                   {currentStep === 1 && (
-                    <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 md:gap-8 min-h-[400px] lg:h-[400px]"> {/* responsive: stack on mobile/tablet */}
+                    <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 md:gap-8 min-h-[400px] lg:h-[400px]">
                       {/* Resume Upload */}
                       <div 
                         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
@@ -361,24 +327,34 @@ const GenerateReport = () => {
                         )}
                       >
                         <input type="file" ref={fileInputRef} onChange={(e) => handleFileChange(e.target.files[0])} accept=".pdf" className="hidden" />
-                        <div className={cn(
-                          "size-20 md:size-24 rounded-[1.5rem] md:rounded-[2rem] bg-zinc-900 border border-white/5 flex items-center justify-center transition-all duration-700", 
-                          (isDragging || formData.resumeFile) && "scale-110 border-white/20"
-                        )}>
-                          {formData.resumeFile ? <FileCheck size={40} className="text-white" /> : <Upload size={40} className="text-zinc-800 group-hover/upload:text-zinc-500 transition-colors" />}
-                        </div>
-                        <div className="text-center px-4">
-                          <p className="text-white font-bold text-lg md:text-xl tracking-tight">
-                            {formData.resumeFile ? formData.resumeFile.name : "Resume.pdf"}
-                          </p>
-                          <p className="text-zinc-500 text-[10px] md:text-xs font-light mt-2 md:mt-3 uppercase tracking-widest">
-                            {formData.resumeFile ? "FILE SECURED" : "SELECT PDF FILE"}
-                          </p>
-                        </div>
+                        
+                        {formData.resumeFile && uploadProgress < 100 ? (
+                          <div className="w-full max-w-[200px] space-y-4">
+                            <ProgressBar value={uploadProgress} />
+                            <p className="text-[10px] font-bold text-white uppercase tracking-widest text-center">Securing {uploadProgress}%</p>
+                          </div>
+                        ) : (
+                          <>
+                            <div className={cn(
+                              "size-20 md:size-24 rounded-[1.5rem] md:rounded-[2rem] bg-zinc-900 border border-white/5 flex items-center justify-center transition-all duration-700", 
+                              (isDragging || formData.resumeFile) && "scale-110 border-white/20"
+                            )}>
+                              {formData.resumeFile ? <FileCheck size={40} className="text-white" /> : <Upload size={40} className="text-zinc-800 group-hover/upload:text-zinc-500 transition-colors" />}
+                            </div>
+                            <div className="text-center px-4">
+                              <p className="text-white font-bold text-lg md:text-xl tracking-tight">
+                                {formData.resumeFile ? formData.resumeFile.name : "Resume.pdf"}
+                              </p>
+                              <p className="text-zinc-500 text-[10px] md:text-xs font-light mt-2 md:mt-3 uppercase tracking-widest">
+                                {formData.resumeFile ? "FILE SECURED" : "SELECT PDF FILE"}
+                              </p>
+                            </div>
+                          </>
+                        )}
                       </div>
 
-                      {/* Self Description Alternative */}
-                      <div className="relative group h-[200px] lg:h-full"> {/* responsive: fix height on mobile */}
+                      {/* Self Description */}
+                      <div className="relative group h-[200px] lg:h-full">
                         <textarea
                           id="self-description-input"
                           placeholder="Or provide a brief self description..."
@@ -399,7 +375,7 @@ const GenerateReport = () => {
               </AnimatePresence>
             </div>
 
-            <div className="mt-8 md:mt-16 flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-12 pb-12"> {/* responsive: stack buttons on mobile */}
+            <div className="mt-8 md:mt-16 flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-12 pb-12">
               <button 
                 onClick={() => setCurrentStep(prev => prev - 1)} 
                 disabled={currentStep === 0 || loading} 
@@ -428,12 +404,7 @@ const GenerateReport = () => {
                     onClick={handleGenerate} 
                     className={cn("w-full max-w-[280px] sm:max-w-none", (!isFinalValid || loading) && "opacity-50 grayscale pointer-events-none")}
                     loading={loading}
-                    loadingChild={
-                      <div className="flex items-center gap-3">
-                        <DotLoader />
-                        <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Analyzing...</span>
-                      </div>
-                    }
+                    loadingText="Analyzing..."
                   >
                     Generate Analysis
                   </LiquidCtaButton>

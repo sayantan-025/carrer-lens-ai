@@ -39,16 +39,15 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Don't attempt to refresh on auth endpoints (login, register, logout, etc.)
-    if (originalRequest.url?.includes("/auth/")) {
-      return Promise.reject(error);
-    }
+    // Don't attempt to refresh on auth endpoints themselves to prevent infinite loops
+    // But allow get-me to trigger a refresh if it fails with 401
+    const isAuthRoute = originalRequest.url?.includes("/auth/") && !originalRequest.url?.includes("/get-me");
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       originalRequest._retry = true;
 
       try {
-        // Use global axios to avoid interceptor logic here
+        // Use global axios with withCredentials to get new token
         const refreshRes = await axios.post("/api/auth/refresh-token", {}, { withCredentials: true });
         const { accessToken: newAccessToken } = refreshRes.data;
 

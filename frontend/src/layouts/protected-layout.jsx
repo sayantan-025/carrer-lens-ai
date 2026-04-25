@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Outlet, Navigate, useLocation } from "react-router";
 import { useAuth } from "../features/auth/hooks/use-auth";
 import { Skeleton } from "../components/ui/skeleton";
@@ -47,15 +47,17 @@ const ProtectedLayout = () => {
 
   return (
     <div className="min-h-screen relative flex flex-col bg-black overflow-hidden">
-      {!isFocusedPage && <LenisScroll />}
-      {!isFocusedPage && <Navbar />}
-      
-      <main className={cn(
-        "flex-1 relative z-10 flex flex-col min-h-0",
-        isFocusedPage ? "overflow-hidden" : "overflow-y-auto mt-20"
-      )}>
-        <Outlet />
-      </main>
+      <Suspense fallback={<AuthenticatedSkeleton />}>
+        {!isFocusedPage && <LenisScroll />}
+        {!isFocusedPage && <Navbar />}
+        
+        <main className={cn(
+          "flex-1 relative z-10 flex flex-col min-h-0",
+          isFocusedPage ? "overflow-hidden" : "overflow-y-auto mt-20"
+        )}>
+          <Outlet />
+        </main>
+      </Suspense>
     </div>
   );
 };

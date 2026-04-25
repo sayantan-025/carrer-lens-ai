@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useResetPassword } from "../hooks/use-password-hooks";
-import { Spinner } from "../../../components/ui/spinner";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import Logo from "../../../components/ui/logo";
@@ -155,13 +154,14 @@ const ResetPassword = () => {
         )}
 
         <div className="w-full pt-2 flex justify-center">
-           <LiquidCtaButton type="submit" disabled={isSubmitting} className="w-full max-w-[280px]">
-             {isSubmitting ? (
-               <div className="flex items-center justify-center gap-3">
-                 <Spinner size="sm" />
-                 <span>Resetting...</span>
-               </div>
-             ) : "Reset Password"}
+           <LiquidCtaButton 
+             type="submit" 
+             disabled={isSubmitting} 
+             className="w-full max-w-[280px]"
+             loading={isSubmitting}
+             loadingText="Resetting..."
+           >
+             Reset Password
            </LiquidCtaButton>
         </div>
       </form>

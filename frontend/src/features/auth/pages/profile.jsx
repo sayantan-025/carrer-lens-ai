@@ -1,11 +1,12 @@
 import React from "react";
 import { useAuth } from "../hooks/use-auth";
 import { motion } from "framer-motion";
-import { User, Mail, Calendar, Shield, ArrowLeft, CheckCircle2, Settings } from "lucide-react";
+import { User, Mail, Calendar, Shield, ArrowLeft, CheckCircle2, Settings, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 import Logo from "../../../components/ui/logo";
 import { cn } from "../../../lib/utils";
 import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
+import { TacticalGhostButton } from "../../../components/buttons/tactical-ghost-button";
 
 const ProfileSkeleton = () => (
   <div className="w-full max-w-4xl mx-auto py-8 xs:py-12 px-4 xs:px-6 relative z-10">
@@ -65,8 +66,10 @@ const Profile = () => {
           </div>
 
           <div className="md:ml-auto w-full md:w-auto">
-            <Link to="/" className="flex items-center justify-center gap-3 text-zinc-500 hover:text-white transition-all text-[10px] font-bold uppercase tracking-widest bg-zinc-900/50 border border-white/5 px-6 xs:px-8 py-3 xs:py-4 rounded-xl xs:rounded-2xl hover:border-white/20 cursor-pointer active:scale-95">
-              <ArrowLeft size={14} /> Back
+            <Link to="/" className="flex items-center justify-center">
+              <TacticalGhostButton icon={ArrowLeft} className="w-full md:w-auto py-3 xs:py-4">
+                Back
+              </TacticalGhostButton>
             </Link>
           </div>
         </div>
@@ -98,13 +101,13 @@ const Profile = () => {
             to="/change-password"
             className="w-full md:w-auto max-w-[280px] md:max-w-none"
           >
-            <button className="w-full flex items-center justify-center gap-3 bg-zinc-900/50 border border-white/5 hover:border-white/20 text-zinc-500 hover:text-white font-bold py-4 xs:py-5 px-6 xs:px-8 rounded-xl xs:rounded-[2rem] text-[10px] xs:text-[11px] uppercase tracking-widest transition-all cursor-pointer active:scale-98">
-              <Settings size={14} /> Change Password
-            </button>
+            <TacticalGhostButton icon={Settings} className="w-full py-5">
+              Change Password
+            </TacticalGhostButton>
           </Link>
           <div className="w-full md:w-auto max-w-[280px] md:max-w-none">
              <Link to="/generate-report">
-               <LiquidCtaButton className="w-full">
+               <LiquidCtaButton className="w-full" icon={Sparkles}>
                  generate analysis
                </LiquidCtaButton>
              </Link>

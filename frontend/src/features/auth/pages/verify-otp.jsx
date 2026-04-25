@@ -157,13 +157,14 @@ const VerifyOTP = () => {
         </div>
 
         <div className="w-full pt-2 flex justify-center">
-           <LiquidCtaButton type="submit" disabled={isSubmitting || !isOtpComplete} className="w-full max-w-[280px]">
-             {isSubmitting ? (
-               <div className="flex items-center justify-center gap-3">
-                 <DotLoader />
-                 <span>Verifying...</span>
-               </div>
-             ) : "Verify Code"}
+           <LiquidCtaButton 
+             type="submit" 
+             disabled={isSubmitting || !isOtpComplete} 
+             className="w-full max-w-[280px]"
+             loading={isSubmitting}
+             loadingText="Verifying..."
+           >
+             Verify Code
            </LiquidCtaButton>
         </div>
       </form>

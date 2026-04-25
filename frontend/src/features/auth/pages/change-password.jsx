@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useChangePassword } from "../hooks/use-password-hooks";
-import { Spinner } from "../../../components/ui/spinner";
 import { motion } from "framer-motion";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router";
@@ -139,8 +138,14 @@ const ChangePassword = () => {
         )}
 
         <div className="w-full pt-2 flex justify-center">
-           <LiquidCtaButton type="submit" disabled={isSubmitting} className="w-full max-w-[280px]">
-             {isSubmitting ? <Spinner size="sm" /> : "Update Password"}
+           <LiquidCtaButton 
+             type="submit" 
+             disabled={isSubmitting} 
+             className="w-full max-w-[280px]"
+             loading={isSubmitting}
+             loadingText="Updating..."
+           >
+             Update Password
            </LiquidCtaButton>
         </div>
       </form>

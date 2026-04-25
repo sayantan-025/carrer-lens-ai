@@ -283,8 +283,13 @@ const Register = () => {
           )}
 
           <div className="w-full pt-2 flex justify-center">
-             <LiquidCtaButton type="submit" className="w-full max-w-[280px]" disabled={isSubmitting}>
-               {isSubmitting ? "..." : "Register"}
+             <LiquidCtaButton 
+                type="submit" 
+                className="w-full max-w-[280px]" 
+                loading={isSubmitting}
+                loadingText="Creating Account..."
+             >
+               Register
              </LiquidCtaButton>
           </div>
         </form>

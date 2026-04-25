@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Outlet, Navigate } from "react-router";
 import { useAuthContext } from "../features/auth/auth.context";
 import { Skeleton } from "../components/ui/skeleton";
@@ -26,7 +26,9 @@ const AuthLayout = () => {
       <div className="tactical-overlay" />
       <GlobalBackground />
       <main className="relative z-10 w-full flex items-center justify-center p-6">
-        <Outlet />
+        <Suspense fallback={<AuthLayoutSkeleton />}>
+          <Outlet />
+        </Suspense>
       </main>
     </div>
   );

@@ -171,9 +171,9 @@ const IntelligenceCard = ({ item, index }) => {
 const Dashboard = () => {
   const { interviewId } = useParams();
   const { report, loading, error, getResumePdf } = useInterview();
-  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState("technical");
   const [isDownloading, setIsDownloading] = useState(false);
+  const { showSuccessToast, showErrorToast } = useToast();
 
   if (loading) return <DashboardSkeleton />;
   if (error || !report) return <ErrorState error={error} />;
@@ -185,19 +185,19 @@ const Dashboard = () => {
   ];
 
   const activeSector = SECTORS.find(s => s.id === activeTab);
-const { showSuccessToast, showErrorToast } = useToast();
 
-const handleDownload = async () => {
-  setIsDownloading(true);
-  try {
-    await getResumePdf(interviewId);
-    showSuccessToast("Downloaded successfully.");
-  } catch (err) {
-    showErrorToast("Download failed.");
-  } finally {
-    setIsDownloading(false);
-  }
-};
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      await getResumePdf(interviewId);
+      showSuccessToast("Downloaded successfully.");
+    } catch (err) {
+      showErrorToast("Download failed.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div className="h-screen w-full bg-black text-zinc-400 font-sans selection:bg-white/10 relative overflow-hidden flex flex-col">
       <div className="tactical-overlay" />
@@ -217,14 +217,16 @@ const handleDownload = async () => {
           <h2 className="text-xs font-bold text-zinc-100 tracking-tight uppercase truncate max-w-[120px] md:max-w-[300px]">{report.title}</h2>
         </div>
         <div className="flex items-center gap-4">
-           <button
+           <LiquidCtaButton
              onClick={handleDownload}
-             disabled={isDownloading}
-             className="flex items-center gap-2.5 px-3 md:px-4 py-2 rounded-xl bg-white text-black font-bold text-[9px] md:text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+             loading={isDownloading}
+             loadingText="Downloading..."
+             icon={FileDown}
+             className="min-h-[40px] px-4 py-2"
+             theme="light"
            >
-             {isDownloading ? <Spinner size="sm" className="border-zinc-800 border-t-zinc-500" /> : <FileDown size={14} />} 
-             <span>{isDownloading ? "Wait..." : "Download Resume"}</span>
-           </button>
+             Download Resume
+           </LiquidCtaButton>
         </div>
       </header>
 
