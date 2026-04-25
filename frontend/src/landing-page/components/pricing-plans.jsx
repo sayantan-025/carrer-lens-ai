@@ -61,14 +61,14 @@ const plans = [
 
 export default function PricingPlans() {
   return (
-    <section id="pricing" className="px-6 py-24 md:py-40 bg-black relative overflow-hidden border-t border-zinc-900/50">
+    <section id="pricing" className="px-6 py-24 md:py-40 bg-black relative overflow-hidden border-t border-zinc-900/50 max-md:py-20 max-md:px-4">
       {/* Premium Background Ambience */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_50%)] pointer-events-none" />
       
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Section Header */}
         <motion.div 
-          className="text-center mb-20"
+          className="text-center mb-20 max-md:mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -77,17 +77,17 @@ export default function PricingPlans() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Flexible Pricing</span>
           </div>
-          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
-            Simple <br className="hidden md:block" /> 
+          <h2 className="font-display text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto max-lg:text-5xl max-md:text-4xl max-sm:text-3xl">
+            Simple <br className="max-md:hidden" /> 
             <span className="text-zinc-500">Investment.</span>
           </h2>
-          <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light">
+          <p className="text-zinc-400 max-w-2xl mx-auto text-xl leading-relaxed font-light max-md:text-lg max-sm:text-base">
             Transparent pricing designed to fit your career goals. No hidden fees, just pure interview success.
           </p>
         </motion.div>
 
         {/* Pricing Grid */}
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-3 gap-8 max-lg:gap-4 max-md:grid-cols-1 max-md:max-w-sm max-md:mx-auto">
           {plans.map((plan, i) => (
             <motion.div
               key={plan.name}
@@ -96,20 +96,20 @@ export default function PricingPlans() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
               className={cn(
-                "group relative p-10 rounded-[2.5rem] border flex flex-col h-full transition-all duration-500",
+                "group relative p-10 rounded-[2.5rem] border flex flex-col h-full transition-all duration-500 max-lg:p-6",
                 plan.highlighted 
                   ? "bg-white border-white shadow-[0_0_80px_rgba(255,255,255,0.1)]" 
                   : "bg-zinc-900/20 border-zinc-800/50 hover:border-zinc-600/50 backdrop-blur-xl"
               )}
             >
               {plan.highlighted && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-zinc-900 text-white text-[10px] font-mono font-bold uppercase tracking-widest rounded-full border border-white/20">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-zinc-900 text-white text-[10px] font-mono font-bold uppercase tracking-widest rounded-full border border-white/20 whitespace-nowrap">
                   Most Popular
                 </div>
               )}
 
               {/* Plan Header */}
-              <div className="mb-10">
+              <div className="mb-10 max-md:mb-8">
                 <div className={cn(
                   "w-12 h-12 rounded-2xl flex items-center justify-center mb-6 border transition-transform duration-500 group-hover:scale-110",
                   plan.highlighted ? "bg-zinc-100 border-zinc-200" : "bg-zinc-800/50 border-zinc-700/50"
@@ -131,7 +131,7 @@ export default function PricingPlans() {
               </div>
 
               {/* Price */}
-              <div className="mb-10">
+              <div className="mb-10 max-md:mb-8">
                 <div className="flex items-baseline gap-1">
                   <span className={cn(
                     "font-display text-5xl font-bold tracking-tighter",
@@ -149,7 +149,7 @@ export default function PricingPlans() {
               </div>
 
               {/* Features */}
-              <ul className="space-y-4 mb-12 flex-1">
+              <ul className="space-y-4 mb-12 flex-1 max-md:mb-10">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-4">
                     <Check className={cn(
@@ -170,7 +170,7 @@ export default function PricingPlans() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className={cn(
-                    "w-full py-4 px-6 text-center rounded-2xl font-bold text-sm tracking-tight transition-all duration-300",
+                    "w-full py-4 px-6 text-center rounded-2xl font-bold text-sm tracking-tight transition-all duration-300 min-h-[44px] flex items-center justify-center",
                     plan.highlighted
                       ? "bg-zinc-950 text-white hover:shadow-[0_10px_30px_rgba(0,0,0,0.2)]"
                       : "bg-white text-zinc-950 hover:bg-zinc-200"
@@ -183,7 +183,7 @@ export default function PricingPlans() {
           ))}
         </div>
 
-        <p className="text-center text-zinc-600 text-[10px] font-mono uppercase tracking-[0.4em] mt-20">
+        <p className="text-center text-zinc-600 text-[10px] font-mono uppercase tracking-[0.4em] mt-20 max-md:mt-16">
           Secure. Private. Reliable.
         </p>
       </div>

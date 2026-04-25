@@ -30,8 +30,8 @@ const itemVariants = {
 
 export default function HeroSection() {
   return (
-    <section className="min-h-screen w-full relative flex flex-col items-center justify-center overflow-hidden pt-14">
-      {/* Background Aurora Effect - True Inset 0 */}
+    <section className="min-h-screen w-full relative flex flex-col items-center justify-center overflow-hidden pt-14 max-md:pt-20">
+      {/* Background Aurora Effect */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <SoftAurora
           speed={0.6}
@@ -63,18 +63,18 @@ export default function HeroSection() {
           {/* Feature Badge */}
           <motion.div 
             variants={itemVariants}
-            className="mb-8"
+            className="mb-8 max-md:mb-6"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">
+              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold max-sm:text-[9px]">
                 AI-Powered Interview Prep
               </span>
             </div>
           </motion.div>
 
-          {/* Headline */}
+          {/* Headline - Desktop: 8xl, Tablet: 6xl, Mobile: 4xl */}
           <motion.h1 
-            className="font-display text-5xl md:text-8xl font-bold tracking-tighter mb-8 leading-[1.05]"
+            className="font-display text-8xl font-bold tracking-tighter mb-8 leading-[1.05] max-lg:text-7xl max-md:text-6xl max-sm:text-4xl max-md:mb-6"
             variants={itemVariants}
           >
             <span className="text-zinc-100 block">Land the Offer.</span>
@@ -83,9 +83,9 @@ export default function HeroSection() {
             </span>
           </motion.h1>
 
-          {/* Subheadline */}
+          {/* Subheadline - Desktop: xl, Mobile: base */}
           <motion.p 
-            className="text-lg md:text-xl text-zinc-300 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light"
+            className="text-xl text-zinc-300 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light max-md:text-lg max-sm:text-base max-md:mb-8"
             variants={itemVariants}
           >
             Career Lens AI uses your resume or self-description and the job details to create a 
@@ -94,49 +94,39 @@ export default function HeroSection() {
 
           {/* CTAs */}
           <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16"
+            className="flex flex-row items-center justify-center gap-6 mb-16 max-sm:flex-col max-md:mb-12 max-sm:w-full"
             variants={itemVariants}
           >
-            <Link to="/register">
-              <LiquidCtaButton>Get Started Now</LiquidCtaButton>
+            <Link to="/register" className="max-sm:w-full">
+              <LiquidCtaButton className="max-sm:w-full">Get Started Now</LiquidCtaButton>
             </Link>
           </motion.div>
 
-          {/* Social Proof Avatar Stack - BOTTOM POSITION */}
+          {/* Social Proof Avatar Stack */}
           <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-row items-center justify-center gap-4 max-sm:flex-col max-sm:gap-6"
             variants={itemVariants}
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 max-sm:flex-col">
               <div className="flex -space-x-3">
-                <img
-                  src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200"
-                  alt="User avatar"
-                  className="w-10 h-10 rounded-full border-2 border-zinc-950 hover:-translate-y-1 transition duration-300 object-cover z-[1]"
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200"
-                  alt="User avatar"
-                  className="w-10 h-10 rounded-full border-2 border-zinc-950 hover:-translate-y-1 transition duration-300 object-cover z-[2]"
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&h=200&auto=format&fit=crop"
-                  alt="User avatar"
-                  className="w-10 h-10 rounded-full border-2 border-zinc-950 hover:-translate-y-1 transition duration-300 object-cover z-[3]"
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200"
-                  alt="User avatar"
-                  className="w-10 h-10 rounded-full border-2 border-zinc-950 hover:-translate-y-1 transition duration-300 object-cover z-[4]"
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200"
-                  alt="User avatar"
-                  className="w-10 h-10 rounded-full border-2 border-zinc-950 hover:-translate-y-1 transition duration-300 object-cover z-[5]"
-                />
+                {[
+                  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200",
+                  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200",
+                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&h=200&auto=format&fit=crop",
+                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200",
+                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200"
+                ].map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt="User avatar"
+                    className="w-10 h-10 rounded-full border-2 border-zinc-950 hover:-translate-y-1 transition duration-300 object-cover"
+                    style={{ zIndex: i + 1 }}
+                  />
+                ))}
               </div>
-              <div className="h-8 w-px bg-zinc-800" />
-              <div className="flex flex-col items-start text-left">
+              <div className="h-8 w-px bg-zinc-800 max-sm:hidden" />
+              <div className="flex flex-col items-start text-left max-sm:items-center max-sm:text-center">
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <svg
@@ -156,7 +146,7 @@ export default function HeroSection() {
                   ))}
                   <span className="text-zinc-400 font-bold ml-1 text-sm">4.9</span>
                 </div>
-                <p className="text-sm text-zinc-500 font-medium">
+                <p className="text-sm text-zinc-500 font-medium max-sm:text-xs">
                   Trusted by <span className="text-zinc-300 font-bold">2,000+ Professionals</span>
                 </p>
               </div>

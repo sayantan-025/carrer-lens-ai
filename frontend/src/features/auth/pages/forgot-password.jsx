@@ -41,16 +41,16 @@ const ForgotPassword = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 shadow-2xl mx-auto relative"
+      className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2rem] xs:rounded-[2.5rem] p-6 xs:p-8 lg:p-10 shadow-2xl mx-auto relative"
     >
-      <div className="text-center mb-10">
-        <div className="flex justify-center mb-8">
-          <Logo className="h-12 w-12" />
+      <div className="text-center mb-8 xs:mb-10">
+        <div className="flex justify-center mb-6 xs:mb-8">
+          <Logo className="h-10 w-10 xs:h-12 xs:w-12" />
         </div>
-        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter text-center">
+        <h1 className="text-2xl xs:text-3xl font-display font-bold text-white mb-2 tracking-tighter text-center">
           Forgot Password
         </h1>
-        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] text-center">
+        <p className="text-zinc-500 font-bold text-[9px] xs:text-[10px] uppercase tracking-[0.2em] px-4 leading-relaxed text-center">
           Enter your email to reset
         </p>
       </div>
@@ -61,7 +61,7 @@ const ForgotPassword = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-8 p-5 bg-red-950/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-400 text-[11px] font-bold uppercase tracking-widest"
+            className="mb-8 p-5 bg-red-950/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-400 text-[10px] xs:text-[11px] font-bold uppercase tracking-widest"
           >
             <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
             {error}
@@ -69,7 +69,7 @@ const ForgotPassword = () => {
         )}
       </AnimatePresence>
 
-      <form onSubmit={handleSubmit} className="space-y-8 flex flex-col items-center">
+      <form onSubmit={handleSubmit} className="space-y-6 xs:space-y-8 flex flex-col items-center">
         <div className="w-full space-y-2 text-left">
           <Label htmlFor="email" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">Email Address</Label>
           <Input 
@@ -103,10 +103,10 @@ const ForgotPassword = () => {
         </div>
       </form>
 
-      <div className="text-center mt-10">
+      <div className="text-center mt-8 xs:mt-10">
         <Link
           to="/login"
-          className="text-zinc-500 hover:text-white font-bold text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer"
+          className="text-zinc-500 hover:text-white font-bold text-[10px] xs:text-[11px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
           <ChevronLeft size={14} /> Back to Sign In
         </Link>

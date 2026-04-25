@@ -53,16 +53,16 @@ const ResetPassword = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 shadow-2xl mx-auto relative"
+      className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2rem] xs:rounded-[2.5rem] p-6 xs:p-8 lg:p-10 shadow-2xl mx-auto relative"
     >
-      <div className="text-center mb-10">
-        <div className="flex justify-center mb-8">
-          <Logo className="h-12 w-12" />
+      <div className="text-center mb-8 xs:mb-10">
+        <div className="flex justify-center mb-6 xs:mb-8">
+          <Logo className="h-10 w-10 xs:h-12 xs:w-12" />
         </div>
-        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter text-center">
+        <h1 className="text-2xl xs:text-3xl font-display font-bold text-white mb-2 tracking-tighter text-center">
           Reset Password
         </h1>
-        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] px-4 leading-relaxed text-center">
+        <p className="text-zinc-500 font-bold text-[9px] xs:text-[10px] uppercase tracking-[0.2em] px-4 leading-relaxed text-center">
           For <span className="text-zinc-100">{email}</span>
         </p>
       </div>
@@ -73,7 +73,7 @@ const ResetPassword = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-8 p-5 bg-red-950/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-400 text-[11px] font-bold uppercase tracking-widest"
+            className="mb-6 p-4 bg-red-950/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-[10px] xs:text-[11px] font-bold uppercase tracking-widest"
           >
             <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
             {error}
@@ -81,7 +81,7 @@ const ResetPassword = () => {
         )}
       </AnimatePresence>
 
-      <form onSubmit={handleSubmit} className="space-y-6 flex flex-col items-center">
+      <form onSubmit={handleSubmit} className="space-y-6 xs:space-y-8 flex flex-col items-center">
         <div className="w-full space-y-2 text-left">
           <Label htmlFor="otp" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">Verification Code</Label>
           <Input 
@@ -97,11 +97,6 @@ const ResetPassword = () => {
               error && (error.toLowerCase().includes("code") || error.toLowerCase().includes("otp") || error.toLowerCase().includes("invalid")) && "border-red-500/50"
             )}
           />
-          {error && (error.toLowerCase().includes("code") || error.toLowerCase().includes("otp") || error.toLowerCase().includes("invalid")) && (
-            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
-              {error}
-            </p>
-          )}
         </div>
 
         <div className="w-full space-y-2 text-left">
@@ -127,11 +122,6 @@ const ResetPassword = () => {
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
-          {error && error.toLowerCase().includes("password") && !error.toLowerCase().includes("match") && (
-            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
-              {error}
-            </p>
-          )}
         </div>
 
         <div className="w-full space-y-2 text-left">
@@ -148,14 +138,9 @@ const ResetPassword = () => {
               error && error.toLowerCase().includes("match") && "border-red-500/50"
             )}
           />
-          {error && error.toLowerCase().includes("match") && (
-            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
-              {error}
-            </p>
-          )}
         </div>
 
-        <div className="w-full pt-4 flex justify-center">
+        <div className="w-full pt-2 flex justify-center">
            <LiquidCtaButton type="submit" disabled={isSubmitting} className="w-full">
              {isSubmitting ? (
                <div className="flex items-center justify-center gap-3">

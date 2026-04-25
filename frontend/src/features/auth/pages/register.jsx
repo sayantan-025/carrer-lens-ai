@@ -93,7 +93,7 @@ const Register = () => {
 
   if (isAuthChecking) {
     return (
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6 text-left">
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-4 xs:px-6 text-left">
         <div className="hidden lg:flex flex-col gap-10">
           <Skeleton className="h-10 w-10 mb-4 rounded-xl" />
           <div className="space-y-6">
@@ -104,29 +104,16 @@ const Register = () => {
             </div>
             <Skeleton className="h-20 w-4/5 rounded-2xl" />
           </div>
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center gap-3">
-                <Skeleton className="size-4 rounded-full" />
-                <Skeleton className="h-4 w-48 rounded-md" />
-              </div>
-            ))}
-          </div>
         </div>
-        <div className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 shadow-2xl mx-auto lg:mr-0 relative h-[700px]">
-          <div className="flex flex-col items-center lg:items-start mb-10">
-            <Skeleton className="h-12 w-12 mb-8 lg:hidden rounded-xl" />
-            <Skeleton className="h-10 w-32 mb-4 rounded-xl" />
-            <Skeleton className="h-4 w-48 rounded-md" />
-          </div>
-          <div className="space-y-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-4 w-24 rounded-md" />
-                <Skeleton className="h-12 w-full rounded-xl" />
-              </div>
-            ))}
-            <Skeleton className="h-14 w-full rounded-full mt-4" />
+        <div className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2rem] xs:rounded-[2.5rem] p-6 xs:p-8 lg:p-10 shadow-2xl mx-auto lg:mr-0 relative h-auto min-h-[600px]">
+          <Skeleton className="h-12 w-12 mb-8 lg:hidden rounded-xl mx-auto" />
+          <div className="space-y-8">
+            <Skeleton className="h-10 w-32 rounded-xl mx-auto lg:mx-0" />
+            <div className="space-y-4">
+              <Skeleton className="h-12 w-full rounded-xl" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
+            <Skeleton className="h-14 w-full rounded-full" />
           </div>
         </div>
       </div>
@@ -134,7 +121,7 @@ const Register = () => {
   }
 
   return (
-    <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-12 px-6 text-left">
+    <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10 py-8 xs:py-12 px-4 xs:px-6 text-left">
       <motion.div 
         className="hidden lg:flex flex-col gap-10"
         initial={{ opacity: 0, x: -20 }}
@@ -176,45 +163,45 @@ const Register = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 shadow-2xl mx-auto lg:mr-0 relative"
+        className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2rem] xs:rounded-[2.5rem] p-6 xs:p-8 lg:p-10 shadow-2xl mx-auto lg:mr-0 relative"
       >
-        <div className="text-center lg:text-left mb-10">
-          <div className="lg:hidden flex justify-center mb-8">
-            <Logo className="h-12 w-12" />
+        <div className="text-center lg:text-left mb-8 xs:mb-10">
+          <div className="lg:hidden flex justify-center mb-6 xs:mb-8">
+            <Logo className="h-10 w-10 xs:h-12 xs:w-12" />
           </div>
-          <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter text-center lg:text-left">
+          <h1 className="text-2xl xs:text-3xl font-display font-bold text-white mb-2 tracking-tighter">
             Register
           </h1>
-          <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] text-center lg:text-left">
+          <p className="text-zinc-500 font-bold text-[9px] xs:text-[10px] uppercase tracking-[0.2em]">
             Set up your profile
           </p>
         </div>
 
-        <div className="flex flex-col space-y-4 mb-10">
+        <div className="flex flex-col space-y-3 xs:space-y-4 mb-8 xs:mb-10">
           <button
             onClick={() => handleSocialLogin("github")}
-            className="flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-zinc-900 border border-white/5 px-4 text-[11px] font-bold uppercase tracking-widest text-zinc-400 transition-all hover:bg-zinc-800 hover:text-white hover:border-white/10 active:scale-95 cursor-pointer"
+            className="flex h-11 xs:h-12 w-full items-center justify-center gap-2 xs:gap-3 rounded-xl bg-zinc-900 border border-white/5 px-2 xs:px-4 text-[10px] xs:text-[11px] font-bold uppercase tracking-widest text-zinc-400 transition-all hover:bg-zinc-800 hover:text-white hover:border-white/10 active:scale-95 cursor-pointer"
           >
-            <svg className="size-4" viewBox="0 0 24 24" fill="currentColor">
+            <svg className="size-3.5 xs:size-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.744.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.181-1.305.289-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.213-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.833 1.233 1.903 1.233 3.213 0 4.61-2.803 5.625-5.475 5.92.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
             </svg> 
-            Continue with GitHub
+            GitHub
           </button>
           <button
             onClick={() => handleSocialLogin("google")}
-            className="flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-zinc-900 border border-white/5 px-4 text-[11px] font-bold uppercase tracking-widest text-zinc-400 transition-all hover:bg-zinc-800 hover:text-white hover:border-white/10 active:scale-95 cursor-pointer"
+            className="flex h-11 xs:h-12 w-full items-center justify-center gap-2 xs:gap-3 rounded-xl bg-zinc-900 border border-white/5 px-2 xs:px-4 text-[10px] xs:text-[11px] font-bold uppercase tracking-widest text-zinc-400 transition-all hover:bg-zinc-800 hover:text-white hover:border-white/10 active:scale-95 cursor-pointer"
           >
-             <svg className="h-4 w-4" viewBox="0 0 24 24">
+             <svg className="h-3.5 w-3.5 xs:h-4 xs:w-4" viewBox="0 0 24 24">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
               <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" />
             </svg>
-            Continue with Google
+            Google
           </button>
         </div>
 
-        <div className="relative mb-10">
+        <div className="relative mb-8 xs:mb-10">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-white/5"></div>
           </div>
@@ -223,7 +210,7 @@ const Register = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 flex flex-col items-center">
+        <form onSubmit={handleSubmit} className="space-y-6 xs:space-y-8 flex flex-col items-center">
           <div className="w-full space-y-2 text-left">
             <Label htmlFor="username" className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1">Full Name</Label>
             <div className="relative">
@@ -241,11 +228,6 @@ const Register = () => {
               />
               <ValidationCheck isValid={isNameValid} />
             </div>
-            {error && error.toLowerCase().includes("taken") && (
-              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
-                {error}
-              </p>
-            )}
           </div>
           
           <div className="w-full space-y-2 text-left">
@@ -265,11 +247,6 @@ const Register = () => {
               />
               <ValidationCheck isValid={isEmailValid} />
             </div>
-            {error && (error.toLowerCase().includes("email") || error.toLowerCase().includes("registered")) && (
-              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
-                {error}
-              </p>
-            )}
           </div>
 
           <div className="w-full space-y-2 text-left">
@@ -296,30 +273,20 @@ const Register = () => {
               </button>
               <ValidationCheck isValid={isPasswordValid} />
             </div>
-            {error && error.toLowerCase().includes("password") && (
-              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest ml-1 mt-1 animate-in fade-in slide-in-from-top-1">
-                {error}
-              </p>
-            )}
           </div>
 
           <div className="w-full pt-2">
              <LiquidCtaButton type="submit" className="w-full" disabled={isSubmitting}>
-               {isSubmitting ? (
-                 <div className="flex items-center justify-center gap-3">
-                   <Spinner size="sm" />
-                   <span>Registering...</span>
-                 </div>
-               ) : "Register"}
+               {isSubmitting ? "..." : "Register"}
              </LiquidCtaButton>
           </div>
         </form>
 
-        <p className="text-center mt-10 text-[11px] text-zinc-500 font-bold uppercase tracking-widest">
+        <p className="text-center mt-8 xs:mt-10 text-[10px] xs:text-[11px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-white hover:text-zinc-300 transition-colors font-bold"
+            className="text-white hover:text-zinc-300 transition-colors font-bold whitespace-nowrap"
           >
             Sign In
           </Link>
