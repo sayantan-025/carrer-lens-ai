@@ -29,7 +29,7 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Must match.");
       return;
     }
 
@@ -37,10 +37,10 @@ const ResetPassword = () => {
     setIsSubmitting(true);
     try {
       await resetPassword({ email, otp: otpValue, newPassword });
-      showToast({ message: "Password updated.", type: "success" });
+      showToast({ message: "Changed.", type: "success" });
       navigate("/login");
     } catch (err) {
-      const errMsg = err.response?.data?.message || "Reset failed.";
+      const errMsg = err.response?.data?.message || "Error.";
       setError(errMsg);
       showToast({ message: errMsg, type: "error" });
     } finally {

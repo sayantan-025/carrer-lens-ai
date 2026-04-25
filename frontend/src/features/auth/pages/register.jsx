@@ -46,7 +46,7 @@ const Register = () => {
     setError("");
     
     if (!isPasswordValid) {
-      const msg = "Password must be at least 8 characters.";
+      const msg = "Password too short.";
       setError(msg);
       showToast({ message: msg, type: "error" });
       return;
@@ -56,12 +56,12 @@ const Register = () => {
     try {
       await register({ userName, email, password });
       showToast({ 
-        message: "Account created successfully.", 
+        message: "Account created.", 
         type: "success" 
       });
       navigate("/verify-otp", { state: { email } });
     } catch (err) {
-      const errMsg = err.response?.data?.message || "Registration failed.";
+      const errMsg = err.response?.data?.message || "Error. Try again.";
       setError(errMsg);
       showToast({ message: errMsg, type: "error" });
     } finally {
@@ -215,7 +215,6 @@ const Register = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6 xs:space-y-8 flex flex-col items-center">
           <div className="w-full space-y-2 text-left">
-            {/* lighthouse-fix: Accessibility - improved contrast */}
             <Label htmlFor="username" className="text-[10px] uppercase tracking-widest text-zinc-400 font-bold ml-1">Full Name</Label>
             <div className="relative">
               <Input 
@@ -235,7 +234,6 @@ const Register = () => {
           </div>
           
           <div className="w-full space-y-2 text-left">
-            {/* lighthouse-fix: Accessibility - improved contrast */}
             <Label htmlFor="email" className="text-[10px] uppercase tracking-widest text-zinc-400 font-bold ml-1">Email Address</Label>
             <div className="relative">
               <Input 
@@ -255,7 +253,6 @@ const Register = () => {
           </div>
 
           <div className="w-full space-y-2 text-left">
-            {/* lighthouse-fix: Accessibility - improved contrast */}
             <Label htmlFor="password" className="text-[10px] uppercase tracking-widest text-zinc-400 font-bold ml-1">Password</Label>
             <div className="relative">
               <Input 
@@ -274,7 +271,6 @@ const Register = () => {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-700 hover:text-white transition-colors cursor-pointer z-20"
-                /* lighthouse-fix: Accessibility - added aria-label */
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}

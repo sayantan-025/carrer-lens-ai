@@ -34,7 +34,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           const { id, emails, displayName, photos } = profile;
           
           if (!emails || emails.length === 0) {
-            return done(new Error("No email associated with this Google account."), null);
+            return done(null, false, { message: "google_failed" });
           }
           
           const email = emails[0].value;
@@ -46,12 +46,20 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           });
 
           if (user) {
+            if (user.isSuspended) {
+              return done(null, false, { message: "account_suspended" });
+            }
+
+            // Check if user was registered with local but email matches
+            if (user.authProvider === "local" && user.email === email) {
+                return done(null, false, { message: "email_exists" });
+            }
+
             // Update existing user
             user.googleId = id;
             user.authProvider = "google";
             user.isVerified = true;
             user.avatar = avatar;
-            // Only set userName if they don't have one (unlikely but safe)
             if (!user.userName) {
                 user.userName = await generateUniqueUsername(displayName);
             }
@@ -95,12 +103,9 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
           const { id, emails, displayName, username, photos } = profile;
           
           let email = emails?.[0]?.value || emails?.[0];
-          if (!email && username) {
-            email = `${username}@github.com`; 
-          }
-
+          
           if (!email) {
-            return done(new Error("Could not retrieve email from GitHub account."), null);
+            return done(null, false, { message: "github_no_email" });
           }
 
           const avatar = photos?.[0]?.value || profile._json?.avatar_url || null;
@@ -110,6 +115,14 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
           });
 
           if (user) {
+            if (user.isSuspended) {
+              return done(null, false, { message: "account_suspended" });
+            }
+
+            if (user.authProvider === "local" && user.email === email) {
+                return done(null, false, { message: "email_exists" });
+            }
+
             user.githubId = id;
             user.authProvider = "github";
             user.isVerified = true;

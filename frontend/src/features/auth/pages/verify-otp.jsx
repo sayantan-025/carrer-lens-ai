@@ -82,10 +82,10 @@ const VerifyOTP = () => {
     setIsSubmitting(true);
     try {
       await verifyOTP({ email, otp: otpString });
-      showToast({ message: "Verified successfully.", type: "success" });
+      showToast({ message: "Verified.", type: "success" });
       navigate("/");
     } catch (err) {
-      const errMsg = err.response?.data?.message || "Invalid code.";
+      const errMsg = err.response?.data?.message || "Wrong code.";
       setError(errMsg);
       showToast({ message: errMsg, type: "error" });
     } finally {
@@ -97,10 +97,10 @@ const VerifyOTP = () => {
     if (countdown > 0) return;
     try {
       await resendOTP({ email });
-      showToast({ message: "New code sent.", type: "success" });
+      showToast({ message: "Code sent.", type: "success" });
       setCountdown(60);
     } catch (err) {
-      showToast({ message: "Resend failed.", type: "error" });
+      showToast({ message: "Error.", type: "error" });
     }
   };
 

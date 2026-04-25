@@ -30,42 +30,50 @@ router.get(
 router.get(
   "/google/callback",
   (req, res, next) => {
-    passport.authenticate("google", { 
-      failureRedirect: `${getClientUrl(req)}/login?error=oauth_failed`, 
-      session: false 
-    })(req, res, next);
-  },
-  async (req, res) => {
-    try {
+    passport.authenticate("google", { session: false }, (err, user, info) => {
       const clientUrl = getClientUrl(req);
-      if (!req.user) {
-        return res.redirect(`${clientUrl}/login?error=no_user`);
+      
+      if (err) {
+        return res.redirect(`${clientUrl}/login?error=server_error`);
       }
 
-      // Generate tokens
-      const accessToken = generateAccessToken(req.user._id);
-      const refreshToken = await rotateRefreshToken(req.user);
+      if (!user) {
+        // Map passport error messages to URL params
+        const errorCode = info?.message || "google_failed";
+        const providerParam = errorCode === "email_exists" ? "&provider=google" : "";
+        return res.redirect(`${clientUrl}/login?error=${errorCode}${providerParam}`);
+      }
 
-      const options = COOKIE_OPTIONS(req);
+      req.logIn(user, { session: false }, async (loginErr) => {
+        if (loginErr) return res.redirect(`${clientUrl}/login?error=server_error`);
+        
+        try {
+          // Generate tokens
+          const accessToken = generateAccessToken(user._id);
+          const refreshToken = await rotateRefreshToken(user);
 
-      // Set cookies
-      res.cookie("accessToken", accessToken, {
-        ...options,
-        maxAge: ACCESS_TOKEN_MAX_AGE,
+          const options = COOKIE_OPTIONS(req);
+
+          // Set cookies
+          res.cookie("accessToken", accessToken, {
+            ...options,
+            maxAge: ACCESS_TOKEN_MAX_AGE,
+          });
+
+          res.cookie("refreshToken", refreshToken, {
+            ...options,
+            maxAge: REFRESH_TOKEN_MAX_AGE,
+            path: "/",
+          });
+
+          // Redirect to frontend callback page
+          res.redirect(`${clientUrl}/oauth/callback`);
+        } catch (error) {
+          console.error("Google OAuth error:", error);
+          res.redirect(`${clientUrl}/login?error=server_error`);
+        }
       });
-
-      res.cookie("refreshToken", refreshToken, {
-        ...options,
-        maxAge: REFRESH_TOKEN_MAX_AGE,
-        path: "/",
-      });
-
-      // Redirect to frontend callback page
-      res.redirect(`${clientUrl}/oauth/callback`);
-    } catch (error) {
-      console.error("Google OAuth error:", error);
-      res.redirect(`${getClientUrl(req)}/login?error=server_error`);
-    }
+    })(req, res, next);
   }
 );
 
@@ -78,39 +86,46 @@ router.get(
 router.get(
   "/github/callback",
   (req, res, next) => {
-    passport.authenticate("github", { 
-      failureRedirect: `${getClientUrl(req)}/login?error=oauth_failed`, 
-      session: false 
-    })(req, res, next);
-  },
-  async (req, res) => {
-    try {
+    passport.authenticate("github", { session: false }, (err, user, info) => {
       const clientUrl = getClientUrl(req);
-      if (!req.user) {
-        return res.redirect(`${clientUrl}/login?error=no_user`);
+
+      if (err) {
+        return res.redirect(`${clientUrl}/login?error=server_error`);
       }
 
-      const accessToken = generateAccessToken(req.user._id);
-      const refreshToken = await rotateRefreshToken(req.user);
+      if (!user) {
+        const errorCode = info?.message || "github_failed";
+        const providerParam = errorCode === "email_exists" ? "&provider=github" : "";
+        return res.redirect(`${clientUrl}/login?error=${errorCode}${providerParam}`);
+      }
 
-      const options = COOKIE_OPTIONS(req);
+      req.logIn(user, { session: false }, async (loginErr) => {
+        if (loginErr) return res.redirect(`${clientUrl}/login?error=server_error`);
 
-      res.cookie("accessToken", accessToken, {
-        ...options,
-        maxAge: ACCESS_TOKEN_MAX_AGE,
+        try {
+          const accessToken = generateAccessToken(user._id);
+          const refreshToken = await rotateRefreshToken(user);
+
+          const options = COOKIE_OPTIONS(req);
+
+          res.cookie("accessToken", accessToken, {
+            ...options,
+            maxAge: ACCESS_TOKEN_MAX_AGE,
+          });
+
+          res.cookie("refreshToken", refreshToken, {
+            ...options,
+            maxAge: REFRESH_TOKEN_MAX_AGE,
+            path: "/",
+          });
+
+          res.redirect(`${clientUrl}/oauth/callback`);
+        } catch (error) {
+          console.error("GitHub OAuth error:", error);
+          res.redirect(`${clientUrl}/login?error=server_error`);
+        }
       });
-
-      res.cookie("refreshToken", refreshToken, {
-        ...options,
-        maxAge: REFRESH_TOKEN_MAX_AGE,
-        path: "/",
-      });
-
-      res.redirect(`${clientUrl}/oauth/callback`);
-    } catch (error) {
-      console.error("GitHub OAuth error:", error);
-      res.redirect(`${getClientUrl(req)}/login?error=server_error`);
-    }
+    })(req, res, next);
   }
 );
 

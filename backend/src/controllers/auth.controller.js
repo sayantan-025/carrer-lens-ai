@@ -5,6 +5,7 @@ const blacklistModel = require("../models/blacklist.model");
 const emailService = require("../services/email.service");
 const tokenService = require("../services/token.service");
 const logger = require("../utils/logger");
+const ApiError = require("../utils/api-error");
 
 const COOKIE_OPTIONS = (req) => {
   const isLocalhost = req.hostname === "localhost" || req.get("host")?.includes("localhost");
@@ -41,7 +42,6 @@ const sendAuthCookies = async (req, res, user) => {
   res.cookie("refreshToken", refreshToken, {
     ...options,
     maxAge: REFRESH_TOKEN_MAX_AGE,
-    // Using root path for refresh token too for maximum compatibility
     path: "/", 
   });
 
@@ -49,34 +49,38 @@ const sendAuthCookies = async (req, res, user) => {
 };
 
 // register controller
-const registerUserController = async (req, res) => {
+const registerUserController = async (req, res, next) => {
   const { userName, email, password } = req.body;
 
-  if (!userName || !email || !password) {
-    logger.warn(`Registration attempt failed: Missing fields. Received keys: ${Object.keys(req.body || {})}`);
-    return res.status(400).json({ message: "Username, email and password are required" });
-  }
+  if (!userName) return next(new ApiError(400, "Username is required", "userName"));
+  if (!email) return next(new ApiError(400, "Email is required", "email"));
+  
+  const emailRegex = /^\S+@\S+\.\S+$/;
+  if (!emailRegex.test(email)) return next(new ApiError(400, "Enter a valid email address", "email"));
+  
+  if (!password) return next(new ApiError(400, "Password is required", "password"));
+  if (password.length < 8) return next(new ApiError(400, "Password must be at least 8 characters", "password"));
 
   try {
     const emailExists = await userModel.findOne({ email });
     if (emailExists) {
       if (emailExists.isVerified) {
-        return res.status(400).json({ message: "Email already registered" });
+        return next(new ApiError(409, "Email already registered", "email"));
       }
-      // If user exists but not verified, we'll reuse the account and send new OTP
-      emailExists.password = password; // Pre-save hook will hash this
+      
+      emailExists.password = password; 
       emailExists.userName = userName;
       const otp = generateOTP();
       emailExists.otp = otp;
       emailExists.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
       await emailExists.save();
       await emailService.sendOTPEmail(email, otp);
-      return res.status(200).json({ message: "Account pending verification. New OTP sent.", email });
+      return res.status(200).json({ success: true, message: "Account pending verification. New OTP sent.", email });
     }
 
     const userNameExists = await userModel.findOne({ userName });
     if (userNameExists) {
-      return res.status(400).json({ message: "Username already taken" });
+      return next(new ApiError(409, "Username already taken", "userName"));
     }
 
     const otp = generateOTP();
@@ -85,7 +89,7 @@ const registerUserController = async (req, res) => {
     await userModel.create({
       userName,
       email,
-      password, // Pre-save hook will hash this
+      password,
       otp,
       otpExpiry,
       isVerified: false,
@@ -94,26 +98,28 @@ const registerUserController = async (req, res) => {
     await emailService.sendOTPEmail(email, otp);
 
     res.status(201).json({
+      success: true,
       message: "Registration successful. Please verify your email with the OTP sent.",
       email,
     });
   } catch (error) {
-    logger.error(`Registration error: ${error.message}`);
-    res.status(500).json({ message: "Error registering user", error: error.message });
+    next(error);
   }
 };
 
 // verify otp controller
-const verifyOTPController = async (req, res) => {
+const verifyOTPController = async (req, res, next) => {
   const { email, otp } = req.body;
+
+  if (!otp) return next(new ApiError(400, "OTP is required", "otp"));
 
   try {
     const user = await userModel.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return next(new ApiError(404, "User not found", "general"));
 
-    if (user.isVerified) return res.status(400).json({ message: "User already verified" });
+    if (user.isVerified) return next(new ApiError(400, "User already verified", "general"));
     if (user.otp !== otp || user.otpExpiry < new Date()) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
+      return next(new ApiError(400, "Invalid or expired OTP", "otp"));
     }
 
     user.isVerified = true;
@@ -123,78 +129,87 @@ const verifyOTPController = async (req, res) => {
     const { accessToken } = await sendAuthCookies(req, res, user);
 
     res.status(200).json({
+      success: true,
       message: "Email verified successfully",
       user: { id: user._id, name: user.userName, email: user.email },
       accessToken
     });
   } catch (error) {
-    logger.error(`OTP verification error: ${error.message}`);
-    res.status(500).json({ message: "Verification failed", error: error.message });
+    next(error);
   }
 };
 
 // login controller
-const loginUserController = async (req, res) => {
+const loginUserController = async (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
-  }
+  if (!email) return next(new ApiError(400, "Email is required", "email"));
+  
+  const emailRegex = /^\S+@\S+\.\S+$/;
+  if (!emailRegex.test(email)) return next(new ApiError(400, "Enter a valid email address", "email"));
+
+  if (!password) return next(new ApiError(400, "Password is required", "password"));
 
   try {
     const user = await userModel.findOne({ email }).select("+password");
-    if (!user) return res.status(401).json({ message: "Invalid email or password." });
+    if (!user) return next(new ApiError(404, "No account found with this email", "email"));
 
-    if (!user.isVerified) {
-      return res.status(403).json({ message: "Please verify your email first", email: user.email });
+    if (user.authProvider !== "local") {
+      const providerName = user.authProvider.charAt(0).toUpperCase() + user.authProvider.slice(1);
+      return next(new ApiError(409, `This email is linked to a ${providerName} account. Use that to sign in.`, "email"));
     }
 
-    if (user.authProvider !== "local" || !user.password) {
-      return res.status(400).json({ 
-        message: `This account uses ${user.authProvider} authentication. Please log in with ${user.authProvider}.` 
+    if (user.isSuspended) return next(new ApiError(403, "Your account has been suspended. Contact support.", "general"));
+
+    if (!user.isVerified) {
+      return res.status(403).json({ 
+        success: false, 
+        field: "general", 
+        message: "Please verify your email before logging in", 
+        email: user.email 
       });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Invalid email or password." });
+    if (!isMatch) return next(new ApiError(401, "Incorrect password", "password"));
 
     const { accessToken } = await sendAuthCookies(req, res, user);
 
     res.status(200).json({
+      success: true,
       message: "Logged in successfully",
       user: { id: user._id, name: user.userName, email: user.email },
       accessToken
     });
   } catch (error) {
-    logger.error(`Login error: ${error.message}`);
-    res.status(500).json({ message: "Login failed" });
+    next(error);
   }
 };
 
 // refresh token controller
-const refreshTokenController = async (req, res) => {
+const refreshTokenController = async (req, res, next) => {
   const token = req.cookies.refreshToken;
-  if (!token) return res.status(401).json({ message: "Refresh token missing" });
+  if (!token) return next(new ApiError(401, "Refresh token missing", "general"));
 
   try {
     const decoded = tokenService.verifyRefreshToken(token);
-    if (!decoded) return res.status(401).json({ message: "Invalid refresh token" });
+    if (!decoded) return next(new ApiError(401, "Invalid refresh token", "general"));
 
     const user = await userModel.findById(decoded.id).select("+refreshToken");
     if (!user || user.refreshToken !== tokenService.hashToken(token)) {
-      return res.status(401).json({ message: "Invalid or rotated refresh token" });
+      return next(new ApiError(401, "Invalid or rotated refresh token", "general"));
     }
 
     const { accessToken } = await sendAuthCookies(req, res, user);
 
-    res.status(200).json({ accessToken });
+    res.status(200).json({ success: true, accessToken });
   } catch (error) {
-    res.status(500).json({ message: "Token refresh failed" });
+    next(error);
   }
 };
 
 // logout controller
-const logoutUserController = async (req, res) => {
+const logoutUserController = async (req, res, next) => {
   try {
     const userId = req.user?.id;
     if (userId) {
@@ -204,18 +219,19 @@ const logoutUserController = async (req, res) => {
     const options = COOKIE_OPTIONS(req);
     res.clearCookie("accessToken", options);
     res.clearCookie("refreshToken", options);
-    res.status(200).json({ message: "Logged out successfully" });
+    res.status(200).json({ success: true, message: "Logged out successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Logout failed" });
+    next(error);
   }
 };
 
-const getMeController = async (req, res) => {
+const getMeController = async (req, res, next) => {
   try {
     const user = await userModel.findById(req.user.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return next(new ApiError(404, "User not found", "general"));
     
     res.status(200).json({
+      success: true,
       user: { 
         id: user._id, 
         name: user.userName, 
@@ -225,72 +241,89 @@ const getMeController = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Fetch failed" });
+    next(error);
   }
 };
 
-const resendOTPController = async (req, res) => {
+const resendOTPController = async (req, res, next) => {
   const { email } = req.body;
+  if (!email) return next(new ApiError(400, "Email is required", "general"));
+
   try {
     const user = await userModel.findOne({ email });
-    if (!user || user.isVerified) return res.status(400).json({ message: "Invalid request" });
+    if (!user || user.isVerified) return next(new ApiError(400, "Invalid request", "general"));
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
     await emailService.sendOTPEmail(email, otp);
-    res.status(200).json({ message: "OTP resent" });
+    res.status(200).json({ success: true, message: "OTP resent" });
   } catch (error) {
-    res.status(500).json({ message: "Error resending OTP" });
+    next(error);
   }
 };
 
-const forgotPasswordController = async (req, res) => {
+const forgotPasswordController = async (req, res, next) => {
   const { email } = req.body;
+  if (!email) return next(new ApiError(400, "Email is required", "email"));
+
   try {
     const user = await userModel.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return next(new ApiError(404, "No account found with this email", "email"));
+    
     const otp = generateOTP();
     user.resetPasswordToken = otp;
     user.resetPasswordExpiry = new Date(Date.now() + 15 * 60 * 1000);
     await user.save();
     await emailService.sendPasswordResetOTP(email, otp);
-    res.status(200).json({ message: "Reset OTP sent" });
+    res.status(200).json({ success: true, message: "Reset OTP sent" });
   } catch (error) {
-    res.status(500).json({ message: "Error" });
+    next(error);
   }
 };
 
-const resetPasswordController = async (req, res) => {
+const resetPasswordController = async (req, res, next) => {
   const { email, otp, newPassword } = req.body;
+  
+  if (!otp) return next(new ApiError(400, "OTP is required", "otp"));
+  if (!newPassword) return next(new ApiError(400, "New password is required", "newPassword"));
+  if (newPassword.length < 8) return next(new ApiError(400, "Password must be at least 8 characters", "newPassword"));
+
   try {
     const user = await userModel.findOne({
       email,
       resetPasswordToken: otp,
       resetPasswordExpiry: { $gt: new Date() },
     });
-    if (!user) return res.status(400).json({ message: "Invalid or expired OTP" });
+    if (!user) return next(new ApiError(400, "Invalid or expired OTP", "otp"));
+    
     user.password = newPassword;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpiry = undefined;
     await user.save();
-    res.status(200).json({ message: "Password reset successful" });
+    res.status(200).json({ success: true, message: "Password reset successful" });
   } catch (error) {
-    res.status(500).json({ message: "Error" });
+    next(error);
   }
 };
 
-const changePasswordController = async (req, res) => {
+const changePasswordController = async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword) return next(new ApiError(400, "Current password is required", "oldPassword"));
+  if (!newPassword) return next(new ApiError(400, "New password is required", "newPassword"));
+  if (newPassword.length < 8) return next(new ApiError(400, "New password must be at least 8 characters", "newPassword"));
+
   try {
     const user = await userModel.findById(req.user.id).select("+password");
     const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Incorrect password" });
+    if (!isMatch) return next(new ApiError(401, "Incorrect current password", "oldPassword"));
+    
     user.password = newPassword;
     await user.save();
-    res.status(200).json({ message: "Password changed" });
+    res.status(200).json({ success: true, message: "Password changed successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error" });
+    next(error);
   }
 };
 
