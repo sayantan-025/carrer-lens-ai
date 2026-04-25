@@ -5,11 +5,14 @@ const blacklistModel = require("../models/blacklist.model");
 const emailService = require("../services/email.service");
 const tokenService = require("../services/token.service");
 
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax", // Changed from strict to allow OAuth redirects
-  path: "/",
+const COOKIE_OPTIONS = (req) => {
+  const isLocalhost = req.get("host")?.includes("localhost");
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production" && !isLocalhost,
+    sameSite: "lax",
+    path: "/",
+  };
 };
 
 const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 mins
@@ -19,7 +22,7 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-const sendAuthCookies = async (res, user) => {
+const sendAuthCookies = async (req, res, user) => {
   const accessToken = tokenService.generateAccessToken(user._id);
   const refreshToken = tokenService.generateRefreshToken(user._id);
 
@@ -27,13 +30,15 @@ const sendAuthCookies = async (res, user) => {
   user.refreshToken = tokenService.hashToken(refreshToken);
   await user.save();
 
+  const options = COOKIE_OPTIONS(req);
+
   res.cookie("accessToken", accessToken, {
-    ...COOKIE_OPTIONS,
+    ...options,
     maxAge: ACCESS_TOKEN_MAX_AGE,
   });
 
   res.cookie("refreshToken", refreshToken, {
-    ...COOKIE_OPTIONS,
+    ...options,
     maxAge: REFRESH_TOKEN_MAX_AGE,
     path: "/api/auth/refresh-token", // Only send to refresh endpoint
   });
@@ -111,7 +116,7 @@ const verifyOTPController = async (req, res) => {
     user.otp = undefined;
     user.otpExpiry = undefined;
     
-    const { accessToken } = await sendAuthCookies(res, user);
+    const { accessToken } = await sendAuthCookies(req, res, user);
 
     res.status(200).json({
       message: "Email verified successfully",
@@ -144,7 +149,7 @@ const loginUserController = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Invalid email or password." });
 
-    const { accessToken } = await sendAuthCookies(res, user);
+    const { accessToken } = await sendAuthCookies(req, res, user);
 
     res.status(200).json({
       message: "Logged in successfully",
@@ -170,7 +175,7 @@ const refreshTokenController = async (req, res) => {
       return res.status(401).json({ message: "Invalid or rotated refresh token" });
     }
 
-    const { accessToken } = await sendAuthCookies(res, user);
+    const { accessToken } = await sendAuthCookies(req, res, user);
 
     res.status(200).json({ accessToken });
   } catch (error) {
@@ -186,8 +191,9 @@ const logoutUserController = async (req, res) => {
       await userModel.findByIdAndUpdate(userId, { $unset: { refreshToken: 1 } });
     }
     
-    res.clearCookie("accessToken", COOKIE_OPTIONS);
-    res.clearCookie("refreshToken", { ...COOKIE_OPTIONS, path: "/api/auth/refresh-token" });
+    const options = COOKIE_OPTIONS(req);
+    res.clearCookie("accessToken", options);
+    res.clearCookie("refreshToken", { ...options, path: "/api/auth/refresh-token" });
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     res.status(500).json({ message: "Logout failed" });

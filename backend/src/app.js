@@ -12,6 +12,9 @@ const errorHandler = require("./middlewares/error.middleware");
 
 const projectRoot = path.resolve(__dirname, "../..");
 
+// Trust Render's proxy for correct IP detection in rate limiting
+app.set("trust proxy", 1);
+
 // Security: Rate Limiting
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -64,7 +67,7 @@ app.use(express.static(path.join(projectRoot, "frontend", "dist")));
 app.use("/api", errorHandler);
 
 // SPA Fallback: Send index.html for all non-API routes
-app.get("*", (req, res) => {
+app.get("*path", (req, res) => {
   if (req.originalUrl.startsWith("/api")) {
     return res.status(404).json({
       success: false,

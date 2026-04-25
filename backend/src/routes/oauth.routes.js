@@ -3,11 +3,14 @@ const router = express.Router();
 const passport = require("../config/passport");
 const { generateAccessToken, rotateRefreshToken } = require("../services/token.service");
 
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax", // Standard for OAuth callbacks
-  path: "/",
+const COOKIE_OPTIONS = (req) => {
+  const isLocalhost = req.get("host")?.includes("localhost");
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production" && !isLocalhost,
+    sameSite: "lax", // Standard for OAuth callbacks
+    path: "/",
+  };
 };
 
 const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 mins
@@ -43,14 +46,16 @@ router.get(
       const accessToken = generateAccessToken(req.user._id);
       const refreshToken = await rotateRefreshToken(req.user);
 
+      const options = COOKIE_OPTIONS(req);
+
       // Set cookies
       res.cookie("accessToken", accessToken, {
-        ...COOKIE_OPTIONS,
+        ...options,
         maxAge: ACCESS_TOKEN_MAX_AGE,
       });
 
       res.cookie("refreshToken", refreshToken, {
-        ...COOKIE_OPTIONS,
+        ...options,
         maxAge: REFRESH_TOKEN_MAX_AGE,
         path: "/api/auth/refresh-token",
       });
@@ -88,13 +93,15 @@ router.get(
       const accessToken = generateAccessToken(req.user._id);
       const refreshToken = await rotateRefreshToken(req.user);
 
+      const options = COOKIE_OPTIONS(req);
+
       res.cookie("accessToken", accessToken, {
-        ...COOKIE_OPTIONS,
+        ...options,
         maxAge: ACCESS_TOKEN_MAX_AGE,
       });
 
       res.cookie("refreshToken", refreshToken, {
-        ...COOKIE_OPTIONS,
+        ...options,
         maxAge: REFRESH_TOKEN_MAX_AGE,
         path: "/api/auth/refresh-token",
       });

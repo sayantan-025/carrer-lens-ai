@@ -17,6 +17,7 @@ const envSchema = z.object({
   GOOGLE_GENAI_API_KEY: z.string({
     required_error: "GOOGLE_GENAI_API_KEY is required for AI services",
   }),
+  CLIENT_URL: z.string().default("http://localhost:5173"),
   
   // Optional OAuth Configuration
   GOOGLE_CLIENT_ID: z.string().optional(),
