@@ -6,11 +6,11 @@ const emailService = require("../services/email.service");
 const tokenService = require("../services/token.service");
 
 const COOKIE_OPTIONS = (req) => {
-  const isLocalhost = req.get("host")?.includes("localhost");
+  const isLocalhost = req.hostname === "localhost" || req.get("host")?.includes("localhost");
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" && !isLocalhost,
-    sameSite: "lax",
+    secure: isLocalhost ? false : true,
+    sameSite: isLocalhost ? "lax" : "none", // none required for cross-site cookies in some browsers
     path: "/",
   };
 };
@@ -40,7 +40,8 @@ const sendAuthCookies = async (req, res, user) => {
   res.cookie("refreshToken", refreshToken, {
     ...options,
     maxAge: REFRESH_TOKEN_MAX_AGE,
-    path: "/api/auth/refresh-token", // Only send to refresh endpoint
+    // Using root path for refresh token too for maximum compatibility
+    path: "/", 
   });
 
   return { accessToken };
@@ -193,7 +194,7 @@ const logoutUserController = async (req, res) => {
     
     const options = COOKIE_OPTIONS(req);
     res.clearCookie("accessToken", options);
-    res.clearCookie("refreshToken", { ...options, path: "/api/auth/refresh-token" });
+    res.clearCookie("refreshToken", options);
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     res.status(500).json({ message: "Logout failed" });

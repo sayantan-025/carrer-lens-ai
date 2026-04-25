@@ -4,11 +4,11 @@ const passport = require("../config/passport");
 const { generateAccessToken, rotateRefreshToken } = require("../services/token.service");
 
 const COOKIE_OPTIONS = (req) => {
-  const isLocalhost = req.get("host")?.includes("localhost");
+  const isLocalhost = req.hostname === "localhost" || req.get("host")?.includes("localhost");
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" && !isLocalhost,
-    sameSite: "lax", // Standard for OAuth callbacks
+    secure: isLocalhost ? false : true,
+    sameSite: isLocalhost ? "lax" : "none",
     path: "/",
   };
 };
@@ -57,7 +57,7 @@ router.get(
       res.cookie("refreshToken", refreshToken, {
         ...options,
         maxAge: REFRESH_TOKEN_MAX_AGE,
-        path: "/api/auth/refresh-token",
+        path: "/",
       });
 
       // Redirect to frontend callback page
@@ -103,7 +103,7 @@ router.get(
       res.cookie("refreshToken", refreshToken, {
         ...options,
         maxAge: REFRESH_TOKEN_MAX_AGE,
-        path: "/api/auth/refresh-token",
+        path: "/",
       });
 
       res.redirect(`${clientUrl}/oauth/callback`);

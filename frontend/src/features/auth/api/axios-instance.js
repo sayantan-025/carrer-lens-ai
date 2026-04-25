@@ -39,7 +39,7 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Don't attempt to refresh on auth endpoints (login, register, etc.)
+    // Don't attempt to refresh on auth endpoints (login, register, logout, etc.)
     if (originalRequest.url?.includes("/auth/")) {
       return Promise.reject(error);
     }
@@ -48,6 +48,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
+        // Use global axios to avoid interceptor logic here
         const refreshRes = await axios.post("/api/auth/refresh-token", {}, { withCredentials: true });
         const { accessToken: newAccessToken } = refreshRes.data;
 
@@ -59,6 +60,7 @@ axiosInstance.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
+        // If refresh fails, log out the user
         if (logoutHandler) {
           logoutHandler("SESSION_EXPIRED");
         }
