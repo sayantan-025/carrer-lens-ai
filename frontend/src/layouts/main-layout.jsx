@@ -39,7 +39,7 @@ const MainLayout = () => {
       <LenisScroll />
       <GlobalBackground />
       <Navbar />
-      <main className="flex-1 relative z-10 pt-20">
+      <main className="flex-1 relative z-10">
         <Outlet />
       </main>
       <Footer />

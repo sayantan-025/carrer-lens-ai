@@ -33,15 +33,15 @@ export default function HeroSection() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <section className="min-h-screen w-full relative flex flex-col items-center justify-center overflow-hidden pt-14 max-md:pt-20">
+    <section className="min-h-screen w-full relative flex flex-col items-center justify-center overflow-hidden pt-20 pb-20 max-md:pt-24 max-md:pb-12">
       {/* Background Aurora Effect */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <SoftAurora
           speed={0.6}
           scale={1.5}
-          brightness={1}
-          color1="#f7f7f7"
-          color2="#ffffff"
+          brightness={1.2}
+          color1="#52525b"
+          color2="#a1a1aa"
           noiseFrequency={2.5}
           noiseAmplitude={1}
           bandHeight={0.5}
@@ -52,7 +52,9 @@ export default function HeroSection() {
           enableMouseInteraction
           mouseInfluence={0.25}
         />
-        <div className="absolute inset-x-0 bottom-0 h-64 bg-linear-to-t from-black via-black/80 to-transparent" />
+        {/* Central Contrast Mask for Text Visibility */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.4)_0%,transparent_70%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-96 bg-linear-to-t from-black via-black/90 to-transparent" />
       </div>
 
       {/* Content Wrapper */}
@@ -68,8 +70,8 @@ export default function HeroSection() {
             variants={itemVariants}
             className="mb-8 max-md:mb-6"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold max-sm:text-[9px]">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-black/40 backdrop-blur-md">
+              <span className="text-[10px] font-mono text-zinc-300 uppercase tracking-[0.2em] font-bold max-sm:text-[9px]">
                 Simple AI Interview Prep
               </span>
             </div>
@@ -77,22 +79,22 @@ export default function HeroSection() {
 
           {/* Headline - Simple English */}
           <motion.h1 
-            /* lighthouse-fix: Accessibility - added subtle text-shadow for contrast on light background */
+            /* lighthouse-fix: Accessibility - added multi-layer text-shadow for maximum contrast on vibrant glow */
             /* lighthouse-fix: Performance - high fetchpriority for LCP element */
-            className="font-display text-8xl font-bold tracking-tighter mb-8 leading-[1.05] max-lg:text-7xl max-md:text-6xl max-sm:text-4xl max-md:mb-6 [text-shadow:0_2px_10px_rgba(0,0,0,0.2)]"
+            className="font-display text-8xl font-bold tracking-tighter mb-8 leading-[1.05] max-lg:text-7xl max-md:text-6xl max-sm:text-5xl max-[400px]:text-4xl max-md:mb-6 text-white drop-shadow-[0_0_30px_rgba(0,0,0,0.8)] [text-shadow:0_4px_12px_rgba(0,0,0,0.6),0_0_20px_rgba(0,0,0,0.4)] text-balance"
             variants={itemVariants}
             fetchpriority="high"
           >
-            <span className="text-zinc-100 block">Get the Job.</span>
-            <span className="text-zinc-100 block">
+            <span className="block">Get the Job.</span>
+            <span className="block">
               Skip the Stress.
             </span>
           </motion.h1>
 
           {/* Subheadline - Simple English */}
           <motion.p 
-            /* lighthouse-fix: Accessibility - darkened text slightly for better contrast on light background */
-            className="text-xl text-zinc-200 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light max-md:text-lg max-sm:text-base max-md:mb-8 [text-shadow:0_1px_5px_rgba(0,0,0,0.1)]"
+            /* lighthouse-fix: Accessibility - used high-contrast zinc for readability */
+            className="text-xl text-zinc-200 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light max-md:text-lg max-sm:text-base max-md:mb-8 [text-shadow:0_2px_8px_rgba(0,0,0,0.8)] text-balance"
             variants={itemVariants}
           >
             Upload your resume and the job details. Get a personalized plan to pass your interview and land the offer.
