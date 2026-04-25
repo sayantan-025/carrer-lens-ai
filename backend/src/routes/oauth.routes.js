@@ -13,6 +13,11 @@ const COOKIE_OPTIONS = {
 const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 mins
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+// Helper to get client URL
+const getClientUrl = (req) => {
+  return process.env.CLIENT_URL || `${req.protocol}://${req.get("host")}`;
+};
+
 // Google OAuth
 router.get(
   "/google",
@@ -21,14 +26,17 @@ router.get(
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", { 
-    failureRedirect: `${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=oauth_failed`, 
-    session: false 
-  }),
+  (req, res, next) => {
+    passport.authenticate("google", { 
+      failureRedirect: `${getClientUrl(req)}/login?error=oauth_failed`, 
+      session: false 
+    })(req, res, next);
+  },
   async (req, res) => {
     try {
+      const clientUrl = getClientUrl(req);
       if (!req.user) {
-        return res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=no_user`);
+        return res.redirect(`${clientUrl}/login?error=no_user`);
       }
 
       // Generate tokens
@@ -48,10 +56,10 @@ router.get(
       });
 
       // Redirect to frontend callback page
-      res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/oauth/callback`);
+      res.redirect(`${clientUrl}/oauth/callback`);
     } catch (error) {
       console.error("Google OAuth error:", error);
-      res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=server_error`);
+      res.redirect(`${getClientUrl(req)}/login?error=server_error`);
     }
   }
 );
@@ -64,14 +72,17 @@ router.get(
 
 router.get(
   "/github/callback",
-  passport.authenticate("github", { 
-    failureRedirect: `${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=oauth_failed`, 
-    session: false 
-  }),
+  (req, res, next) => {
+    passport.authenticate("github", { 
+      failureRedirect: `${getClientUrl(req)}/login?error=oauth_failed`, 
+      session: false 
+    })(req, res, next);
+  },
   async (req, res) => {
     try {
+      const clientUrl = getClientUrl(req);
       if (!req.user) {
-        return res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=no_user`);
+        return res.redirect(`${clientUrl}/login?error=no_user`);
       }
 
       const accessToken = generateAccessToken(req.user._id);
@@ -88,10 +99,10 @@ router.get(
         path: "/api/auth/refresh-token",
       });
 
-      res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/oauth/callback`);
+      res.redirect(`${clientUrl}/oauth/callback`);
     } catch (error) {
       console.error("GitHub OAuth error:", error);
-      res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=server_error`);
+      res.redirect(`${getClientUrl(req)}/login?error=server_error`);
     }
   }
 );

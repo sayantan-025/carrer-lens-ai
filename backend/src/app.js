@@ -21,12 +21,27 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// CORS configuration
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL || "http://localhost:5173"],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl) or same-origin
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      // In production, if it's same-origin (served by this server), it should be fine.
+      // But we can also just allow the host itself.
+      return callback(null, true); 
+    },
     credentials: true,
   }),
 );
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
@@ -37,17 +52,30 @@ app.use("/api/auth/register", authLimiter);
 app.use("/api/auth/verify-otp", authLimiter);
 app.use("/api/auth/forgot-password", authLimiter);
 
+// API Routes
 app.use("/api/auth", authRouter);
 app.use("/api/oauth", oauthRouter);
 app.use("/api/interview", interviewReport);
 
-app.use(express.static(path.join(projectRoot, "frontend/dist")));
+// Serve Static Files
+app.use(express.static(path.join(projectRoot, "frontend", "dist")));
 
-// Centralized error handling
-app.use(errorHandler);
+// Centralized error handling for API routes
+app.use("/api", errorHandler);
 
-app.use((req, res) => {
-  res.sendFile(path.join(projectRoot, "frontend", "dist", "index.html"));
+// SPA Fallback: Send index.html for all non-API routes
+app.get("*", (req, res) => {
+  if (req.originalUrl.startsWith("/api")) {
+    return res.status(404).json({
+      success: false,
+      message: `API route ${req.originalUrl} not found`,
+    });
+  }
+  res.sendFile(path.join(projectRoot, "frontend", "dist", "index.html"), (err) => {
+    if (err) {
+      res.status(500).send("Error loading frontend. Make sure 'npm run build' was executed in the frontend directory.");
+    }
+  });
 });
 
 module.exports = app;

@@ -70,7 +70,8 @@ const Register = () => {
   };
 
   const handleSocialLogin = (provider) => {
-    window.location.href = `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/oauth/${provider}`;
+    const baseUrl = import.meta.env.VITE_API_URL || window.location.origin;
+    window.location.href = `${baseUrl}/api/oauth/${provider}`;
   };
 
   const ValidationCheck = ({ isValid }) => (
