@@ -185,19 +185,19 @@ const Dashboard = () => {
   ];
 
   const activeSector = SECTORS.find(s => s.id === activeTab);
+const { showSuccessToast, showErrorToast } = useToast();
 
-  const handleDownload = async () => {
-    setIsDownloading(true);
-    try {
-      await getResumePdf(interviewId);
-      showToast({ message: "Downloaded successfully.", type: "success" });
-    } catch (err) {
-      showToast({ message: "Download failed.", type: "error" });
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
+const handleDownload = async () => {
+  setIsDownloading(true);
+  try {
+    await getResumePdf(interviewId);
+    showSuccessToast("Downloaded successfully.");
+  } catch (err) {
+    showErrorToast("Download failed.");
+  } finally {
+    setIsDownloading(false);
+  }
+};
   return (
     <div className="h-screen w-full bg-black text-zinc-400 font-sans selection:bg-white/10 relative overflow-hidden flex flex-col">
       <div className="tactical-overlay" />

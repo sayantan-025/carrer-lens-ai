@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
-  const { showToast } = useToast();
+  const { showErrorToast } = useToast();
 
   const isAuthenticated = !!user;
 
@@ -27,13 +27,10 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
       
       if (reason === "SESSION_EXPIRED") {
-        showToast({ 
-          message: "Your session has expired. Please log in again.", 
-          type: "error" 
-        });
+        showErrorToast("Your session has expired. Please log in again.");
       }
     }
-  }, [showToast]);
+  }, [showErrorToast]);
 
   const updateAuthData = useCallback((user, token) => {
     setUser(user);

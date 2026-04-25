@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useRegister } from "../hooks/use-register";
-import { useToast } from "../../../context/toast-context";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, CheckCircle2, Check } from "lucide-react";
@@ -16,7 +15,6 @@ import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 const Register = () => {
   const navigate = useNavigate();
   const { isLoading: isAuthChecking } = useAuth();
-  const { showToast } = useToast();
 
   const {
     handleRegister,
@@ -25,10 +23,6 @@ const Register = () => {
     formData,
     handleInputChange
   } = useRegister(() => {
-    showToast({ 
-      message: "Account created.", 
-      type: "success" 
-    });
     navigate("/verify-otp", { state: { email: formData.email } });
   });
 

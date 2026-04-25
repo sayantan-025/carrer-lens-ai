@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useVerifyOTP } from "../hooks/use-verify-otp";
-import { useToast } from "../../../context/toast-context";
 import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw } from "lucide-react";
 import Logo from "../../../components/ui/logo";
@@ -15,7 +14,6 @@ const VerifyOTP = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { resendOTP } = useAuth();
-  const { showToast } = useToast();
   const email = location.state?.email;
 
   const {
@@ -26,7 +24,6 @@ const VerifyOTP = () => {
     handleInputChange,
     setFormData
   } = useVerifyOTP(() => {
-    showToast({ message: "Verified.", type: "success" });
     navigate("/");
   });
 
@@ -101,13 +98,10 @@ const VerifyOTP = () => {
     if (countdown > 0) return;
     try {
       await resendOTP({ email });
-      showToast({ message: "Code sent.", type: "success" });
       setCountdown(60);
     } catch (err) {
-      // Errors handled by toast here since it's not the primary form submission
-      // But we could also map it to the OTP error
       const msg = err.response?.data?.message || "Error resending code.";
-      showToast({ message: msg, type: "error" });
+      setErrors({ otp: msg });
     }
   };
 

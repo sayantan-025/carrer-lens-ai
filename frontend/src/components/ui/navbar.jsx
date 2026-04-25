@@ -23,7 +23,7 @@ export default function Navbar() {
   
   const { user, isAuthenticated, logout } = useAuth();
   const { reports, getResumePdf } = useInterview();
-  const { showToast } = useToast();
+  const { showSuccessToast, showErrorToast, showInfoToast } = useToast();
   
   const navigate = useNavigate();
   const profileRef = useRef(null);
@@ -40,6 +40,7 @@ export default function Navbar() {
 
   const handleLogoutConfirm = async () => {
     await logout();
+    showInfoToast("Logged out successfully.");
     setIsLogoutModalOpen(false);
     setIsProfileOpen(false);
     setIsOpen(false);
@@ -48,7 +49,7 @@ export default function Navbar() {
 
   const handleDownloadLatest = async () => {
     if (!reports || reports.length === 0) {
-      showToast({ message: "No reports found to download.", type: "error" });
+      showErrorToast("No reports found to download.");
       return;
     }
     
@@ -56,9 +57,9 @@ export default function Navbar() {
     try {
       const latestReportId = reports[0]._id;
       await getResumePdf(latestReportId);
-      showToast({ message: "Download started.", type: "success" });
+      showSuccessToast("Download started.");
     } catch (err) {
-      showToast({ message: "Download failed.", type: "error" });
+      showErrorToast("Download failed.");
     } finally {
       setIsDownloading(false);
       setIsProfileOpen(false);

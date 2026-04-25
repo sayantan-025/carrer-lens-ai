@@ -68,7 +68,7 @@ const Toast = ({ message, type = "success", onClose, duration = 4000 }) => {
 
 export const ToastContainer = ({ toasts, removeToast }) => {
   return (
-    <div className="fixed bottom-8 right-8 z-[9999] flex flex-col gap-3 items-end">
+    <div className="fixed top-8 right-8 z-[9999] flex flex-col gap-3 items-end">
       <AnimatePresence mode="popLayout">
         {toasts.map((toast) => (
           <Toast

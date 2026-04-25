@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useChangePassword } from "../hooks/use-password-hooks";
-import { useToast } from "../../../context/toast-context";
 import { Spinner } from "../../../components/ui/spinner";
 import { motion } from "framer-motion";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
@@ -12,8 +11,6 @@ import { cn } from "../../../lib/utils";
 import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 
 const ChangePassword = () => {
-  const { showToast } = useToast();
-
   const {
     handleChangePassword,
     isSubmitting,
@@ -23,7 +20,6 @@ const ChangePassword = () => {
     setFormData,
     setErrors
   } = useChangePassword(() => {
-    showToast({ message: "Password updated successfully.", type: "success" });
     setFormData({ oldPassword: "", newPassword: "" });
     setConfirmPassword("");
   });

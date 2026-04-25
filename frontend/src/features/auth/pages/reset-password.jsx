@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useResetPassword } from "../hooks/use-password-hooks";
-import { useToast } from "../../../context/toast-context";
 import { Spinner } from "../../../components/ui/spinner";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
@@ -15,7 +14,6 @@ import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 const ResetPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { showToast } = useToast();
   const { isLoading: isAuthChecking } = useAuth();
   
   const email = location.state?.email;
@@ -29,7 +27,6 @@ const ResetPassword = () => {
     setFormData,
     setErrors
   } = useResetPassword(() => {
-    showToast({ message: "Password changed successfully.", type: "success" });
     navigate("/login");
   });
 

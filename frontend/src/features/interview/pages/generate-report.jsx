@@ -38,7 +38,7 @@ const steps = [
 const GenerateReport = () => {
   const navigate = useNavigate();
   const { generateReport, loading, reports, getReports } = useInterview();
-  const { showToast } = useToast();
+  const { showSuccessToast, showErrorToast } = useToast();
   
   const [currentStep, setCurrentStep] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -67,9 +67,9 @@ const GenerateReport = () => {
   const handleFileChange = (file) => {
     if (file && file.type === "application/pdf") {
       setFormData(prev => ({ ...prev, resumeFile: file }));
-      showToast({ message: "Resume uploaded.", type: "success" });
+      showSuccessToast("Resume uploaded.");
     } else {
-      showToast({ message: "Please upload a PDF.", type: "error" });
+      showErrorToast("Please upload a PDF.");
     }
   };
 
@@ -78,11 +78,11 @@ const GenerateReport = () => {
     try {
       const result = await generateReport(formData);
       if (result) {
-        showToast({ message: "Report generated.", type: "success" });
+        showSuccessToast("Report generated.");
         navigate(`/dashboard/${result._id}`);
       }
     } catch (err) { 
-      showToast({ message: "Generation failed.", type: "error" }); 
+      showErrorToast("Generation failed."); 
     }
   };
 

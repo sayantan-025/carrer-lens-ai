@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate, Link } from "react-router";
 import { useAuth } from "../hooks/use-auth";
 import { useForgotPassword } from "../hooks/use-password-hooks";
-import { useToast } from "../../../context/toast-context";
 import { Spinner } from "../../../components/ui/spinner";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
@@ -14,7 +13,6 @@ import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const { showToast } = useToast();
 
   const {
     handleForgotPassword,
@@ -23,7 +21,6 @@ const ForgotPassword = () => {
     formData,
     handleInputChange
   } = useForgotPassword(() => {
-    showToast({ message: "Code sent.", type: "success" });
     navigate("/reset-password", { state: { email: formData.email } });
   });
 

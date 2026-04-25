@@ -17,7 +17,6 @@ const Login = () => {
   const navigate = useNavigate();
   const { isLoading: isAuthChecking } = useAuth();
   const { oauthError, clearOAuthError } = useOAuthError();
-  const { showToast } = useToast();
   
   const { 
     handleLogin, 
@@ -26,7 +25,6 @@ const Login = () => {
     formData, 
     handleInputChange 
   } = useLogin(() => {
-    showToast({ message: "Signed in.", type: "success" });
     navigate("/");
   });
 
