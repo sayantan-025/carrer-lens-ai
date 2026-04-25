@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, X } from 'lucide-react';
 import { cn } from '../../../lib/utils';
-import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
+import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 
 const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
   return (

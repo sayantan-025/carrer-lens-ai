@@ -10,7 +10,7 @@ import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { cn } from "../../../lib/utils";
-import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
+import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 
 const Login = () => {
   const navigate = useNavigate();

@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { LiquidCtaButton } from "../../components/buttons/LiquidCtaButton";
-import SoftAurora from "../../components/ui/SoftAurora";
+import { LiquidCtaButton } from "../../components/buttons/liquid-cta-button";
+import SoftAurora from "../../components/ui/soft-aurora";
 
 const containerVariants = {
   hidden: { opacity: 0 },

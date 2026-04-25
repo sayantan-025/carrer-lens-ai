@@ -1,326 +1,292 @@
-const User = require("../models/user.model");
-const { sendOTPEmail, sendPasswordResetOTP } = require("../services/email.service");
-const { 
-  generateAccessToken, 
-  rotateRefreshToken,
-  verifyRefreshToken 
-} = require("../services/token.service");
-const crypto = require("crypto");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const userModel = require("../models/user.model");
+const blacklistModel = require("../models/blacklist.model");
+const emailService = require("../services/email.service");
+const tokenService = require("../services/token.service");
 
-/**
- * Helper to set refresh token cookie
- */
-const setRefreshTokenCookie = (res, token) => {
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  };
-  res.cookie("refreshToken", token, cookieOptions);
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax", // Changed from strict to allow OAuth redirects
+  path: "/",
 };
 
-// @desc    Register user
-// @route   POST /api/auth/register
-// @access  Public
-exports.register = async (req, res) => {
-  const { name, email, password } = req.body;
+const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 mins
+const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-  let user = await User.findOne({ email });
-  if (user) {
-    return res.status(400).json({ success: false, message: "Email already registered" });
-  }
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
 
-  user = new User({ name, email, password, authProvider: "local" });
-  const otp = user.generateOTP();
+const sendAuthCookies = async (res, user) => {
+  const accessToken = tokenService.generateAccessToken(user._id);
+  const refreshToken = tokenService.generateRefreshToken(user._id);
+
+  // Save hashed refresh token to user
+  user.refreshToken = tokenService.hashToken(refreshToken);
   await user.save();
 
+  res.cookie("accessToken", accessToken, {
+    ...COOKIE_OPTIONS,
+    maxAge: ACCESS_TOKEN_MAX_AGE,
+  });
+
+  res.cookie("refreshToken", refreshToken, {
+    ...COOKIE_OPTIONS,
+    maxAge: REFRESH_TOKEN_MAX_AGE,
+    path: "/api/auth/refresh-token", // Only send to refresh endpoint
+  });
+
+  return { accessToken };
+};
+
+// register controller
+const registerUserController = async (req, res) => {
+  const { userName, email, password } = req.body;
+
+  if (!userName || !email || !password) {
+    return res.status(400).json({ message: "Username, email and password are required" });
+  }
+
   try {
-    await sendOTPEmail(email, otp);
-    res.status(201).json({ success: true, message: "OTP sent to email" });
-  } catch (err) {
-    console.error("Registration Email Error:", err);
-    user.otp = undefined;
-    user.otpExpiry = undefined;
-    await user.save();
-    res.status(500).json({ 
-      success: false, 
-      message: "Email could not be sent"
+    const emailExists = await userModel.findOne({ email });
+    if (emailExists) {
+      if (emailExists.isVerified) {
+        return res.status(400).json({ message: "Email already registered" });
+      }
+      // If user exists but not verified, we'll reuse the account and send new OTP
+      emailExists.password = password; // Pre-save hook will hash this
+      emailExists.userName = userName;
+      const otp = generateOTP();
+      emailExists.otp = otp;
+      emailExists.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+      await emailExists.save();
+      await emailService.sendOTPEmail(email, otp);
+      return res.status(200).json({ message: "Account pending verification. New OTP sent.", email });
+    }
+
+    const userNameExists = await userModel.findOne({ userName });
+    if (userNameExists) {
+      return res.status(400).json({ message: "Username already taken" });
+    }
+
+    const otp = generateOTP();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+    await userModel.create({
+      userName,
+      email,
+      password, // Pre-save hook will hash this
+      otp,
+      otpExpiry,
+      isVerified: false,
     });
+
+    await emailService.sendOTPEmail(email, otp);
+
+    res.status(201).json({
+      message: "Registration successful. Please verify your email with the OTP sent.",
+      email,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error registering user", error: error.message });
   }
 };
 
-// @desc    Verify OTP
-// @route   POST /api/auth/verify-otp
-// @access  Public
-exports.verifyOTP = async (req, res) => {
+// verify otp controller
+const verifyOTPController = async (req, res) => {
   const { email, otp } = req.body;
 
-  const user = await User.findOne({ email }).select("+otp +otpExpiry");
-  if (!user) {
-    return res.status(404).json({ success: false, message: "User not found" });
-  }
-
-  const hashedOTP = crypto.createHash("sha256").update(otp).digest("hex");
-
-  if (user.otp !== hashedOTP || user.otpExpiry < Date.now()) {
-    return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
-  }
-
-  user.isVerified = true;
-  user.otp = undefined;
-  user.otpExpiry = undefined;
-  
-  const accessToken = generateAccessToken(user._id);
-  const refreshToken = await rotateRefreshToken(user);
-
-  setRefreshTokenCookie(res, refreshToken);
-  await user.save();
-
-  res.status(200).json({
-    success: true,
-    message: "Account verified successfully",
-    accessToken,
-    user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar, authProvider: user.authProvider, createdAt: user.createdAt },
-  });
-};
-
-// @desc    Resend OTP
-// @route   POST /api/auth/resend-otp
-// @access  Public
-exports.resendOTP = async (req, res) => {
-  const { email } = req.body;
-
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.status(404).json({ success: false, message: "User not found" });
-  }
-
-  if (user.isVerified) {
-    return res.status(400).json({ success: false, message: "Account already verified" });
-  }
-
-  const otp = user.generateOTP();
-  await user.save();
-
   try {
-    await sendOTPEmail(email, otp);
-    res.status(200).json({ success: true, message: "New OTP sent to email" });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Email could not be sent" });
+    const user = await userModel.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.isVerified) return res.status(400).json({ message: "User already verified" });
+    if (user.otp !== otp || user.otpExpiry < new Date()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    user.isVerified = true;
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    
+    const { accessToken } = await sendAuthCookies(res, user);
+
+    res.status(200).json({
+      message: "Email verified successfully",
+      user: { id: user._id, name: user.userName, email: user.email },
+      accessToken
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Verification failed", error: error.message });
   }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
-exports.login = async (req, res) => {
+// login controller
+const loginUserController = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email }).select("+password");
-  if (!user || user.authProvider !== "local") {
-    return res.status(401).json({ success: false, message: "Invalid email or password." });
+  try {
+    const user = await userModel.findOne({ email }).select("+password");
+    if (!user) return res.status(401).json({ message: "Invalid email or password." });
+
+    if (!user.isVerified) {
+      return res.status(403).json({ message: "Please verify your email first", email: user.email });
+    }
+
+    if (user.authProvider !== "local" || !user.password) {
+      return res.status(400).json({ 
+        message: `This account uses ${user.authProvider} authentication. Please log in with ${user.authProvider}.` 
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid email or password." });
+
+    const { accessToken } = await sendAuthCookies(res, user);
+
+    res.status(200).json({
+      message: "Logged in successfully",
+      user: { id: user._id, name: user.userName, email: user.email },
+      accessToken
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Login failed" });
   }
-
-  if (!user.isVerified) {
-    return res.status(403).json({ success: false, message: "Account not verified", unverified: true });
-  }
-
-  const isMatch = await user.comparePassword(password);
-  if (!isMatch) {
-    return res.status(401).json({ success: false, message: "Invalid email or password." });
-  }
-
-  const accessToken = generateAccessToken(user._id);
-  const refreshToken = await rotateRefreshToken(user);
-
-  setRefreshTokenCookie(res, refreshToken);
-
-  res.status(200).json({
-    success: true,
-    accessToken,
-    user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar, authProvider: user.authProvider, createdAt: user.createdAt },
-  });
 };
 
-// @desc    Refresh Token
-// @route   POST /api/auth/refresh-token
-// @access  Public
-exports.refreshToken = async (req, res) => {
+// refresh token controller
+const refreshTokenController = async (req, res) => {
   const token = req.cookies.refreshToken;
+  if (!token) return res.status(401).json({ message: "Refresh token missing" });
 
-  if (!token) {
-    return res.status(401).json({ success: false, message: "No refresh token" });
-  }
-
-  const decoded = verifyRefreshToken(token);
-  if (!decoded) {
-    return res.status(401).json({ success: false, message: "Invalid refresh token" });
-  }
-
-  const user = await User.findById(decoded.id).select("+refreshToken");
-  if (!user) {
-    return res.status(401).json({ success: false, message: "User not found" });
-  }
-
-  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-  if (user.refreshToken !== hashedToken) {
-    return res.status(401).json({ success: false, message: "Token reuse detected" });
-  }
-
-  const accessToken = generateAccessToken(user._id);
-  const newRefreshToken = await rotateRefreshToken(user);
-
-  setRefreshTokenCookie(res, newRefreshToken);
-
-  res.status(200).json({ success: true, accessToken });
-};
-
-// @desc    Logout user
-// @route   POST /api/auth/logout
-// @access  Public
-exports.logout = async (req, res) => {
   try {
-    let userId = req.user?.id;
+    const decoded = tokenService.verifyRefreshToken(token);
+    if (!decoded) return res.status(401).json({ message: "Invalid refresh token" });
 
-    if (!userId && req.cookies.refreshToken) {
-      const decoded = verifyRefreshToken(req.cookies.refreshToken);
-      if (decoded) userId = decoded.id;
+    const user = await userModel.findById(decoded.id).select("+refreshToken");
+    if (!user || user.refreshToken !== tokenService.hashToken(token)) {
+      return res.status(401).json({ message: "Invalid or rotated refresh token" });
     }
 
+    const { accessToken } = await sendAuthCookies(res, user);
+
+    res.status(200).json({ accessToken });
+  } catch (error) {
+    res.status(500).json({ message: "Token refresh failed" });
+  }
+};
+
+// logout controller
+const logoutUserController = async (req, res) => {
+  try {
+    const userId = req.user?.id;
     if (userId) {
-      const user = await User.findById(userId);
-      if (user) {
-        user.refreshToken = undefined;
-        await user.save();
-      }
+      await userModel.findByIdAndUpdate(userId, { $unset: { refreshToken: 1 } });
     }
-  } catch (err) {
-    console.error("Logout DB cleanup error:", err);
+    
+    res.clearCookie("accessToken", COOKIE_OPTIONS);
+    res.clearCookie("refreshToken", { ...COOKIE_OPTIONS, path: "/api/auth/refresh-token" });
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Logout failed" });
   }
-
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  };
-
-  res.clearCookie("refreshToken", cookieOptions);
-  res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
-// @desc    Forgot Password
-// @route   POST /api/auth/forgot-password
-// @access  Public
-exports.forgotPassword = async (req, res) => {
-  const { email } = req.body;
-
-  const user = await User.findOne({ email });
-  if (!user || user.authProvider !== "local") {
-    return res.status(200).json({ success: true, message: "If account exists, OTP sent" });
-  }
-
-  const otp = user.generateOTP();
-  await user.save();
-
+const getMeController = async (req, res) => {
   try {
-    await sendPasswordResetOTP(email, otp);
-    res.status(200).json({ success: true, message: "OTP sent to email" });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Email could not be sent" });
+    const user = await userModel.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    
+    res.status(200).json({
+      user: { 
+        id: user._id, 
+        name: user.userName, 
+        email: user.email,
+        avatar: user.avatar,
+        authProvider: user.authProvider
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Fetch failed" });
   }
 };
 
-// @desc    Reset Password
-// @route   POST /api/auth/reset-password
-// @access  Public
-exports.resetPassword = async (req, res) => {
+const resendOTPController = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user || user.isVerified) return res.status(400).json({ message: "Invalid request" });
+    const otp = generateOTP();
+    user.otp = otp;
+    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
+    await emailService.sendOTPEmail(email, otp);
+    res.status(200).json({ message: "OTP resent" });
+  } catch (error) {
+    res.status(500).json({ message: "Error resending OTP" });
+  }
+};
+
+const forgotPasswordController = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const otp = generateOTP();
+    user.resetPasswordToken = otp;
+    user.resetPasswordExpiry = new Date(Date.now() + 15 * 60 * 1000);
+    await user.save();
+    await emailService.sendPasswordResetOTP(email, otp);
+    res.status(200).json({ message: "Reset OTP sent" });
+  } catch (error) {
+    res.status(500).json({ message: "Error" });
+  }
+};
+
+const resetPasswordController = async (req, res) => {
   const { email, otp, newPassword } = req.body;
-
-  const user = await User.findOne({ email }).select("+otp +otpExpiry");
-  if (!user) {
-    return res.status(404).json({ success: false, message: "User not found" });
+  try {
+    const user = await userModel.findOne({
+      email,
+      resetPasswordToken: otp,
+      resetPasswordExpiry: { $gt: new Date() },
+    });
+    if (!user) return res.status(400).json({ message: "Invalid or expired OTP" });
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiry = undefined;
+    await user.save();
+    res.status(200).json({ message: "Password reset successful" });
+  } catch (error) {
+    res.status(500).json({ message: "Error" });
   }
-
-  const hashedOTP = crypto.createHash("sha256").update(otp).digest("hex");
-  if (user.otp !== hashedOTP || user.otpExpiry < Date.now()) {
-    return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
-  }
-
-  user.password = newPassword;
-  user.otp = undefined;
-  user.otpExpiry = undefined;
-  await user.save();
-
-  res.status(200).json({ success: true, message: "Password reset successful" });
 };
 
-// @desc    Change Password
-// @route   POST /api/auth/change-password
-// @access  Private
-exports.changePassword = async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
-
-  const user = await User.findById(req.user.id).select("+password");
-
-  if (user.authProvider !== "local") {
-    return res.status(400).json({ success: false, message: "Password change not available for Google/GitHub accounts" });
+const changePasswordController = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  try {
+    const user = await userModel.findById(req.user.id).select("+password");
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Incorrect password" });
+    user.password = newPassword;
+    await user.save();
+    res.status(200).json({ message: "Password changed" });
+  } catch (error) {
+    res.status(500).json({ message: "Error" });
   }
-
-  const isMatch = await user.comparePassword(currentPassword);
-  if (!isMatch) {
-    return res.status(401).json({ success: false, message: "Current password is incorrect" });
-  }
-
-  user.password = newPassword;
-  user.refreshToken = null; // Force re-login on other devices
-  await user.save();
-
-  res.status(200).json({ success: true, message: "Password changed successfully" });
 };
 
-// @desc    Delete Account
-// @route   DELETE /api/auth/delete-account
-// @access  Private
-exports.deleteAccount = async (req, res) => {
-  const { password } = req.body;
-  const user = await User.findById(req.user.id).select("+password");
-
-  if (user.authProvider === "local") {
-    if (!password) {
-      return res.status(400).json({ success: false, message: "Password is required to delete account" });
-    }
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Incorrect password" });
-    }
-  }
-
-  await User.findByIdAndDelete(req.user.id);
-
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  };
-  res.clearCookie("refreshToken", cookieOptions);
-
-  res.status(200).json({ success: true, message: "Account deleted successfully" });
-};
-
-// @desc    Get current user
-// @route   GET /api/auth/me
-// @access  Private
-exports.getMe = async (req, res) => {
-  const user = await User.findById(req.user.id);
-  res.status(200).json({ 
-    success: true, 
-    user: { 
-      name: user.name, 
-      email: user.email, 
-      avatar: user.avatar, 
-      authProvider: user.authProvider, 
-      createdAt: user.createdAt 
-    } 
-  });
+module.exports = {
+  registerUserController,
+  verifyOTPController,
+  resendOTPController,
+  loginUserController,
+  refreshTokenController,
+  logoutUserController,
+  getMeController,
+  forgotPasswordController,
+  resetPasswordController,
+  changePasswordController,
 };

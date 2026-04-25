@@ -18,11 +18,11 @@ import {
 import { useNavigate, Link } from "react-router";
 import { useInterview } from "../hooks/use-interview";
 import { useToast } from "../../../context/toast-context";
-import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
+import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 import { Spinner } from "../../../components/ui/spinner";
 import { DotLoader } from "../../../components/ui/dot-loader";
 import { ProgressBar } from "../../../components/ui/progress-bar";
-import SoftAurora from "../../../components/ui/SoftAurora";
+import SoftAurora from "../../../components/ui/soft-aurora";
 import Logo from "../../../components/ui/logo";
 import { cn } from "../../../lib/utils";
 

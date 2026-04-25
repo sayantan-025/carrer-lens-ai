@@ -19,8 +19,8 @@ import {
   ShieldAlert,
   AlertCircle
 } from "lucide-react";
-import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
-import SoftAurora from "../../../components/ui/SoftAurora";
+import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
+import SoftAurora from "../../../components/ui/soft-aurora";
 import Logo from "../../../components/ui/logo";
 import { cn } from "../../../lib/utils";
 

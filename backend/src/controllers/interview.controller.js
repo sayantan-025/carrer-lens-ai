@@ -1,5 +1,5 @@
 const pdfParse = require("pdf-parse");
-const interviewReportModel = require("../models/interviewReport.model");
+const interviewReportModel = require("../models/interview-report.model");
 const {
   generateInterviewReport,
   generateResumePdf,

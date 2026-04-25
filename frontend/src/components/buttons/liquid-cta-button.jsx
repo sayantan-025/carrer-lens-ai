@@ -2,7 +2,7 @@
 
 import React from "react"
 import { ArrowRight } from "lucide-react"
-import { LiquidMetalBorder } from "../ui/LiquidMetalBorder"
+import { LiquidMetalBorder } from "../ui/liquid-metal-border"
 import { cn } from "../../lib/utils"
 
 export function LiquidCtaButton({ 

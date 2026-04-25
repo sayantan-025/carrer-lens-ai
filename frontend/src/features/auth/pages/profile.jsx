@@ -5,7 +5,7 @@ import { User, Mail, Calendar, Shield, ArrowLeft, CheckCircle2, Settings } from 
 import { Link } from "react-router";
 import Logo from "../../../components/ui/logo";
 import { cn } from "../../../lib/utils";
-import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
+import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 
 const ProfileSkeleton = () => (
   <div className="w-full max-w-4xl mx-auto py-12 px-6 relative z-10">

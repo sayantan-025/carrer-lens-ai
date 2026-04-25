@@ -11,7 +11,7 @@ import Logo from "../../../components/ui/logo";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { cn } from "../../../lib/utils";
-import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
+import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 
 const Register = () => {
   const navigate = useNavigate();

@@ -8,7 +8,7 @@ import { RefreshCw } from "lucide-react";
 import Logo from "../../../components/ui/logo";
 import { Label } from "../../../components/ui/label";
 import { cn } from "../../../lib/utils";
-import { LiquidCtaButton } from "../../../components/buttons/LiquidCtaButton";
+import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 import { DotLoader } from "../../../components/ui/dot-loader";
 
 const VerifyOTP = () => {
