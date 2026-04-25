@@ -96,13 +96,13 @@ const Profile = () => {
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 xs:gap-6">
           <Link 
             to="/change-password"
-            className="w-full md:w-auto min-w-[180px] xs:min-w-[200px]"
+            className="w-full md:w-auto max-w-[280px] md:max-w-none"
           >
             <button className="w-full flex items-center justify-center gap-3 bg-zinc-900/50 border border-white/5 hover:border-white/20 text-zinc-500 hover:text-white font-bold py-4 xs:py-5 px-6 xs:px-8 rounded-xl xs:rounded-[2rem] text-[10px] xs:text-[11px] uppercase tracking-widest transition-all cursor-pointer active:scale-98">
               <Settings size={14} /> Change Password
             </button>
           </Link>
-          <div className="w-full md:w-auto min-w-[180px] xs:min-w-[200px]">
+          <div className="w-full md:w-auto max-w-[280px] md:max-w-none">
              <Link to="/generate-report">
                <LiquidCtaButton className="w-full">
                  generate analysis

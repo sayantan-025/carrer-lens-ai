@@ -404,7 +404,7 @@ const GenerateReport = () => {
                 onClick={() => setCurrentStep(prev => prev - 1)} 
                 disabled={currentStep === 0 || loading} 
                 className={cn(
-                  "flex items-center gap-3 px-8 py-4 rounded-2xl transition-all duration-300 font-bold uppercase tracking-[0.2em] text-[11px] outline-none cursor-pointer w-full sm:w-auto justify-center",
+                  "flex items-center gap-3 px-8 py-4 rounded-2xl transition-all duration-300 font-bold uppercase tracking-[0.2em] text-[11px] outline-none cursor-pointer w-full sm:w-auto justify-center max-w-[280px] sm:max-w-none",
                   currentStep === 0 
                     ? "hidden" 
                     : "bg-zinc-900/50 text-zinc-500 hover:text-white active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
@@ -414,19 +414,19 @@ const GenerateReport = () => {
               </button>
 
               {currentStep < steps.length - 1 ? (
-                <div className="shrink-0 w-full sm:min-w-[200px] sm:w-auto">
+                <div className="shrink-0 w-full sm:min-w-[200px] sm:w-auto flex justify-center">
                   <LiquidCtaButton 
                     onClick={() => setCurrentStep(prev => prev + 1)} 
-                    className={cn("w-full", !canProceed && "opacity-50 grayscale pointer-events-none")}
+                    className={cn("w-full max-w-[280px] sm:max-w-none", !canProceed && "opacity-50 grayscale pointer-events-none")}
                   >
                     Continue
                   </LiquidCtaButton>
                 </div>
               ) : (
-                <div className="shrink-0 w-full sm:min-w-[240px] sm:w-auto">
+                <div className="shrink-0 w-full sm:min-w-[240px] sm:w-auto flex justify-center">
                   <LiquidCtaButton 
                     onClick={handleGenerate} 
-                    className={cn("w-full", (!isFinalValid || loading) && "opacity-50 grayscale pointer-events-none")}
+                    className={cn("w-full max-w-[280px] sm:max-w-none", (!isFinalValid || loading) && "opacity-50 grayscale pointer-events-none")}
                     loading={loading}
                     loadingChild={
                       <div className="flex items-center gap-3">

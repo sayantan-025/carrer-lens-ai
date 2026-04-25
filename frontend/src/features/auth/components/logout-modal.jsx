@@ -51,7 +51,7 @@ const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
                 <div className="flex flex-col w-full gap-4 items-center">
                   <LiquidCtaButton 
                     onClick={onConfirm}
-                    className="w-full"
+                    className="w-full max-w-[240px]"
                   >
                     Logout
                   </LiquidCtaButton>

@@ -379,9 +379,11 @@ const Dashboard = () => {
                   ))}
                 </div>
               </div>
-              <Link to="/generate-report" className="block w-full">
-                <LiquidCtaButton className="w-full">Generate Analysis</LiquidCtaButton>
-              </Link>
+              <div className="flex justify-center w-full">
+                <Link to="/generate-report" className="w-full max-w-[280px]">
+                  <LiquidCtaButton className="w-full">Generate Analysis</LiquidCtaButton>
+                </Link>
+              </div>
             </div>
           </div>
         </section>

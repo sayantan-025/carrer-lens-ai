@@ -89,7 +89,6 @@ export default function HeroSection() {
           {/* Subheadline - Simple English */}
           <motion.p 
             className="text-xl text-zinc-300 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light max-md:text-lg max-sm:text-base max-md:mb-8"
-            variants={itemVariants}
           >
             Upload your resume and the job details. Get a personalized plan to pass your interview and land the offer.
           </motion.p>
@@ -97,7 +96,7 @@ export default function HeroSection() {
           {/* CTAs - Conditional based on Auth */}
           <motion.div 
             className="flex flex-row items-center justify-center gap-6 mb-16 max-md:mb-12"
-            variants={itemVariants}
+            
           >
             {isAuthenticated ? (
               <Link to="/generate-report">

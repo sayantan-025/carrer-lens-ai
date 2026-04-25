@@ -4,9 +4,25 @@ import React from "react"
 import { motion } from "framer-motion"
 import { Link } from "react-router"
 import { LiquidCtaButton } from "../../components/buttons/liquid-cta-button"
+import { useAuth } from "../../features/auth/hooks/use-auth"
 import { Rocket } from "lucide-react"
 
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 20,
+    },
+  },
+};
+
 export default function CallToAction() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <section className="w-full pt-20 md:pt-60 lg:pt-60 pb-10 md:pb-20 px-5 relative flex flex-col justify-center items-center overflow-visible">
       {/* Background SVG - Industrial Aura */}
@@ -111,36 +127,39 @@ export default function CallToAction() {
       <div className="relative z-10 flex flex-col justify-start items-center max-w-4xl mx-auto text-center">
         <motion.div 
           className="flex flex-col justify-start items-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ staggerChildren: 0.1 }}
         >
           {/* Synced Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
+          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/50 mb-4">
              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] font-bold">Ready to Start?</span>
-          </div>
+          </motion.div>
 
-          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
+          <motion.h2 variants={itemVariants} className="font-display text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter leading-[1.1] max-w-4xl mx-auto">
             Master Your Next <br className="hidden md:block" /> 
             <span className="text-zinc-500">Interview Today.</span>
-          </h2>
-          <p className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light mb-10">
+          </motion.h2>
+          
+          <motion.p variants={itemVariants} className="text-zinc-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-light mb-10">
             Join thousands of professionals who have improved their interview success and landed their dream jobs with Career Lens AI.
-          </p>
-        </motion.div>
-        
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <Link to="/register">
-            <LiquidCtaButton>
-              Get Started for Free
-            </LiquidCtaButton>
-          </Link>
+          </motion.p>
+
+          <motion.div 
+            className="flex flex-row items-center justify-center gap-6 mb-16 max-md:mb-12"
+            variants={itemVariants}
+          >
+            {isAuthenticated ? (
+              <Link to="/generate-report">
+                <LiquidCtaButton>Generate Analysis</LiquidCtaButton>
+              </Link>
+            ) : (
+              <Link to="/register">
+                <LiquidCtaButton>Get Started</LiquidCtaButton>
+              </Link>
+            )}
+          </motion.div>
         </motion.div>
 
         <motion.p 

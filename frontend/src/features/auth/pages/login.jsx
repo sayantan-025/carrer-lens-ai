@@ -227,8 +227,8 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="w-full pt-2">
-             <LiquidCtaButton type="submit" className="w-full">
+          <div className="w-full pt-2 flex justify-center">
+             <LiquidCtaButton type="submit" className="w-full max-w-[280px]">
                {isSubmitting ? "..." : "Sign In"}
              </LiquidCtaButton>
           </div>

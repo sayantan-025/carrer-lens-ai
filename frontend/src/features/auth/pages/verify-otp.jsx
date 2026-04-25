@@ -111,7 +111,7 @@ const VerifyOTP = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 shadow-2xl mx-auto relative"
+      className="w-full max-w-md bg-zinc-950/40 backdrop-blur-3xl border border-white/5 rounded-[2rem] xs:rounded-[2.5rem] p-10 shadow-2xl mx-auto relative"
     >
       <div className="text-center mb-10">
         <div className="flex justify-center mb-8">
@@ -120,7 +120,7 @@ const VerifyOTP = () => {
         <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tighter text-center">
           Verify Email
         </h1>
-        <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-[0.2em] px-4 leading-relaxed text-center">
+        <p className="text-zinc-500 font-bold text-[9px] xs:text-[10px] uppercase tracking-[0.2em] px-4 leading-relaxed text-center">
           Sent to <span className="text-zinc-100">{email}</span>
         </p>
       </div>
@@ -170,7 +170,7 @@ const VerifyOTP = () => {
         </div>
 
         <div className="w-full pt-2 flex justify-center">
-           <LiquidCtaButton type="submit" disabled={isSubmitting || !isOtpComplete} className="w-full text-center">
+           <LiquidCtaButton type="submit" disabled={isSubmitting || !isOtpComplete} className="w-full max-w-[280px]">
              {isSubmitting ? (
                <div className="flex items-center justify-center gap-3">
                  <DotLoader />
