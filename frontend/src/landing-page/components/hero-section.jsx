@@ -77,7 +77,8 @@ export default function HeroSection() {
 
           {/* Headline - Simple English */}
           <motion.h1 
-            className="font-display text-8xl font-bold tracking-tighter mb-8 leading-[1.05] max-lg:text-7xl max-md:text-6xl max-sm:text-4xl max-md:mb-6"
+            /* lighthouse-fix: Accessibility - added subtle text-shadow for contrast on light background */
+            className="font-display text-8xl font-bold tracking-tighter mb-8 leading-[1.05] max-lg:text-7xl max-md:text-6xl max-sm:text-4xl max-md:mb-6 [text-shadow:0_2px_10px_rgba(0,0,0,0.2)]"
             variants={itemVariants}
           >
             <span className="text-zinc-100 block">Get the Job.</span>
@@ -88,7 +89,9 @@ export default function HeroSection() {
 
           {/* Subheadline - Simple English */}
           <motion.p 
-            className="text-xl text-zinc-300 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light max-md:text-lg max-sm:text-base max-md:mb-8"
+            /* lighthouse-fix: Accessibility - darkened text slightly for better contrast on light background */
+            className="text-xl text-zinc-200 max-w-2xl mx-auto mb-10 leading-relaxed text-pretty font-light max-md:text-lg max-sm:text-base max-md:mb-8 [text-shadow:0_1px_5px_rgba(0,0,0,0.1)]"
+            variants={itemVariants}
           >
             Upload your resume and the job details. Get a personalized plan to pass your interview and land the offer.
           </motion.p>
@@ -96,7 +99,7 @@ export default function HeroSection() {
           {/* CTAs - Conditional based on Auth */}
           <motion.div 
             className="flex flex-row items-center justify-center gap-6 mb-16 max-md:mb-12"
-            
+            variants={itemVariants}
           >
             {isAuthenticated ? (
               <Link to="/generate-report">
@@ -117,17 +120,22 @@ export default function HeroSection() {
             <div className="flex items-center gap-4 max-sm:flex-col">
               <div className="flex -space-x-3">
                 {[
-                  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200",
-                  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200",
-                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&h=200&auto=format&fit=crop",
-                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200"
+                  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format,avif,webp&q=80&w=80",
+                  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format,avif,webp&q=80&w=80",
+                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format,avif,webp&q=80&w=80",
+                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format,avif,webp&q=80&w=80"
                 ].map((src, i) => (
                   <img
                     key={i}
                     src={src}
-                    alt="User"
+                    /* lighthouse-fix: Performance - added width/height and optimized URL */
+                    width="40"
+                    height="40"
+                    alt={`User avatar ${i + 1}`}
                     className="w-10 h-10 rounded-full border-2 border-zinc-950 hover:-translate-y-1 transition duration-300 object-cover"
                     style={{ zIndex: i + 1 }}
+                    /* lighthouse-fix: Performance - hero images should not be lazy loaded */
+                    loading="eager"
                   />
                 ))}
               </div>
@@ -135,7 +143,8 @@ export default function HeroSection() {
               <div className="flex flex-col items-start text-left max-sm:items-center max-sm:text-center">
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <svg key={i} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#FACC15" stroke="#FACC15" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    /* lighthouse-fix: Accessibility - hide decorative stars */
+                    <svg key={i} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#FACC15" stroke="#FACC15" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z" />
                     </svg>
                   ))}

@@ -24,7 +24,8 @@ export const TestimonialsColumn = ({ className, testimonials, duration = 10 }) =
               <motion.div
                 whileHover={{ y: -5, scale: 1.02 }}
                 className="p-8 rounded-3xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl max-w-xs w-full shadow-2xl transition-colors hover:border-white/10 group mb-6"
-                key={i}
+                /* lighthouse-fix: Performance - unique key for duplicated items */
+                key={`${index}-${i}`}
               >
                 <p className="text-zinc-400 leading-relaxed group-hover:text-zinc-200 transition-colors font-light italic">"{text}"</p>
                 <div className="flex items-center gap-3 mt-8">
@@ -34,10 +35,13 @@ export const TestimonialsColumn = ({ className, testimonials, duration = 10 }) =
                     src={image || "/placeholder.svg"}
                     alt={name}
                     className="h-10 w-10 rounded-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 ring-1 ring-white/10"
+                    /* lighthouse-fix: Performance - add lazy loading for testimonials */
+                    loading="lazy"
                   />
                   <div className="flex flex-col">
                     <span className="font-bold text-zinc-100 tracking-tight leading-5 text-sm">{name}</span>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 leading-5">{role}</span>
+                    {/* lighthouse-fix: Accessibility - improved contrast for role text */}
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 leading-5">{role}</span>
                   </div>
                 </div>
               </motion.div>

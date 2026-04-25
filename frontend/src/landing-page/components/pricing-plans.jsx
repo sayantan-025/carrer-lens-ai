@@ -114,7 +114,8 @@ export default function PricingPlans() {
                   "w-12 h-12 rounded-2xl flex items-center justify-center mb-6 border transition-transform duration-500 group-hover:scale-110",
                   plan.highlighted ? "bg-zinc-100 border-zinc-200" : "bg-zinc-800/50 border-zinc-700/50"
                 )}>
-                  <plan.icon className={cn("w-6 h-6", plan.highlighted ? "text-zinc-900" : "text-zinc-400")} />
+                  {/* lighthouse-fix: Accessibility - hide decorative icon */}
+                  <plan.icon className={cn("w-6 h-6", plan.highlighted ? "text-zinc-900" : "text-zinc-400")} aria-hidden="true" />
                 </div>
                 <h3 className={cn(
                   "font-display text-2xl font-bold mb-3 tracking-tight",
@@ -155,7 +156,7 @@ export default function PricingPlans() {
                     <Check className={cn(
                       "w-4 h-4 shrink-0 mt-0.5 transition-colors",
                       plan.highlighted ? "text-zinc-900" : "text-zinc-500 group-hover:text-white"
-                    )} />
+                    )} aria-hidden="true" />
                     <span className={cn(
                       "text-sm font-light",
                       plan.highlighted ? "text-zinc-700" : "text-zinc-400 group-hover:text-zinc-300"
@@ -165,7 +166,8 @@ export default function PricingPlans() {
               </ul>
 
               {/* CTA */}
-              <Link to="/register">
+              {/* lighthouse-fix: Accessibility - added aria-label */}
+              <Link to="/register" aria-label={`Sign up for the ${plan.name} plan`}>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -183,7 +185,8 @@ export default function PricingPlans() {
           ))}
         </div>
 
-        <p className="text-center text-zinc-600 text-[10px] font-mono uppercase tracking-[0.4em] mt-20 max-md:mt-16">
+        {/* lighthouse-fix: Accessibility - improved contrast */}
+        <p className="text-center text-zinc-500 text-[10px] font-mono uppercase tracking-[0.4em] mt-20 max-md:mt-16">
           Secure. Private. Reliable.
         </p>
       </div>

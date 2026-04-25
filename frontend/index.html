@@ -1,17 +1,59 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"> <!-- lighthouse-fix: added lang attribute if missing -->
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
     <title>Career Lens AI | AI-Powered Tech Interview Prep</title>
     <meta name="description" content="AI platform to analyze your resume, identify skill gaps, and generate customized preparation plans to ace your interviews."/>
+    
+    <!-- lighthouse-fix: SEO - Canonical Tag -->
+    <link rel="canonical" href="https://careerlens.ai/" />
+    
+    <!-- lighthouse-fix: SEO - Open Graph -->
+    <meta property="og:title" content="Career Lens AI | AI-Powered Tech Interview Prep" />
+    <meta property="og:description" content="AI platform to analyze your resume, identify skill gaps, and generate customized preparation plans." />
+    <meta property="og:image" content="https://careerlens.ai/og-image.png" />
+    <meta property="og:url" content="https://careerlens.ai/" />
+    <meta property="og:type" content="website" />
+    
+    <!-- lighthouse-fix: SEO - Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Career Lens AI | AI-Powered Tech Interview Prep" />
+    <meta name="twitter:description" content="AI platform to analyze your resume, identify skill gaps, and generate customized preparation plans." />
+    <meta name="twitter:image" content="https://careerlens.ai/og-image.png" />
+    
+    <!-- lighthouse-fix: Performance - Preconnect and DNS-prefetch -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- lighthouse-fix: SEO - Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Career Lens AI",
+      "url": "https://careerlens.ai/",
+      "description": "AI platform to analyze your resume, identify skill gaps, and generate customized preparation plans.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://careerlens.ai/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
+    <!-- lighthouse-fix: Best Practices - Content Security Policy (Basic) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com; connect-src 'self' http://localhost:3000 https://careerlens.ai;">
   </head>
   <body>
     <div id="root"></div>
+    <!-- lighthouse-fix: Accessibility - Skip to Content link -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:rounded-md">Skip to content</a>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -16,7 +16,7 @@ const steps = [
     glow: "shadow-[0_0_40px_rgba(255,255,255,0.08)]",
     side: "left",
     visual: (
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div className="relative w-full h-full flex items-center justify-center" aria-hidden="true">
         <div className="w-full max-w-[280px] rounded-xl border border-zinc-800 bg-zinc-950/90 p-5 font-mono text-[10px] text-zinc-400/90 shadow-2xl backdrop-blur-md relative overflow-hidden group border-t-zinc-100/10">
           {/* Active Scan Effect */}
           <motion.div 
@@ -30,7 +30,8 @@ const steps = [
                <div className="w-2 h-2 rounded-full bg-zinc-800" />
                <div className="w-2 h-2 rounded-full bg-zinc-800" />
             </div>
-            <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-500 font-bold">JD_CORE_v5.2</span>
+            {/* lighthouse-fix: Accessibility - improved contrast */}
+            <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-400 font-bold">JD_CORE_v5.2</span>
           </div>
           <div className="space-y-2">
             <div className="h-2 w-3/4 bg-zinc-900 rounded-sm overflow-hidden relative">
@@ -41,8 +42,9 @@ const steps = [
             </div>
             <p className="flex items-center gap-2 pt-2"><ChevronRight className="w-2.5 h-2.5 text-white/50" /> {`ANALYZING_JOB...`}</p>
             <div className="grid grid-cols-2 gap-2 mt-4">
-               <div className="p-2 rounded bg-white/[0.02] border border-white/[0.05] text-[7px] text-zinc-500 uppercase tracking-widest">REQUIREMENTS</div>
-               <div className="p-2 rounded bg-white/[0.02] border border-white/[0.05] text-[7px] text-zinc-500 uppercase tracking-widest">SUCCESS_CRITERIA</div>
+               {/* lighthouse-fix: Accessibility - improved contrast */}
+               <div className="p-2 rounded bg-white/[0.02] border border-white/[0.05] text-[7px] text-zinc-400 uppercase tracking-widest">REQUIREMENTS</div>
+               <div className="p-2 rounded bg-white/[0.02] border border-white/[0.05] text-[7px] text-zinc-400 uppercase tracking-widest">SUCCESS_CRITERIA</div>
             </div>
           </div>
         </div>
@@ -59,7 +61,7 @@ const steps = [
     glow: "shadow-[0_0_40px_rgba(255,255,255,0.08)]",
     side: "right",
     visual: (
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div className="relative w-full h-full flex items-center justify-center" aria-hidden="true">
         <div className="relative w-full max-w-[320px] aspect-video flex items-center justify-center">
            <div className="absolute inset-0 border border-white/5 rounded-full" />
            <div className="absolute inset-12 border border-white/5 rounded-full" />
@@ -69,7 +71,7 @@ const steps = [
                 animate={{ y: [-4, 4, -4] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
-                <div className="text-zinc-600 font-mono text-[7px] uppercase tracking-tighter mb-1">Source</div>
+                <div className="text-zinc-500 font-mono text-[7px] uppercase tracking-tighter mb-1">Source</div>
                 <div className="text-white font-mono text-[9px] font-bold tracking-widest text-center">RESUME /<br/>PROFILE</div>
               </motion.div>
               <div className="relative w-24 h-px bg-zinc-800">
@@ -85,7 +87,7 @@ const steps = [
                 animate={{ y: [4, -4, 4] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
-                <div className="text-zinc-600 font-mono text-[7px] uppercase tracking-tighter mb-1">Target</div>
+                <div className="text-zinc-500 font-mono text-[7px] uppercase tracking-tighter mb-1">Target</div>
                 <Target className="w-5 h-5 text-white" />
               </motion.div>
            </div>
@@ -103,7 +105,7 @@ const steps = [
     glow: "shadow-[0_0_40px_rgba(255,255,255,0.08)]",
     side: "left",
     visual: (
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div className="relative w-full h-full flex items-center justify-center" aria-hidden="true">
         <div className="w-full max-w-[280px] rounded-[2.5rem] border border-white/10 bg-zinc-950/90 p-8 shadow-3xl backdrop-blur-2xl relative overflow-hidden">
            <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.02] blur-3xl -z-10" />
            <div className="flex justify-between items-start mb-8">
@@ -214,6 +216,7 @@ export default function WorkflowSteps() {
             width="20"
             height={svgHeight}
             className="ml-[-10px] block overflow-visible"
+            /* lighthouse-fix: Accessibility - hide beam SVG */
             aria-hidden="true"
           >
             {/* The Static Path */}
@@ -287,10 +290,11 @@ export default function WorkflowSteps() {
                     "w-14 h-14 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center transition-all duration-500 group-hover:border-white/20 group-hover:bg-zinc-900 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.05)]",
                     step.glow
                   )}>
-                    <step.icon className={cn("w-7 h-7", step.color)} />
+                    <step.icon className={cn("w-7 h-7", step.color)} aria-hidden="true" />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.4em] font-bold">
+                    {/* lighthouse-fix: Accessibility - improved contrast */}
+                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.4em] font-bold">
                       Step {step.phase}
                     </span>
                     <span className="text-[12px] text-zinc-100 font-bold uppercase tracking-[0.2em] opacity-80 group-hover:opacity-100 transition-opacity">
@@ -313,7 +317,7 @@ export default function WorkflowSteps() {
               </motion.div>
 
               {/* Central Indicator Node (Desktop) */}
-              <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center">
+              <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center" aria-hidden="true">
                  <motion.div 
                     className="w-8 h-8 rounded-full border border-zinc-800 bg-zinc-950 flex items-center justify-center relative z-20 group"
                     whileInView={{ 
@@ -334,6 +338,7 @@ export default function WorkflowSteps() {
                 whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                 viewport={{ once: true }}
                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                aria-hidden="true"
               >
                  <div className="w-full h-full p-8 rounded-[2.5rem] border border-white/5 bg-zinc-900/10 backdrop-blur-3xl relative overflow-hidden group">
                    <div className="absolute inset-0 bg-linear-to-tr from-white/[0.02] to-transparent pointer-events-none" />

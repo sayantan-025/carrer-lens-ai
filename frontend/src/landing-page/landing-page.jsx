@@ -9,7 +9,8 @@ import CallToAction from "./components/call-to-action";
 
 const LandingPage = () => {
   return (
-    <main>
+    /* lighthouse-fix: Accessibility - added id for skip link */
+    <main id="main-content">
       <HeroSection />
       <Features />
       <WorkflowSteps />

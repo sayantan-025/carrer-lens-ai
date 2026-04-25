@@ -67,7 +67,8 @@ export default function Features() {
                     whileHover={{ rotate: [0, -10, 10, 0] }}
                     transition={{ duration: 0.5 }}
                   >
-                    <Target className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
+                    {/* lighthouse-fix: Accessibility - hide decorative icon */}
+                    <Target className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" aria-hidden="true" />
                   </motion.div>
                   <div>
                     <p className="font-display font-bold text-xl text-zinc-100">Job Match Analysis</p>
@@ -77,7 +78,7 @@ export default function Features() {
                 <p className="text-zinc-400 text-base mb-8 leading-relaxed font-light max-sm:text-sm">
                   Deep analysis of job descriptions to find missing keywords and calculate your readiness score for the role.
                 </p>
-                <div className="rounded-2xl border border-zinc-800/50 bg-zinc-950/50 p-6 overflow-hidden relative max-sm:p-4">
+                <div className="rounded-2xl border border-zinc-800/50 bg-zinc-950/50 p-6 overflow-hidden relative max-sm:p-4" aria-hidden="true">
                   {/* AI Scanline/Pulse Effect */}
                   <motion.div 
                     className="absolute inset-0 bg-linear-to-b from-transparent via-zinc-400/5 to-transparent z-10 pointer-events-none"
@@ -96,7 +97,8 @@ export default function Features() {
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
                       <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
                     </div>
-                    <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest max-sm:text-[8px]">Analysis Engine v2.5</div>
+                    {/* lighthouse-fix: Accessibility - improved contrast */}
+                    <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest max-sm:text-[8px]">Analysis Engine v2.5</div>
                   </div>
                   
                   {/* Metrics grid */}
@@ -164,7 +166,7 @@ export default function Features() {
                     animate={{ scale: [1, 1.05, 1] }}
                     transition={{ duration: 3, repeat: Infinity }}
                   >
-                    <FileCheck className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
+                    <FileCheck className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" aria-hidden="true" />
                   </motion.div>
                   <p className="font-display font-bold text-xl text-zinc-100">Resume Optimizer</p>
                 </div>
@@ -191,7 +193,8 @@ export default function Features() {
                         <div className="w-1 h-1 rounded-full bg-zinc-500" />
                         <span className="text-[11px] text-zinc-400 font-medium uppercase tracking-tight">{item.label}</span>
                       </div>
-                      <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">{item.status}</span>
+                      {/* lighthouse-fix: Accessibility - improved contrast */}
+                      <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{item.status}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -238,7 +241,7 @@ export default function Features() {
                     className="w-12 h-12 rounded-2xl bg-zinc-800/50 flex items-center justify-center border border-zinc-700/50 shrink-0"
                     whileHover={{ y: -2 }}
                   >
-                    <MessageSquare className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
+                    <MessageSquare className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" aria-hidden="true" />
                   </motion.div>
                   <p className="font-display font-bold text-xl text-zinc-100">Interview Prep</p>
                 </div>
@@ -246,7 +249,7 @@ export default function Features() {
                   Get technical and behavioral questions tailored to your experience and the specific role.
                 </p>
                 
-                <div className="flex justify-center gap-3 mt-auto relative">
+                <div className="flex justify-center gap-3 mt-auto relative" aria-hidden="true">
                    <div className="absolute inset-0 bg-zinc-500/5 blur-3xl rounded-full" />
                   {["⌘", "Q"].map((key, i) => (
                     <motion.div
@@ -265,7 +268,8 @@ export default function Features() {
                     </motion.div>
                   ))}
                 </div>
-                <p className="text-[10px] text-zinc-600 mt-8 text-center uppercase tracking-widest max-sm:mt-6">Get Practice Questions</p>
+                {/* lighthouse-fix: Accessibility - improved contrast */}
+                <p className="text-[10px] text-zinc-500 mt-8 text-center uppercase tracking-widest max-sm:mt-6">Get Practice Questions</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -286,7 +290,7 @@ export default function Features() {
                     whileHover={{ rotate: 180 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <Layers className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" />
+                    <Layers className="w-6 h-6 text-zinc-300 group-hover:text-zinc-100 transition-colors" aria-hidden="true" />
                   </motion.div>
                   <div>
                     <p className="font-display font-bold text-xl text-zinc-100">Step-by-step Study Plan</p>
@@ -297,7 +301,7 @@ export default function Features() {
                   A clear preparation roadmap to bridge your skill gaps and master the company's specific interview culture.
                 </p>
                 
-                <div className="grid grid-cols-8 gap-3 mt-auto max-md:grid-cols-4 max-sm:gap-2">
+                <div className="grid grid-cols-8 gap-3 mt-auto max-md:grid-cols-4 max-sm:gap-2" aria-hidden="true">
                   {integrationLogos.map((logo, i) => (
                     <motion.div
                       key={logo.name}
@@ -316,7 +320,7 @@ export default function Features() {
                           transition={{ duration: 1, delay: 1 + i * 0.1 }}
                         />
                       </div>
-                      <span className="text-[8px] text-zinc-600 group-hover/logo:text-zinc-300 font-mono uppercase tracking-tighter truncate w-full text-center max-sm:text-[7px]">
+                      <span className="text-[8px] text-zinc-500 group-hover/logo:text-zinc-300 font-mono uppercase tracking-tighter truncate w-full text-center max-sm:text-[7px]">
                         {logo.name}
                       </span>
                     </motion.div>
@@ -325,14 +329,16 @@ export default function Features() {
                 
                 <div className="flex items-center justify-between mt-8 max-sm:flex-col max-sm:gap-4 max-sm:mt-6">
                   <div className="flex items-center gap-2 text-zinc-500 text-xs">
-                    <ShieldCheck className="w-4 h-4 text-zinc-400/50 shrink-0" />
+                    <ShieldCheck className="w-4 h-4 text-zinc-400/50 shrink-0" aria-hidden="true" />
                     <span>Secure and Private</span>
                   </div>
                   <motion.button
                     whileHover={{ x: 6 }}
                     className="flex items-center gap-2 text-sm font-medium text-zinc-300 hover:text-zinc-100 transition-colors"
+                    /* lighthouse-fix: Accessibility - added aria-label */
+                    aria-label="View personalized preparation guide"
                   >
-                    View preparation guide <ArrowRight className="w-4 h-4" />
+                    View preparation guide <ArrowRight className="w-4 h-4" aria-hidden="true" />
                   </motion.button>
                 </div>
               </CardContent>
