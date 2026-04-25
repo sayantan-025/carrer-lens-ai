@@ -383,7 +383,7 @@ const GenerateReport = () => {
                 <div className="shrink-0 min-w-[240px]">
                   <LiquidCtaButton 
                     onClick={handleGenerate} 
-                    className={cn("w-full", !isFinalValid && "opacity-50 grayscale pointer-events-none")}
+                    className={cn("w-full", (!isFinalValid || loading) && "opacity-50 grayscale pointer-events-none")}
                     loading={loading}
                     loadingChild={
                       <div className="flex items-center gap-3">

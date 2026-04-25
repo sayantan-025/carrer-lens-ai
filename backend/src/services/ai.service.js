@@ -148,7 +148,7 @@ Analyze the alignment between the candidate and the role. Your output must be pr
 `;
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-lite",
+    model: "gemini-2.5-flash",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -321,7 +321,7 @@ Include this embedded CSS in your HTML <head> and match its structure:
   let response;
   try {
     response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
