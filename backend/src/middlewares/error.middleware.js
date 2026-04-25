@@ -1,45 +1,61 @@
+const logger = require("../utils/logger");
+const ApiError = require("../utils/api-error");
+
 /**
  * Global error handler middleware
  */
 const errorHandler = (err, req, res, next) => {
-  let error = { ...err };
-  error.message = err.message;
+  let error = err;
 
-  // Log for developer
-  console.error(err);
+  // If not already an instance of ApiError, wrap it
+  if (!(error instanceof ApiError)) {
+    const statusCode = error.status || error.statusCode || 500;
+    const message = error.message || "Internal Server Error";
+    error = new ApiError(statusCode, message, false, err.stack);
+  }
+
+  // Log error using Winston
+  logger.error(`${req.method} ${req.url} - ${error.status} - ${error.message}`);
+  if (!error.isOperational) {
+    logger.debug(error.stack);
+  }
 
   // Mongoose bad ObjectId
   if (err.name === "CastError") {
-    const message = `Resource not found with id of ${err.value}`;
-    error = { status: 404, message };
+    error.message = `Resource not found with id of ${err.value}`;
+    error.status = 404;
   }
 
   // Mongoose duplicate key
   if (err.code === 11000) {
-    const message = "Duplicate field value entered";
-    error = { status: 400, message };
+    error.message = "Duplicate field value entered";
+    error.status = 400;
   }
 
   // Mongoose validation error
   if (err.name === "ValidationError") {
-    const message = Object.values(err.errors).map((val) => val.message);
-    error = { status: 400, message };
+    error.message = Object.values(err.errors).map((val) => val.message).join(", ");
+    error.status = 400;
   }
 
   // JWT errors
   if (err.name === "JsonWebTokenError") {
-    error = { status: 401, message: "Invalid token" };
+    error.message = "Invalid token";
+    error.status = 401;
   }
   
   if (err.name === "TokenExpiredError") {
-    error = { status: 401, message: "Token expired" };
+    error.message = "Token expired";
+    error.status = 401;
   }
 
-  res.status(error.status || 500).json({
+  const response = {
     success: false,
-    message: error.message || "Server Error",
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
-  });
+    message: error.message,
+    ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
+  };
+
+  res.status(error.status || 500).json(response);
 };
 
 module.exports = errorHandler;
