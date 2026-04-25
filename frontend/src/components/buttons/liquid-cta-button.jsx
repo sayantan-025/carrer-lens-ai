@@ -41,7 +41,7 @@ export function LiquidCtaButton({
                 "col-start-1 row-start-1 flex items-center justify-center gap-2 transition-opacity duration-300", 
                 loading ? "opacity-0" : "opacity-100"
               )}>
-                <span className={cn("text-sm font-medium transition-colors", isLight ? "text-zinc-600" : "text-zinc-200")}>
+                <span className={cn("text-sm font-medium transition-colors whitespace-nowrap", isLight ? "text-zinc-600" : "text-zinc-200")}>
                   {children}
                 </span>
                 <ArrowRight

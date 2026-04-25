@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router";
-import { Menu, X, User, LogOut, ChevronDown, Sparkles } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown, Sparkles, FileDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../features/auth/hooks/use-auth";
+import { useInterview } from "../../features/interview/hooks/use-interview";
+import { useToast } from "../../context/toast-context";
 import Logo from "./logo";
 import LogoutModal from "../../features/auth/components/logout-modal";
 import { cn } from "../../lib/utils";
@@ -10,14 +12,19 @@ import { cn } from "../../lib/utils";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/generate-report", label: "New Report" },
+  { href: "/generate-report", label: "Generate Analysis" },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  
   const { user, isAuthenticated, logout } = useAuth();
+  const { reports, getResumePdf } = useInterview();
+  const { showToast } = useToast();
+  
   const navigate = useNavigate();
   const profileRef = useRef(null);
 
@@ -39,6 +46,26 @@ export default function Navbar() {
     navigate("/");
   };
 
+  const handleDownloadLatest = async () => {
+    if (!reports || reports.length === 0) {
+      showToast({ message: "No reports found to download.", type: "error" });
+      return;
+    }
+    
+    setIsDownloading(true);
+    try {
+      // Latest report is usually the first one in the list (sorted by createdAt)
+      const latestReportId = reports[0]._id;
+      await getResumePdf(latestReportId);
+      showToast({ message: "Download started.", type: "success" });
+    } catch (err) {
+      showToast({ message: "Download failed.", type: "error" });
+    } finally {
+      setIsDownloading(false);
+      setIsProfileOpen(false);
+    }
+  };
+
   const UserAvatar = ({ size = "size-8" }) => (
     <div className={cn(size, "rounded-full overflow-hidden border border-white/10 bg-zinc-800 flex items-center justify-center text-white text-xs font-bold")}>
       {user?.avatar ? (
@@ -55,13 +82,13 @@ export default function Navbar() {
         <nav className="max-w-5xl mx-auto flex items-center justify-between h-14 px-6 rounded-full bg-zinc-950/70 border border-white/5 backdrop-blur-xl pointer-events-auto shadow-2xl">
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-2 group transition-transform hover:scale-105">
-            <Logo className="h-7 w-7 max-md:h-6 max-md:w-6" /> {/* responsive: smaller logo on mobile */}
+            <Logo className="h-7 w-7 max-md:h-6 max-md:w-6" />
             <span className="font-display text-lg font-bold tracking-tighter text-white border-r border-white/10 pr-4 mr-2 max-sm:hidden max-md:text-base max-md:pr-3 max-md:mr-1">
               CareerLens<span className="text-zinc-500">AI</span>
             </span>
           </Link>
 
-          {/* Desktop Links - hidden below 768px */}
+          {/* Desktop Links */}
           <div className="flex items-center gap-1 max-md:hidden">
             {navLinks.map((link) => (
               <Link
@@ -80,7 +107,7 @@ export default function Navbar() {
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center gap-2 group p-1 pr-2 rounded-full hover:bg-white/5 transition-all active:scale-95 min-h-[44px]" /* responsive: min-h-44 for touch */
+                  className="flex items-center gap-2 group p-1 pr-2 rounded-full hover:bg-white/5 transition-all active:scale-95 min-h-[44px]"
                 >
                   <UserAvatar size="size-8 max-md:size-7" />
                   <ChevronDown className={cn("size-3.5 text-zinc-500 transition-transform duration-300", isProfileOpen && "rotate-180")} />
@@ -98,6 +125,17 @@ export default function Navbar() {
                         <p className="text-sm font-bold text-white truncate">{user?.name}</p>
                         <p className="text-xs text-zinc-500 truncate">{user?.email}</p>
                       </div>
+                      
+                      {/* Download Resume - Added to every screen via Navbar */}
+                      <button
+                        onClick={handleDownloadLatest}
+                        disabled={isDownloading}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 text-zinc-400 hover:text-white transition-all group min-h-[44px] disabled:opacity-50"
+                      >
+                        <FileDown className={cn("size-4", isDownloading && "animate-pulse")} />
+                        <span className="text-sm font-medium">{isDownloading ? "Downloading..." : "Download Resume"}</span>
+                      </button>
+
                       <Link
                         to="/profile"
                         onClick={() => setIsProfileOpen(false)}
@@ -106,6 +144,7 @@ export default function Navbar() {
                         <User className="size-4 group-hover:text-white" />
                         <span className="text-sm font-medium">Profile Settings</span>
                       </Link>
+                      
                       <button
                         onClick={() => setIsLogoutModalOpen(true)}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-500/10 text-zinc-400 hover:text-red-400 transition-all group mt-1 min-h-[44px]"
@@ -120,7 +159,7 @@ export default function Navbar() {
             ) : (
               <>
                 <Link to="/login" className="text-sm font-medium text-zinc-400 hover:text-white px-4 max-sm:hidden max-md:px-2 max-md:text-xs">
-                  Log in
+                  Log In
                 </Link>
                 <Link
                   to="/register"
@@ -131,10 +170,10 @@ export default function Navbar() {
               </>
             )}
 
-            {/* Mobile Menu Toggle - shown below 768px */}
+            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsOpen(true)}
-              className="p-2 -mr-2 text-zinc-400 hover:text-white hidden max-md:flex min-h-[44px] items-center justify-center" /* responsive: flex on mobile, 44px touch */
+              className="p-2 -mr-2 text-zinc-400 hover:text-white hidden max-md:flex min-h-[44px] items-center justify-center"
             >
               <Menu className="size-6" />
             </button>
@@ -168,7 +207,7 @@ export default function Navbar() {
                     key={link.label}
                     to={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="text-3xl font-bold text-zinc-500 hover:text-white transition-colors min-h-[44px] flex items-center"
+                    className="text-3xl font-bold text-zinc-500 hover:text-white transition-colors min-h-[44px] flex items-center text-center"
                   >
                     {link.label}
                   </Link>
@@ -176,10 +215,21 @@ export default function Navbar() {
                 
                 <div className="h-px w-24 bg-white/10" />
 
+                {isAuthenticated && (
+                   <button
+                    onClick={handleDownloadLatest}
+                    disabled={isDownloading}
+                    className="text-2xl font-bold text-white hover:text-zinc-300 transition-colors min-h-[44px] flex items-center gap-3"
+                  >
+                    <FileDown size={24} />
+                    {isDownloading ? "Wait..." : "Download Resume"}
+                  </button>
+                )}
+
                 {!isAuthenticated ? (
                   <div className="flex flex-col items-center gap-6 w-full">
                     <Link to="/login" onClick={() => setIsOpen(false)} className="text-xl text-zinc-400 min-h-[44px] flex items-center">
-                      Log in
+                      Log In
                     </Link>
                     <Link
                       to="/register"

@@ -126,7 +126,7 @@ const IntelligenceCard = ({ item, index }) => {
         isOpen ? "border-white/10 bg-white/[0.03] shadow-2xl" : "border-white/5 bg-zinc-950/10 hover:border-white/10"
       )}
     >
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full text-left p-6 md:p-10 flex items-start gap-4 md:gap-8 cursor-pointer outline-none min-h-[44px]"> {/* responsive: mobile fix */}
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full text-left p-6 md:p-10 flex items-start gap-4 md:gap-8 cursor-pointer outline-none min-h-[44px]">
         <div className={cn(
           "shrink-0 size-10 md:size-12 rounded-xl md:rounded-2xl flex items-center justify-center font-bold transition-all duration-500 border text-sm md:text-base",
           isOpen ? "bg-white border-white text-black scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]" : "bg-zinc-900 border-white/5 text-zinc-500"
@@ -156,7 +156,7 @@ const IntelligenceCard = ({ item, index }) => {
               </div>
               <div className="p-6 md:p-10 bg-zinc-900/30 border border-white/5 rounded-[1.5rem] md:rounded-[2.5rem]">
                 <p className="text-[10px] md:text-[11px] font-bold text-zinc-400 uppercase tracking-[0.3em] mb-4 md:mb-6 flex items-center gap-2">
-                  <Cpu size={14} className="text-white/40" /> Sample Answer
+                  <Cpu size={14} className="text-white/40" /> Suggested Answer
                 </p>
                 <p className="text-zinc-200 text-base md:text-lg leading-relaxed font-light">{item.answer}</p>
               </div>
@@ -174,15 +174,14 @@ const Dashboard = () => {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState("technical");
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); /* responsive: mobile fix */
 
   if (loading) return <DashboardSkeleton />;
   if (error || !report) return <ErrorState error={error} />;
 
   const SECTORS = [
-    { id: "technical", label: "Technical", fullLabel: "Technical Questions", icon: Code2, desc: "Coding and system architecture" },
-    { id: "behavioral", label: "Behavioral", fullLabel: "Behavioral Questions", icon: Users, desc: "Situational and soft skills" },
-    { id: "roadmap", label: "Preparation", fullLabel: "Preparation Plan", icon: Map, desc: "Your strategic preparation roadmap" },
+    { id: "technical", label: "Technical Prep", icon: Code2, desc: "Coding and system questions" },
+    { id: "behavioral", label: "Behavioral Prep", icon: Users, desc: "Soft skills and situations" },
+    { id: "roadmap", label: "Study Plan", icon: Map, desc: "Your step-by-step roadmap" },
   ];
 
   const activeSector = SECTORS.find(s => s.id === activeTab);
@@ -191,7 +190,7 @@ const Dashboard = () => {
     setIsDownloading(true);
     try {
       await getResumePdf(interviewId);
-      showToast({ message: "Downloaded.", type: "success" });
+      showToast({ message: "Downloaded successfully.", type: "success" });
     } catch (err) {
       showToast({ message: "Download failed.", type: "error" });
     } finally {
@@ -224,8 +223,7 @@ const Dashboard = () => {
              className="flex items-center gap-2.5 px-3 md:px-4 py-2 rounded-xl bg-white text-black font-bold text-[9px] md:text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
            >
              {isDownloading ? <Spinner size="sm" className="border-zinc-800 border-t-zinc-500" /> : <FileDown size={14} />} 
-             <span className="max-sm:hidden">{isDownloading ? "Downloading..." : "Download Resume"}</span>
-             <span className="sm:hidden">{isDownloading ? "" : "PDF"}</span>
+             <span>{isDownloading ? "Wait..." : "Download Resume"}</span>
            </button>
         </div>
       </header>
@@ -283,7 +281,7 @@ const Dashboard = () => {
         </aside>
 
         {/* Section 2: Center Content */}
-        <section className="col-span-1 md:col-span-10 lg:col-span-7 flex flex-col min-h-0 bg-black/40 overflow-y-auto scrollbar-hidden"> {/* responsive: mobile fix */}
+        <section className="col-span-1 md:col-span-10 lg:col-span-7 flex flex-col min-h-0 bg-black/40 overflow-y-auto scrollbar-hidden">
           <div className="p-6 md:p-16 max-w-4xl mx-auto w-full">
             <div className="mb-8 md:mb-14">
                <motion.div 
@@ -295,7 +293,7 @@ const Dashboard = () => {
                   <span className="text-[10px] md:text-[11px] font-bold text-zinc-500 uppercase tracking-[0.3em]">{activeSector.desc}</span>
                </motion.div>
                <h1 className="font-display text-4xl md:text-6xl font-bold text-white tracking-tighter leading-tight">
-                 {activeSector.fullLabel}
+                 {activeSector.label}
                </h1>
             </div>
 
@@ -348,11 +346,11 @@ const Dashboard = () => {
               </motion.div>
             </AnimatePresence>
 
-            {/* Mobile Diagnostic View - shown only on small screens at the end of content */}
+            {/* Mobile Diagnostic View */}
             <div className="lg:hidden mt-16 space-y-12 pb-12">
               <div className="h-px bg-white/5" />
               <div className="flex flex-col items-center">
-                <p className="w-full text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-8 text-center">Diagnostic Score</p>
+                <p className="w-full text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-8 text-center">Match Score</p>
                 <MatchGauge value={report.matchScore} size={150} />
               </div>
               <div className="space-y-6">
@@ -382,7 +380,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <Link to="/generate-report" className="block w-full">
-                <LiquidCtaButton className="w-full">New Analysis Protocol</LiquidCtaButton>
+                <LiquidCtaButton className="w-full">Generate Analysis</LiquidCtaButton>
               </Link>
             </div>
           </div>
@@ -391,7 +389,6 @@ const Dashboard = () => {
         {/* Section 3: Right Diagnostics (Desktop Only) */}
         <aside className="hidden lg:flex lg:col-span-3 border-l border-white/5 bg-zinc-950/20 flex-col min-h-0 overflow-y-auto scrollbar-hidden">
           
-          {/* Diagnostic Part 1: Match Score */}
           <div className="p-8 flex flex-col items-center shrink-0">
              <p className="w-full text-[9px] font-bold text-zinc-500 px-2 uppercase tracking-[0.2em] mb-6">Match Score</p>
              <MatchGauge value={report.matchScore} size={130} />
@@ -401,7 +398,6 @@ const Dashboard = () => {
             <div className="h-px bg-white/5" />
           </div>
 
-          {/* Diagnostic Part 2: Skill Gaps */}
           <div className="flex-1 flex flex-col min-h-0">
              <div className="px-10 pt-8 pb-4 shrink-0">
                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
@@ -440,10 +436,9 @@ const Dashboard = () => {
             <div className="h-px bg-white/5" />
           </div>
 
-          {/* Diagnostic Part 3: Action */}
           <div className="p-8 shrink-0 flex justify-center">
-             <Link to="/generate-report" className="block w-full max-w-[200px]">
-               <LiquidCtaButton className="w-full">New Report</LiquidCtaButton>
+             <Link to="/generate-report" className="block w-full max-w-[240px]">
+               <LiquidCtaButton className="w-full">Generate Analysis</LiquidCtaButton>
              </Link>
           </div>
         </aside>

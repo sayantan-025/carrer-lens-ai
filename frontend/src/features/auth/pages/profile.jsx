@@ -105,7 +105,7 @@ const Profile = () => {
           <div className="w-full md:w-auto min-w-[180px] xs:min-w-[200px]">
              <Link to="/generate-report">
                <LiquidCtaButton className="w-full">
-                 New Report
+                 generate analysis
                </LiquidCtaButton>
              </Link>
           </div>

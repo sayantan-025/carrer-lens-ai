@@ -9,20 +9,20 @@ import { cn } from "../../lib/utils"
 const footerLinks = {
   product: [
     { label: "Features", href: "#features" },
-    { label: "Protocol", href: "#workflow" },
+    { label: "Process", href: "#workflow" },
     { label: "Testimonials", href: "#testimonials" },
     { label: "Pricing", href: "#pricing" },
   ],
   company: [
-    { label: "Intelligence Base", href: "#faq" },
-    { label: "Strategic Blog", href: "#" },
-    { label: "Career Path", href: "#" },
-    { label: "Contact Protocol", href: "#" },
+    { label: "FAQ", href: "#faq" },
+    { label: "Blog", href: "#" },
+    { label: "Careers", href: "#" },
+    { label: "Contact Us", href: "#" },
   ],
   legal: [
     { label: "Privacy Policy", href: "#" },
     { label: "Terms of Service", href: "#" },
-    { label: "Security Protocol", href: "#" },
+    { label: "Security", href: "#" },
   ],
 }
 
@@ -39,11 +39,11 @@ export default function Footer() {
             <Link to="/" className="flex items-center gap-2 group">
               <Logo className="h-8 w-8 transition-transform group-hover:rotate-12" />
               <span className="font-display text-xl font-bold tracking-tighter text-white">
-                CareerLens<span className="text-brand-400">AI</span>
+                CareerLens<span className="text-zinc-500">AI</span>
               </span>
             </Link>
             <p className="text-sm text-zinc-500 leading-relaxed max-w-[240px]">
-              The industrial-grade platform for strategic interview preparation and career dominance.
+              Get the job you want with AI interview prep and resume analysis. Simple and effective.
             </p>
           </div>
 
@@ -53,7 +53,7 @@ export default function Footer() {
             <ul className="space-y-4">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm text-zinc-500 hover:text-brand-400 transition-colors duration-300">
+                  <a href={link.href} className="text-sm text-zinc-500 hover:text-white transition-colors duration-300">
                     {link.label}
                   </a>
                 </li>
@@ -67,7 +67,7 @@ export default function Footer() {
             <ul className="space-y-4">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
-                  <Link to={link.href} className="text-sm text-zinc-500 hover:text-brand-400 transition-colors duration-300">
+                  <Link to={link.href} className="text-sm text-zinc-500 hover:text-white transition-colors duration-300">
                     {link.label}
                   </Link>
                 </li>
@@ -81,7 +81,7 @@ export default function Footer() {
             <ul className="space-y-4">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
-                  <Link to={link.href} className="text-sm text-zinc-500 hover:text-brand-400 transition-colors duration-300">
+                  <Link to={link.href} className="text-sm text-zinc-500 hover:text-white transition-colors duration-300">
                     {link.label}
                   </Link>
                 </li>
@@ -94,11 +94,11 @@ export default function Footer() {
         <div className="pt-10 border-t border-zinc-900/50 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
             <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
-              © {new Date().getFullYear()} CareerLens AI. Protocol Alpha v4.2
+              © {new Date().getFullYear()} CareerLens AI. All rights reserved.
             </p>
             <div className="hidden md:block w-1 h-1 rounded-full bg-zinc-800" />
             <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
-              Engineered for Excellence
+              Built for Success
             </p>
           </div>
           
