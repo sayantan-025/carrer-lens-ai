@@ -67,7 +67,7 @@ const Profile = () => {
 
           <div className="md:ml-auto w-full md:w-auto">
             <Link to="/" className="flex items-center justify-center">
-              <TacticalGhostButton icon={ArrowLeft} className="w-full md:w-auto py-3 xs:py-4">
+              <TacticalGhostButton icon={ArrowLeft} className="w-full md:w-auto py-3 xs:py-4" fullWidth>
                 Back
               </TacticalGhostButton>
             </Link>
@@ -99,15 +99,15 @@ const Profile = () => {
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 xs:gap-6">
           <Link 
             to="/change-password"
-            className="w-full md:w-auto max-w-[280px] md:max-w-none"
+            className="w-full md:w-auto"
           >
-            <TacticalGhostButton icon={Settings} className="w-full py-5">
+            <TacticalGhostButton icon={Settings} className="w-full md:min-w-[200px] py-5" fullWidth>
               Change Password
             </TacticalGhostButton>
           </Link>
-          <div className="w-full md:w-auto max-w-[280px] md:max-w-none">
+          <div className="w-full md:w-auto">
              <Link to="/generate-report">
-               <LiquidCtaButton className="w-full" icon={Sparkles}>
+               <LiquidCtaButton className="w-full md:min-w-[240px]" icon={Sparkles} fullWidth>
                  generate analysis
                </LiquidCtaButton>
              </Link>

@@ -141,9 +141,10 @@ const ChangePassword = () => {
            <LiquidCtaButton 
              type="submit" 
              disabled={isSubmitting} 
-             className="w-full max-w-[280px]"
+             className="w-full"
              loading={isSubmitting}
              loadingText="Updating..."
+             fullWidth
            >
              Update Password
            </LiquidCtaButton>

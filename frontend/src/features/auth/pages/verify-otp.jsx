@@ -160,9 +160,10 @@ const VerifyOTP = () => {
            <LiquidCtaButton 
              type="submit" 
              disabled={isSubmitting || !isOtpComplete} 
-             className="w-full max-w-[280px]"
+             className="w-full"
              loading={isSubmitting}
              loadingText="Verifying..."
+             fullWidth
            >
              Verify Code
            </LiquidCtaButton>

@@ -14,7 +14,8 @@ export function LiquidCtaButton({
   loading = false,
   loadingText,
   icon: Icon = ArrowRight,
-  showIcon = true
+  showIcon = true,
+  fullWidth = false
 }) {
   const isLight = theme === "light"
 
@@ -23,9 +24,13 @@ export function LiquidCtaButton({
       type={type}
       disabled={disabled || loading}
       onClick={onClick}
-      className={cn("group transition-transform duration-300 hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-50 disabled:pointer-events-none", className)}
+      className={cn(
+        "group transition-transform duration-300 hover:scale-[1.02] active:scale-95 cursor-pointer disabled:opacity-50 disabled:pointer-events-none", 
+        fullWidth ? "w-full" : "w-fit",
+        className
+      )}
     >
-      <div className={cn("rounded-full", isLight && "shadow-[0_8px_20px_rgba(0,0,0,0.25)]")}>
+      <div className={cn("rounded-full", isLight && "shadow-[0_8px_20px_rgba(0,0,0,0.25)]", fullWidth && "w-full")}>
         <LiquidMetalBorder borderRadius={9999} borderWidth={2} theme={theme} opacity={1} speed={1.2} scale={3}>
           <div
             className={cn(
@@ -33,6 +38,7 @@ export function LiquidCtaButton({
               isLight
                 ? "bg-gradient-to-b from-zinc-100 via-zinc-200 to-zinc-300"
                 : "bg-gradient-to-b from-zinc-800 to-zinc-900",
+              fullWidth && "w-full"
             )}
           >
             <div className="flex items-center justify-center gap-2.5">

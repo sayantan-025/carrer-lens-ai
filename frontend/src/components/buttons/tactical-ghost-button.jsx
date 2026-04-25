@@ -11,7 +11,8 @@ export function TacticalGhostButton({
   loading = false,
   loadingText,
   icon: Icon,
-  showIcon = true
+  showIcon = true,
+  fullWidth = false
 }) {
   return (
     <button
@@ -20,6 +21,7 @@ export function TacticalGhostButton({
       onClick={onClick}
       className={cn(
         "group flex items-center justify-center gap-3 bg-zinc-900/50 border border-white/5 hover:border-white/20 text-zinc-500 hover:text-white font-medium py-4 px-8 rounded-xl transition-all cursor-pointer active:scale-95 disabled:opacity-30 disabled:pointer-events-none tracking-tight text-[11px]",
+        fullWidth ? "w-full" : "w-fit",
         className
       )}
     >

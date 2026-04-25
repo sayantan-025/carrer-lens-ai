@@ -285,9 +285,10 @@ const Register = () => {
           <div className="w-full pt-2 flex justify-center">
              <LiquidCtaButton 
                 type="submit" 
-                className="w-full max-w-[280px]" 
+                className="w-full" 
                 loading={isSubmitting}
                 loadingText="Creating Account..."
+                fullWidth
              >
                Register
              </LiquidCtaButton>

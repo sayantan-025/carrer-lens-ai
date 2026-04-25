@@ -382,8 +382,8 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="flex justify-center w-full">
-                <Link to="/generate-report" className="w-full max-w-[280px]">
-                  <LiquidCtaButton className="w-full">Generate Analysis</LiquidCtaButton>
+                <Link to="/generate-report" className="w-full">
+                  <LiquidCtaButton className="w-full" fullWidth>Generate Analysis</LiquidCtaButton>
                 </Link>
               </div>
             </div>
@@ -441,8 +441,8 @@ const Dashboard = () => {
           </div>
 
           <div className="p-8 shrink-0 flex justify-center">
-             <Link to="/generate-report" className="block w-full max-w-[240px]">
-               <LiquidCtaButton className="w-full">Generate Analysis</LiquidCtaButton>
+             <Link to="/generate-report" className="block w-full">
+               <LiquidCtaButton className="w-full" fullWidth>Generate Analysis</LiquidCtaButton>
              </Link>
           </div>
         </aside>
@@ -463,8 +463,8 @@ const ErrorState = ({ error }) => (
     <ShieldAlert size={64} className="text-zinc-800 mb-10" />
     <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 tracking-tighter uppercase">Error</h1>
     <p className="text-zinc-500 text-base md:text-lg max-w-sm mb-12 font-light leading-relaxed mx-auto">{error || "Could not retrieve report data."}</p>
-    <Link to="/generate-report">
-       <LiquidCtaButton>Go Back</LiquidCtaButton>
+    <Link to="/generate-report" className="w-full max-w-[200px]">
+       <LiquidCtaButton fullWidth>Go Back</LiquidCtaButton>
     </Link>
   </div>
 );
