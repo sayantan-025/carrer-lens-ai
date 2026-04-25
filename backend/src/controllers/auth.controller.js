@@ -7,49 +7,10 @@ const tokenService = require("../services/token.service");
 const logger = require("../utils/logger");
 const ApiError = require("../utils/api-error");
 
-const COOKIE_OPTIONS = (req) => {
-  const host = req.get("host") || "";
-  // Localhost check should handle 'localhost', '127.0.0.1', or '::1'
-  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1") || host.includes("[::1]");
-  
-  return {
-    httpOnly: true,
-    // On localhost, cookies cannot be 'secure' if served via plain HTTP
-    secure: isLocalhost ? false : true,
-    // 'lax' allows cookies to be sent on same-site requests (including cross-port localhost)
-    sameSite: isLocalhost ? "lax" : "none",
-    path: "/",
-  };
-};
-
-const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 mins
-const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+const { COOKIE_OPTIONS, sendAuthCookies } = require("../utils/auth-helpers");
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
-const sendAuthCookies = async (req, res, user) => {
-  const accessToken = tokenService.generateAccessToken(user._id);
-  const refreshToken = tokenService.generateRefreshToken(user._id);
-
-  // Save hashed refresh token to user
-  user.refreshToken = tokenService.hashToken(refreshToken);
-  await user.save();
-
-  const options = COOKIE_OPTIONS(req);
-
-  res.cookie("accessToken", accessToken, {
-    ...options,
-    maxAge: ACCESS_TOKEN_MAX_AGE,
-  });
-
-  res.cookie("refreshToken", refreshToken, {
-    ...options,
-    maxAge: REFRESH_TOKEN_MAX_AGE,
-  });
-
-  return { accessToken };
 };
 
 // register controller
