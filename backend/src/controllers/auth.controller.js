@@ -4,13 +4,14 @@ const userModel = require("../models/user.model");
 const blacklistModel = require("../models/blacklist.model");
 const emailService = require("../services/email.service");
 const tokenService = require("../services/token.service");
+const logger = require("../utils/logger");
 
 const COOKIE_OPTIONS = (req) => {
   const isLocalhost = req.hostname === "localhost" || req.get("host")?.includes("localhost");
   return {
     httpOnly: true,
     secure: isLocalhost ? false : true,
-    sameSite: isLocalhost ? "lax" : "none", // none required for cross-site cookies in some browsers
+    sameSite: "lax", 
     path: "/",
   };
 };
@@ -52,6 +53,7 @@ const registerUserController = async (req, res) => {
   const { userName, email, password } = req.body;
 
   if (!userName || !email || !password) {
+    logger.warn(`Registration attempt failed: Missing fields. Received keys: ${Object.keys(req.body || {})}`);
     return res.status(400).json({ message: "Username, email and password are required" });
   }
 
@@ -96,6 +98,7 @@ const registerUserController = async (req, res) => {
       email,
     });
   } catch (error) {
+    logger.error(`Registration error: ${error.message}`);
     res.status(500).json({ message: "Error registering user", error: error.message });
   }
 };
@@ -125,6 +128,7 @@ const verifyOTPController = async (req, res) => {
       accessToken
     });
   } catch (error) {
+    logger.error(`OTP verification error: ${error.message}`);
     res.status(500).json({ message: "Verification failed", error: error.message });
   }
 };
@@ -132,6 +136,10 @@ const verifyOTPController = async (req, res) => {
 // login controller
 const loginUserController = async (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
 
   try {
     const user = await userModel.findOne({ email }).select("+password");
@@ -158,6 +166,7 @@ const loginUserController = async (req, res) => {
       accessToken
     });
   } catch (error) {
+    logger.error(`Login error: ${error.message}`);
     res.status(500).json({ message: "Login failed" });
   }
 };
