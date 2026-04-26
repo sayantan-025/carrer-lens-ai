@@ -220,12 +220,13 @@ const Dashboard = () => {
            <LiquidCtaButton
              onClick={handleDownload}
              loading={isDownloading}
-             loadingText="Downloading..."
+             loadingText="Wait..."
              icon={FileDown}
-             className="min-h-[40px] px-4 py-2"
+             className="min-h-[40px] px-3 py-2 sm:px-4 sm:py-2"
              theme="light"
            >
-             Download Resume
+             <span className="hidden sm:inline">Download Resume</span>
+             <span className="sm:hidden text-[10px]">Resume</span>
            </LiquidCtaButton>
         </div>
       </header>

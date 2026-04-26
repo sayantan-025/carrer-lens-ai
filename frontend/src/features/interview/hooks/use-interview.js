@@ -107,6 +107,12 @@ export const useInterview = () => {
         link.setAttribute("download", `resume_${interviewReportId}.pdf`);
         document.body.appendChild(link);
         link.click();
+        
+        // Cleanup
+        if (link.parentNode) {
+          link.parentNode.removeChild(link);
+        }
+        window.URL.revokeObjectURL(url);
       } catch (error) {
         console.log(error);
         throw error;

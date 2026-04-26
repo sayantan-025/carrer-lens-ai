@@ -14,17 +14,21 @@ const ai = new GoogleGenAI({
 function findChromeBinary(startPath) {
   if (!fs.existsSync(startPath)) return null;
 
-  const files = fs.readdirSync(startPath);
-  for (const file of files) {
-    const filename = path.join(startPath, file);
-    const stat = fs.lstatSync(filename);
+  try {
+    const files = fs.readdirSync(startPath);
+    for (const file of files) {
+      const filename = path.join(startPath, file);
+      const stat = fs.lstatSync(filename);
 
-    if (stat.isDirectory()) {
-      const found = findChromeBinary(filename);
-      if (found) return found;
-    } else if (file === "chrome.exe" || file === "chrome") {
-      return filename;
+      if (stat.isDirectory()) {
+        const found = findChromeBinary(filename);
+        if (found) return found;
+      } else if (file === "chrome.exe" || file === "chrome") {
+        return filename;
+      }
     }
+  } catch (err) {
+    console.error(`[Puppeteer] Error searching binary in ${startPath}:`, err.message);
   }
   return null;
 }
@@ -164,22 +168,50 @@ async function generatePdfFromHtml(htmlContent) {
   let page;
 
   try {
-    // 1. Try to find the chrome executable in the custom cache directory
-    const cachePath = path.join(process.cwd(), ".cache", "puppeteer");
-    const resolvedPath = findChromeBinary(cachePath);
-    
-    // 2. Fallback to environment variable (standard for many cloud providers)
-    const executablePath = resolvedPath || process.env.PUPPETEER_EXECUTABLE_PATH;
+    // 1. Try to find the chrome executable in various cache locations
+    const possibleCachePaths = [
+      path.join(process.cwd(), ".cache", "puppeteer"),
+      path.join(process.cwd(), "..", ".cache", "puppeteer"), // Render parent dir
+      "/opt/render/project/src/.cache/puppeteer", // Direct Render path
+      path.join(require('os').homedir(), ".cache", "puppeteer") // Home dir cache
+    ];
 
-    if (executablePath) {
-      console.log(`[Puppeteer] Launching with explicit binary: ${executablePath}`);
-    } else {
-      console.log("[Puppeteer] No custom binary found, launching with default path...");
+    let resolvedPath = null;
+    for (const cp of possibleCachePaths) {
+      resolvedPath = findChromeBinary(cp);
+      if (resolvedPath) break;
+    }
+    
+    // 2. Standard binary paths for Linux
+    const standardPaths = [
+      process.env.PUPPETEER_EXECUTABLE_PATH,
+      "/usr/bin/google-chrome",
+      "/usr/bin/google-chrome-stable",
+      "/usr/bin/chromium-browser",
+      "/usr/bin/chromium"
+    ].filter(Boolean);
+
+    let executablePath = resolvedPath;
+    
+    if (!executablePath) {
+      for (const p of standardPaths) {
+        if (fs.existsSync(p)) {
+          executablePath = p;
+          break;
+        }
+      }
     }
 
+    if (executablePath) {
+      console.log(`[Puppeteer] Launching with binary: ${executablePath}`);
+    } else {
+      console.log("[Puppeteer] No explicit binary found, attempting default launch...");
+    }
+
+    // Stable options for both Windows and Linux
     const launchOptions = {
       executablePath: executablePath || undefined,
-      headless: true,
+      headless: true, // Use stable headless mode
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
@@ -188,59 +220,61 @@ async function generatePdfFromHtml(htmlContent) {
       ],
     };
 
-    // Only add specific flags that are known to help on specific cloud envs 
-    // but can be unstable on local Windows/MacOS.
-    if (process.env.NODE_ENV === "production") {
-      launchOptions.args.push("--single-process", "--no-zygote");
+    // Only add specific Linux flags if not on Windows
+    if (process.platform !== "win32") {
+      launchOptions.args.push("--no-zygote", "--single-process");
     }
 
     try {
       browser = await puppeteer.launch(launchOptions);
     } catch (launchError) {
-      console.warn(`[Puppeteer] Failed to launch with explicit binary. Retrying with default...`);
+      console.warn(`[Puppeteer] Initial launch failed: ${launchError.message}. Retrying with absolute minimal configuration...`);
       browser = await puppeteer.launch({
         headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"]
+        args: ["--no-sandbox"]
       });
     }
 
     page = await browser.newPage();
-    await page.emulateMediaType("screen");
-    await page.setContent(htmlContent, {
-      waitUntil: "networkidle2",
-      timeout: 30000,
+    
+    // Catch page crashes
+    page.on('error', err => {
+      console.error('[Puppeteer Page Error]:', err);
     });
+
+    await page.setViewport({ width: 794, height: 1123 });
+    await page.emulateMediaType("screen");
+    
+    await page.setContent(htmlContent, {
+      waitUntil: ["load", "networkidle0"],
+      timeout: 60000,
+    });
+
+    // Wait for any final layout shifts or font loading
+    await new Promise(r => setTimeout(r, 2000));
 
     const pdfBuffer = await page.pdf({
       format: "A4",
-      pageRanges: "1",
+      printBackground: true,
       margin: {
-        top: "15mm",
-        bottom: "15mm",
-        left: "15mm",
-        right: "15mm",
+        top: "10mm",
+        bottom: "10mm",
+        left: "10mm",
+        right: "10mm",
       },
     });
 
+    if (!pdfBuffer || pdfBuffer.length === 0) {
+      throw new Error("Generated PDF buffer is empty");
+    }
+
     return pdfBuffer;
   } catch (error) {
-    console.error("generatePdfFromHtml error:", error);
+    console.error("[Puppeteer Error]:", error);
     throw new Error(`PDF generation failed: ${error.message}`);
   } finally {
-    if (page) {
-      try {
-        await page.close();
-      } catch (err) {
-        console.warn("Failed to close Puppeteer page:", err.message);
-      }
-    }
-    if (browser) {
-      try {
-        await browser.close();
-      } catch (err) {
-        console.warn("Failed to close Puppeteer browser:", err.message);
-      }
-    }
+    if (page) await page.close().catch(e => console.error("Error closing page:", e.message));
+    if (browser) await browser.close().catch(e => console.error("Error closing browser:", e.message));
   }
 }
 

@@ -30,6 +30,10 @@ const envSchema = z.object({
   // Email Configuration
   EMAIL_USER: z.string().optional(),
   EMAIL_PASS: z.string().optional(),
+
+  // Puppeteer Configuration
+  PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: z.string().optional(),
 });
 
 const _env = envSchema.safeParse(process.env);
