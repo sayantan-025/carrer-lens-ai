@@ -50,6 +50,7 @@ const registerUserController = async (req, res, next) => {
 
     const otp = generateOTP();
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff`;
 
     await userModel.create({
       userName,
@@ -58,6 +59,7 @@ const registerUserController = async (req, res, next) => {
       otp,
       otpExpiry,
       isVerified: false,
+      avatar: defaultAvatar,
     });
 
     await emailService.sendOTPEmail(email, otp);
@@ -96,7 +98,13 @@ const verifyOTPController = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Email verified successfully",
-      user: { id: user._id, name: user.userName, email: user.email },
+      user: { 
+        id: user._id, 
+        name: user.userName, 
+        email: user.email,
+        avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.userName)}&background=random&color=fff`,
+        authProvider: user.authProvider
+      },
       accessToken
     });
   } catch (error) {
@@ -143,7 +151,13 @@ const loginUserController = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Logged in successfully",
-      user: { id: user._id, name: user.userName, email: user.email },
+      user: { 
+        id: user._id, 
+        name: user.userName, 
+        email: user.email,
+        avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.userName)}&background=random&color=fff`,
+        authProvider: user.authProvider
+      },
       accessToken
     });
   } catch (error) {
@@ -216,7 +230,7 @@ const getMeController = async (req, res, next) => {
         id: user._id, 
         name: user.userName, 
         email: user.email,
-        avatar: user.avatar,
+        avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.userName)}&background=random&color=fff`,
         authProvider: user.authProvider
       },
     });
