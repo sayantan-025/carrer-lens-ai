@@ -156,7 +156,7 @@ const refreshTokenController = async (req, res, next) => {
   const token = req.cookies.refreshToken;
   
   if (!token) {
-    logger.warn("Refresh attempt failed: No refreshToken cookie found in request");
+    logger.warn(`Refresh attempt failed: No refreshToken cookie found. Cookies received: ${JSON.stringify(req.cookies)}`);
     return next(new ApiError(401, "Refresh token missing", "general"));
   }
 
@@ -173,8 +173,9 @@ const refreshTokenController = async (req, res, next) => {
       return next(new ApiError(401, "User not found", "general"));
     }
 
-    if (user.refreshToken !== tokenService.hashToken(token)) {
-      logger.warn(`Refresh attempt failed: Token rotation check failed for user ${user._id}. Possible reuse or stale token.`);
+    const hashedToken = tokenService.hashToken(token);
+    if (user.refreshToken !== hashedToken) {
+      logger.warn(`Refresh attempt failed: Token mismatch for user ${user._id}. Expected ${user.refreshToken}, got ${hashedToken}`);
       return next(new ApiError(401, "Invalid or rotated refresh token", "general"));
     }
 

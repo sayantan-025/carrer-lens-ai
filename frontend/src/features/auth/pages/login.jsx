@@ -130,6 +130,32 @@ const Login = () => {
           </p>
         </div>
 
+        {/* OAuth Error Alert */}
+        <AnimatePresence>
+          {oauthError && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+              exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+              className="relative overflow-hidden"
+            >
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500">
+                <AlertCircle className="size-4 shrink-0" />
+                <p className="text-[10px] font-bold uppercase tracking-widest flex-1">
+                  {oauthError}
+                </p>
+                <button
+                  onClick={clearOAuthError}
+                  className="p-1 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                  aria-label="Clear error"
+                >
+                  <X className="size-3" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Social Login Buttons */}
         <div className="grid grid-cols-2 gap-3 xs:gap-4 mb-8 xs:mb-10">
           <button

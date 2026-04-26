@@ -3,6 +3,8 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const GitHubStrategy = require("passport-github2").Strategy;
 const User = require("../models/user.model");
 const crypto = require("crypto");
+const logger = require("../utils/logger");
+const axios = require("axios");
 
 const generateUniqueUsername = async (baseName) => {
   let userName = baseName.replace(/\s+/g, '').toLowerCase();
@@ -20,13 +22,16 @@ const generateUniqueUsername = async (baseName) => {
   return userName;
 };
 
+// Google Strategy
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  const googleCallback = process.env.GOOGLE_CALLBACK_URL || "/api/oauth/google/callback";
+  
   passport.use(
     new GoogleStrategy(
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL,
+        callbackURL: googleCallback,
         proxy: true,
       },
       async (accessToken, refreshToken, profile, done) => {
@@ -59,20 +64,20 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
             user.googleId = id;
             user.authProvider = "google";
             user.isVerified = true;
-            user.avatar = avatar;
+            if (avatar) user.avatar = avatar;
             if (!user.userName) {
-                user.userName = await generateUniqueUsername(displayName);
+                user.userName = await generateUniqueUsername(displayName || email.split("@")[0]);
             }
             await user.save();
             return done(null, user);
           }
 
           // 2. Create new user with unique username
-          const uniqueUserName = await generateUniqueUsername(displayName);
+          const uniqueUserName = await generateUniqueUsername(displayName || email.split("@")[0]);
 
           user = await User.create({
             userName: uniqueUserName,
-            name: displayName,
+            name: displayName || uniqueUserName,
             email,
             googleId: id,
             authProvider: "google",
@@ -82,21 +87,28 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 
           done(null, user);
         } catch (err) {
+          logger.error("Google Strategy Error:", err);
           done(err, null);
         }
       }
     ),
   );
+} else {
+  logger.warn("Google OAuth credentials missing. Google login will be disabled.");
 }
 
+// GitHub Strategy
 if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+  const githubCallback = process.env.GITHUB_CALLBACK_URL || "/api/oauth/github/callback";
+
   passport.use(
     new GitHubStrategy(
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: process.env.GITHUB_CALLBACK_URL,
+        callbackURL: githubCallback,
         proxy: true,
+        scope: ["user:email"],
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -104,6 +116,20 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
           
           let email = emails?.[0]?.value || emails?.[0];
           
+          // If email is missing, fetch from GitHub API directly
+          if (!email) {
+            try {
+              const res = await axios.get("https://api.github.com/user/emails", {
+                headers: { Authorization: `token ${accessToken}` },
+              });
+              // Get the primary, verified email
+              const primaryEmail = res.data.find(e => e.primary && e.verified) || res.data[0];
+              email = primaryEmail?.email;
+            } catch (err) {
+              logger.error("Failed to fetch GitHub emails manually:", err);
+            }
+          }
+
           if (!email) {
             return done(null, false, { message: "github_no_email" });
           }
@@ -126,19 +152,19 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
             user.githubId = id;
             user.authProvider = "github";
             user.isVerified = true;
-            user.avatar = avatar;
+            if (avatar) user.avatar = avatar;
             if (!user.userName) {
-                user.userName = await generateUniqueUsername(displayName || username);
+                user.userName = await generateUniqueUsername(displayName || username || email.split("@")[0]);
             }
             await user.save();
             return done(null, user);
           }
 
-          const uniqueUserName = await generateUniqueUsername(displayName || username);
+          const uniqueUserName = await generateUniqueUsername(displayName || username || email.split("@")[0]);
 
           user = await User.create({
             userName: uniqueUserName,
-            name: displayName || username,
+            name: displayName || username || uniqueUserName,
             email,
             githubId: id,
             authProvider: "github",
@@ -148,11 +174,14 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
 
           done(null, user);
         } catch (err) {
+          logger.error("GitHub Strategy Error:", err);
           done(err, null);
         }
       },
     ),
   );
+} else {
+  logger.warn("GitHub OAuth credentials missing. GitHub login will be disabled.");
 }
 
 passport.serializeUser((user, done) => {

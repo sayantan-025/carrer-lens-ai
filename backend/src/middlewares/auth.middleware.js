@@ -2,8 +2,11 @@ const jwt = require("jsonwebtoken");
 const tokenBlacklistModel = require("../models/blacklist.model");
 
 const authMiddleware = async (req, res, next) => {
-  // Check for accessToken first (new system), then fallback to token (legacy)
-  const token = req.cookies.accessToken || req.cookies.token;
+  // Check for accessToken first (new system), then fallback to token (legacy), then Authorization header
+  const token = 
+    req.cookies.accessToken || 
+    req.cookies.token || 
+    (req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.split(" ")[1] : null);
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized. Please log in." });

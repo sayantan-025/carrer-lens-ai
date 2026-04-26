@@ -2,7 +2,12 @@ const tokenService = require("../services/token.service");
 
 const COOKIE_OPTIONS = (req) => {
   const host = req.get("host") || "";
-  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1") || host.includes("[::1]");
+  // Check if it's localhost or an IP common for local dev
+  const isLocalhost = 
+    host.includes("localhost") || 
+    host.includes("127.0.0.1") || 
+    host.includes("[::1]") ||
+    process.env.NODE_ENV !== "production"; // Fallback for dev environments
   
   return {
     httpOnly: true,
