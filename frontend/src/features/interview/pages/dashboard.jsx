@@ -122,43 +122,43 @@ const IntelligenceCard = ({ item, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       className={cn(
-        "border transition-all duration-500 relative group overflow-hidden rounded-[2rem] md:rounded-[2.5rem] mb-4 md:mb-6",
+        "border transition-all duration-500 relative group overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] mb-3 md:mb-6",
         isOpen ? "border-white/10 bg-white/[0.03] shadow-2xl" : "border-white/5 bg-zinc-950/10 hover:border-white/10"
       )}
     >
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full text-left p-6 md:p-10 flex items-start gap-4 md:gap-8 cursor-pointer outline-none min-h-[44px]">
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full text-left p-5 md:p-10 flex items-start gap-3 md:gap-8 cursor-pointer outline-none min-h-[44px]">
         <div className={cn(
-          "shrink-0 size-10 md:size-12 rounded-xl md:rounded-2xl flex items-center justify-center font-bold transition-all duration-500 border text-sm md:text-base",
+          "shrink-0 size-8 md:size-12 rounded-lg md:rounded-2xl flex items-center justify-center font-bold transition-all duration-500 border text-xs md:text-base",
           isOpen ? "bg-white border-white text-black scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]" : "bg-zinc-900 border-white/5 text-zinc-500"
         )}>
           {index + 1}
         </div>
         <div className="flex-1">
-          <h4 className={cn("font-display text-xl md:text-2xl font-bold tracking-tight leading-snug transition-colors", isOpen ? "text-white" : "text-zinc-400 group-hover:text-zinc-200")}>
+          <h4 className={cn("font-display text-lg md:text-2xl font-bold tracking-tight leading-snug transition-colors", isOpen ? "text-white" : "text-zinc-400 group-hover:text-zinc-200")}>
             {item.question}
           </h4>
         </div>
-        <div className="pt-2">
-           <ChevronDown className={cn("size-5 md:size-6 text-zinc-700 transition-all duration-500", isOpen ? "rotate-180 text-white" : "group-hover:text-zinc-400")} />
+        <div className="pt-1.5 md:pt-2">
+           <ChevronDown className={cn("size-4 md:size-6 text-zinc-700 transition-all duration-500", isOpen ? "rotate-180 text-white" : "group-hover:text-zinc-400")} />
         </div>
       </button>
       
       <AnimatePresence>
         {isOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
-            <div className="px-6 md:px-12 pb-8 md:pb-12 pt-2 space-y-6 md:space-y-10">
+            <div className="px-5 md:px-12 pb-7 md:pb-12 pt-1 md:pt-2 space-y-5 md:space-y-10">
               <div className="h-px bg-white/5" />
-              <div className="space-y-3 md:space-y-4">
-                <p className="text-[10px] md:text-[11px] font-bold text-zinc-500 uppercase tracking-[0.3em] flex items-center gap-2">
-                  <Target size={14} className="text-white/40" /> Why this question?
+              <div className="space-y-2 md:space-y-4">
+                <p className="text-[9px] md:text-[11px] font-bold text-zinc-500 uppercase tracking-[0.3em] flex items-center gap-2">
+                  <Target size={12} className="md:size-[14px] text-white/40" /> Why this question?
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed font-light italic">"{item.intention}"</p>
               </div>
-              <div className="p-6 md:p-10 bg-zinc-900/30 border border-white/5 rounded-[1.5rem] md:rounded-[2.5rem]">
-                <p className="text-[10px] md:text-[11px] font-bold text-zinc-400 uppercase tracking-[0.3em] mb-4 md:mb-6 flex items-center gap-2">
-                  <Cpu size={14} className="text-white/40" /> Suggested Answer
+              <div className="p-5 md:p-10 bg-zinc-900/30 border border-white/5 rounded-[1.25rem] md:rounded-[2.5rem]">
+                <p className="text-[9px] md:text-[11px] font-bold text-zinc-400 uppercase tracking-[0.3em] mb-3 md:mb-6 flex items-center gap-2">
+                  <Cpu size={12} className="md:size-[14px] text-white/40" /> Suggested Answer
                 </p>
-                <p className="text-zinc-200 text-base md:text-lg leading-relaxed font-light">{item.answer}</p>
+                <p className="text-zinc-200 text-sm md:text-lg leading-relaxed font-light">{item.answer}</p>
               </div>
             </div>
           </motion.div>
