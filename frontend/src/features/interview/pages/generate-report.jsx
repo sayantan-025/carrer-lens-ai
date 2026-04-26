@@ -25,6 +25,7 @@ import { LiquidCtaButton } from "../../../components/buttons/liquid-cta-button";
 import { Spinner } from "../../../components/ui/spinner";
 import { DotLoader } from "../../../components/ui/dot-loader";
 import { ProgressBar } from "../../../components/ui/progress-bar";
+import { Skeleton } from "../../../components/ui/skeleton";
 import SoftAurora from "../../../components/ui/soft-aurora";
 import Logo from "../../../components/ui/logo";
 import { cn } from "../../../lib/utils";
@@ -153,98 +154,138 @@ const GenerateReport = () => {
               exit={window.innerWidth < 768 ? { x: "-100%" } : {}}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className={cn(
-                "md:col-span-3 border-r border-white/5 bg-zinc-950/20 md:flex flex-col min-h-0 overflow-y-auto scrollbar-hidden z-[60]",
+                "md:col-span-3 border-r border-white/5 bg-zinc-950/20 md:flex flex-col h-full z-[60] overflow-y-auto scrollbar-hidden",
                 "fixed inset-0 md:relative bg-black md:bg-zinc-950/20",
                 !isSidebarOpen && "hidden md:flex"
               )}
             >
-              <div className="flex items-center justify-between p-6 md:hidden">
+              <div className="flex items-center justify-between p-6 md:hidden shrink-0">
                 <Logo className="h-6 w-6" />
                 <button onClick={() => setIsSidebarOpen(false)} className="p-2 text-white min-h-[44px]">
                   <X size={24} />
                 </button>
               </div>
 
-              {/* Steps */}
-              <div className="p-6 md:p-8 space-y-2">
-                <p className="text-[10px] font-bold text-zinc-500 px-2 uppercase tracking-[0.2em] mb-4">Steps</p>
-                {steps.map((step, index) => {
-                  const Icon = step.icon;
-                  const isActive = currentStep === index;
-                  const isCompleted = currentStep > index;
-                  const isLocked = (index === 1 && !isStep1Valid);
+              {/* Sidebar Content */}
+              <div className="flex flex-col min-h-0">
+                
+                {/* Steps Section */}
+                <div className="p-6 md:p-8 space-y-2">
+                  <p className="text-[10px] font-bold text-zinc-500 px-2 uppercase tracking-[0.2em] mb-4">Steps</p>
+                  {steps.map((step, index) => {
+                    const Icon = step.icon;
+                    const isActive = currentStep === index;
+                    const isCompleted = currentStep > index;
+                    const isLocked = (index === 1 && !isStep1Valid);
 
-                  return (
-                    <div key={step.id} className={cn(
-                      "relative group w-full flex items-center gap-4 px-4 py-4 rounded-2xl border transition-all duration-300",
-                      isActive ? "bg-white/[0.03] border-white/10 text-white" : "bg-transparent border-transparent text-zinc-500",
-                      isLocked && index > currentStep && "opacity-30 grayscale"
-                    )}>
-                      <div className={cn(
-                        "size-9 rounded-xl flex items-center justify-center border transition-all duration-500", 
-                        isActive ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]" : isCompleted ? "bg-zinc-800/50 border-white/5 text-white" : "bg-zinc-900/50 border-white/5"
+                    return (
+                      <div key={step.id} className={cn(
+                        "relative group w-full flex items-center gap-4 px-4 py-4 rounded-2xl border transition-all duration-300",
+                        isActive ? "bg-white/[0.03] border-white/10 text-white" : "bg-transparent border-transparent text-zinc-500",
+                        isLocked && index > currentStep && "opacity-30 grayscale"
                       )}>
-                        {isCompleted ? <CheckCircle2 size={18} /> : <Icon size={18} />}
+                        <div className={cn(
+                          "size-9 rounded-xl flex items-center justify-center border transition-all duration-500", 
+                          isActive ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]" : isCompleted ? "bg-zinc-800/50 border-white/5 text-white" : "bg-zinc-900/50 border-white/5"
+                        )}>
+                          {isCompleted ? <CheckCircle2 size={18} /> : <Icon size={18} />}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[11px] font-bold tracking-tight">{step.title}</span>
+                        </div>
+                        {isActive && (
+                          <motion.div layoutId="activeStep" className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
+                        )}
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-[11px] font-bold tracking-tight">{step.title}</span>
-                      </div>
-                      {isActive && (
-                        <motion.div layoutId="activeStep" className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
+                    );
+                  })}
+                </div>
+
+                {/* Guidelines Section */}
+                <div className="px-6 md:px-8 mt-2 pb-6">
+                  <div className="border-t border-white/5 pt-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                        <BrainCircuit size={10} /> Protocol Rules
+                      </p>
+                      <span className="text-[8px] font-mono text-zinc-600 px-1.5 py-0.5 rounded border border-white/5 bg-white/[0.02]">v1.0.4</span>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      {[
+                        { icon: Target, text: "JD min 50 characters", status: "REQUIRED", color: "text-zinc-400" },
+                        { icon: FileText, text: "Resume or Self-Desc", status: "MANDATORY", color: "text-zinc-400" },
+                        { icon: Info, text: "Self-Desc min 20 chars", status: "ADVISORY", color: "text-zinc-500" },
+                        { icon: Sparkles, text: "Use Resume for precision", status: "OPTIMAL", color: "text-white/60" }
+                      ].map((rule, i) => (
+                        <div key={i} className="group relative flex flex-col gap-1.5 p-3 rounded-xl bg-zinc-900/20 border border-white/5 hover:border-white/10 transition-all duration-300">
+                          <div className="flex items-center justify-between">
+                            <rule.icon size={12} className="text-zinc-600 group-hover:text-zinc-400 transition-colors" />
+                            <span className={cn(
+                              "text-[7px] font-mono px-1 rounded-sm border",
+                              rule.status === "REQUIRED" || rule.status === "MANDATORY" ? "border-white/10 text-white/40" : "border-white/5 text-zinc-700"
+                            )}>
+                              [{rule.status}]
+                            </span>
+                          </div>
+                          <span className={cn("text-[10px] font-medium leading-relaxed tracking-tight", rule.color)}>
+                            {rule.text}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* History Section */}
+                <div className="px-6 md:px-8 pb-8 mt-2">
+                  <div className="border-t border-white/5 pt-6">
+                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                      <Clock size={10} /> History
+                    </p>
+                    
+                    <div className="space-y-2">
+                      {loading && (!reports || reports.length === 0) ? (
+                        <div className="space-y-4">
+                          {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="px-3 py-3 space-y-2">
+                               <Skeleton className="h-4 w-3/4 rounded-lg bg-zinc-900" />
+                               <Skeleton className="h-3 w-1/2 rounded-lg bg-zinc-800" />
+                            </div>
+                          ))}
+                        </div>
+                      ) : reports && reports.length > 0 ? (
+                        <>
+                          {reports.map((report) => (
+                            <Link
+                              key={report._id}
+                              to={`/dashboard/${report._id}`}
+                              onClick={() => setIsSidebarOpen(false)}
+                              className="group flex items-center justify-between px-3 py-3 rounded-xl hover:bg-white/[0.03] border border-transparent hover:border-white/5 transition-all"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-medium text-zinc-400 group-hover:text-white transition-colors truncate">
+                                  {report.title || "Untitled Analysis"}
+                                </p>
+                                <p className="text-[10px] text-zinc-600 mt-0.5">
+                                  {formatDate(report.createdAt)} · {report.matchScore ?? "—"}%
+                                </p>
+                              </div>
+                              <ChevronRight size={12} className="text-zinc-700 group-hover:text-zinc-400 shrink-0 ml-2 transition-colors" />
+                            </Link>
+                          ))}
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[2rem] p-8 opacity-40">
+                          <div className="size-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center mb-4">
+                            <Clock size={16} className="text-zinc-800" />
+                          </div>
+                          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 text-center leading-relaxed">
+                            Terminal idle <br /> No logs detected
+                          </p>
+                        </div>
                       )}
                     </div>
-                  );
-                })}
-              </div>
-
-              {/* Past Reports */}
-              <div className="px-6 md:px-8 pb-8 mt-2 flex-1 flex flex-col min-h-0">
-                <div className="border-t border-white/5 pt-6 flex-1 flex flex-col min-h-0">
-                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                    <Clock size={10} /> History
-                  </p>
-                  
-                  <div className="flex-1 overflow-y-auto scrollbar-hidden pr-1">
-                    {loading && !reports ? (
-                      <div className="space-y-4">
-                        {[1, 2, 3, 4].map(i => (
-                          <div key={i} className="px-3 py-3 space-y-2">
-                             <Skeleton className="h-4 w-3/4 rounded-lg" />
-                             <Skeleton className="h-3 w-1/2 rounded-lg" />
-                          </div>
-                        ))}
-                      </div>
-                    ) : reports && reports.length > 0 ? (
-                      <div className="space-y-2">
-                        {reports.slice(0, 8).map((report) => (
-                          <Link
-                            key={report._id}
-                            to={`/dashboard/${report._id}`}
-                            onClick={() => setIsSidebarOpen(false)}
-                            className="group flex items-center justify-between px-3 py-3 rounded-xl hover:bg-white/[0.03] border border-transparent hover:border-white/5 transition-all"
-                          >
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-medium text-zinc-400 group-hover:text-white transition-colors truncate">
-                                {report.title || "Untitled Analysis"}
-                              </p>
-                              <p className="text-[10px] text-zinc-600 mt-0.5">
-                                {formatDate(report.createdAt)} · {report.matchScore ?? "—"}%
-                              </p>
-                            </div>
-                            <ChevronRight size={12} className="text-zinc-700 group-hover:text-zinc-400 shrink-0 ml-2 transition-colors" />
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="h-full flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[2rem] p-8 opacity-40">
-                        <div className="size-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center mb-4">
-                          <Clock size={16} className="text-zinc-800" />
-                        </div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 text-center leading-relaxed">
-                          Terminal idle <br /> No logs detected
-                        </p>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
