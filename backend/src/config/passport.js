@@ -5,6 +5,7 @@ const User = require("../models/user.model");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
 const axios = require("axios");
+const env = require("./env");
 
 const generateUniqueUsername = async (baseName) => {
   let userName = baseName.replace(/\s+/g, '').toLowerCase();
@@ -23,14 +24,27 @@ const generateUniqueUsername = async (baseName) => {
 };
 
 // Google Strategy
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  const googleCallback = process.env.GOOGLE_CALLBACK_URL || "/api/oauth/google/callback";
+if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
+  // Use explicit callback URL if provided, otherwise construct it
+  let googleCallback = env.GOOGLE_CALLBACK_URL;
+  
+  if (!googleCallback) {
+    if (env.NODE_ENV === "production" && env.CLIENT_URL) {
+      // In production, force absolute URL using CLIENT_URL
+      const baseUrl = env.CLIENT_URL.endsWith("/") ? env.CLIENT_URL.slice(0, -1) : env.CLIENT_URL;
+      googleCallback = `${baseUrl}/api/oauth/google/callback`;
+    } else {
+      googleCallback = "/api/oauth/google/callback";
+    }
+  }
+
+  logger.info(`Configuring Google OAuth with callback: ${googleCallback}`);
   
   passport.use(
     new GoogleStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        clientID: env.GOOGLE_CLIENT_ID,
+        clientSecret: env.GOOGLE_CLIENT_SECRET,
         callbackURL: googleCallback,
         proxy: true,
       },
@@ -98,14 +112,25 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 }
 
 // GitHub Strategy
-if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
-  const githubCallback = process.env.GITHUB_CALLBACK_URL || "/api/oauth/github/callback";
+if (env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET) {
+  let githubCallback = env.GITHUB_CALLBACK_URL;
+
+  if (!githubCallback) {
+    if (env.NODE_ENV === "production" && env.CLIENT_URL) {
+      const baseUrl = env.CLIENT_URL.endsWith("/") ? env.CLIENT_URL.slice(0, -1) : env.CLIENT_URL;
+      githubCallback = `${baseUrl}/api/oauth/github/callback`;
+    } else {
+      githubCallback = "/api/oauth/github/callback";
+    }
+  }
+
+  logger.info(`Configuring GitHub OAuth with callback: ${githubCallback}`);
 
   passport.use(
     new GitHubStrategy(
       {
-        clientID: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        clientID: env.GITHUB_CLIENT_ID,
+        clientSecret: env.GITHUB_CLIENT_SECRET,
         callbackURL: githubCallback,
         proxy: true,
         scope: ["user:email"],
