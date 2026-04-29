@@ -1,6 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router";
-import { Menu, X, User, LogOut, ChevronDown, Sparkles, FileDown } from "lucide-react";
+import {
+  Menu,
+  X,
+  User,
+  LogOut,
+  ChevronDown,
+  Sparkles,
+  FileDown,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../features/auth/hooks/use-auth";
 import { useInterview } from "../../features/interview/hooks/use-interview";
@@ -9,22 +17,18 @@ import Logo from "./logo";
 import LogoutModal from "../../features/auth/components/logout-modal";
 import { cn } from "../../lib/utils";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/generate-report", label: "Generate Analysis" },
-];
+const navLinks = [{ href: "/generate-report", label: "Generate Analysis" }];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  
+
   const { user, isAuthenticated, logout } = useAuth();
   const { reports, getResumePdf } = useInterview();
   const { showSuccessToast, showErrorToast, showInfoToast } = useToast();
-  
+
   const navigate = useNavigate();
   const profileRef = useRef(null);
 
@@ -52,7 +56,7 @@ export default function Navbar() {
       showErrorToast("No reports found to download.");
       return;
     }
-    
+
     setIsDownloading(true);
     try {
       const latestReportId = reports[0]._id;
@@ -67,12 +71,17 @@ export default function Navbar() {
   };
 
   const UserAvatar = ({ size = "size-8" }) => (
-    <div className={cn(size, "rounded-full overflow-hidden border border-white/10 bg-zinc-800 flex items-center justify-center text-white text-xs font-bold")}>
+    <div
+      className={cn(
+        size,
+        "rounded-full overflow-hidden border border-white/10 bg-zinc-800 flex items-center justify-center text-white text-xs font-bold",
+      )}
+    >
       {user?.avatar ? (
-        <img 
-          src={user.avatar} 
-          alt={user.name} 
-          className="size-full object-cover" 
+        <img
+          src={user.avatar}
+          alt={user.name}
+          className="size-full object-cover"
           /* lighthouse-fix: Performance - add dimensions if possible, using 32px as default */
           width="32"
           height="32"
@@ -88,7 +97,11 @@ export default function Navbar() {
       <header className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none">
         <nav className="max-w-5xl mx-auto flex items-center justify-between h-14 px-6 rounded-full bg-zinc-950/70 border border-white/5 backdrop-blur-xl pointer-events-auto shadow-2xl">
           {/* Logo & Brand */}
-          <Link to="/" className="flex items-center gap-2 group transition-transform hover:scale-105" aria-label="CareerLens AI Home">
+          <Link
+            to="/"
+            className="flex items-center gap-2 group transition-transform hover:scale-105"
+            aria-label="CareerLens AI Home"
+          >
             <Logo className="h-7 w-7 max-md:h-6 max-md:w-6" />
             <span className="font-display text-lg font-bold tracking-tighter text-white border-r border-white/10 pr-4 mr-2 max-sm:hidden max-md:text-base max-md:pr-3 max-md:mr-1">
               CareerLens<span className="text-zinc-500">AI</span>
@@ -121,7 +134,13 @@ export default function Navbar() {
                   aria-label="User profile menu"
                 >
                   <UserAvatar size="size-8 max-md:size-7" />
-                  <ChevronDown className={cn("size-3.5 text-zinc-500 transition-transform duration-300", isProfileOpen && "rotate-180")} aria-hidden="true" />
+                  <ChevronDown
+                    className={cn(
+                      "size-3.5 text-zinc-500 transition-transform duration-300",
+                      isProfileOpen && "rotate-180",
+                    )}
+                    aria-hidden="true"
+                  />
                 </button>
 
                 <AnimatePresence>
@@ -134,18 +153,30 @@ export default function Navbar() {
                       role="menu"
                     >
                       <div className="px-3 py-3 border-b border-white/5 mb-2">
-                        <p className="text-sm font-bold text-white truncate">{user?.name}</p>
-                        <p className="text-xs text-zinc-500 truncate">{user?.email}</p>
+                        <p className="text-sm font-bold text-white truncate">
+                          {user?.name}
+                        </p>
+                        <p className="text-xs text-zinc-500 truncate">
+                          {user?.email}
+                        </p>
                       </div>
-                      
+
                       <button
                         onClick={handleDownloadLatest}
                         disabled={isDownloading}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 text-zinc-400 hover:text-white transition-all group min-h-[44px] disabled:opacity-50"
                         role="menuitem"
                       >
-                        <FileDown className={cn("size-4", isDownloading && "animate-pulse")} aria-hidden="true" />
-                        <span className="text-sm font-medium">{isDownloading ? "Downloading..." : "Download Resume"}</span>
+                        <FileDown
+                          className={cn(
+                            "size-4",
+                            isDownloading && "animate-pulse",
+                          )}
+                          aria-hidden="true"
+                        />
+                        <span className="text-sm font-medium">
+                          {isDownloading ? "Downloading..." : "Download Resume"}
+                        </span>
                       </button>
 
                       <Link
@@ -154,10 +185,15 @@ export default function Navbar() {
                         className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 text-zinc-400 hover:text-white transition-all group min-h-[44px]"
                         role="menuitem"
                       >
-                        <User className="size-4 group-hover:text-white" aria-hidden="true" />
-                        <span className="text-sm font-medium">Profile Settings</span>
+                        <User
+                          className="size-4 group-hover:text-white"
+                          aria-hidden="true"
+                        />
+                        <span className="text-sm font-medium">
+                          Profile Settings
+                        </span>
                       </Link>
-                      
+
                       <button
                         onClick={() => setIsLogoutModalOpen(true)}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-500/10 text-zinc-400 hover:text-red-400 transition-all group mt-1 min-h-[44px]"
@@ -172,7 +208,10 @@ export default function Navbar() {
               </div>
             ) : (
               <>
-                <Link to="/login" className="text-sm font-medium text-zinc-400 hover:text-white px-4 max-sm:hidden max-md:px-2 max-md:text-xs">
+                <Link
+                  to="/login"
+                  className="text-sm font-medium text-zinc-400 hover:text-white px-4 max-sm:hidden max-md:px-2 max-md:text-xs"
+                >
                   Log In
                 </Link>
                 <Link
@@ -230,11 +269,11 @@ export default function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-                
+
                 <div className="h-px w-24 bg-white/10" />
 
                 {isAuthenticated && (
-                   <button
+                  <button
                     onClick={handleDownloadLatest}
                     disabled={isDownloading}
                     className="text-2xl font-bold text-white hover:text-zinc-300 transition-colors min-h-[44px] flex items-center gap-3"
@@ -246,7 +285,11 @@ export default function Navbar() {
 
                 {!isAuthenticated ? (
                   <div className="flex flex-col items-center gap-6 w-full">
-                    <Link to="/login" onClick={() => setIsOpen(false)} className="text-xl text-zinc-400 min-h-[44px] flex items-center">
+                    <Link
+                      to="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="text-xl text-zinc-400 min-h-[44px] flex items-center"
+                    >
                       Log In
                     </Link>
                     <Link
